@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>Dispatcharr for Home Assistant community integration</title>
+  <rect x="8" y="8" width="240" height="240" rx="58" fill="#10283f"/>
+  <path d="M54 68h73c49 0 79 24 79 60s-30 60-79 60H54z" fill="#19b8d5"/>
+  <rect x="72" y="87" width="99" height="82" rx="15" fill="#10283f"/>
+  <path d="m109 106 34 22-34 22z" fill="#fff"/>
+  <circle cx="62" cy="204" r="8" fill="#19b8d5"/>
+  <path d="M84 204h49" stroke="#19b8d5" stroke-width="10" stroke-linecap="round"/>
+</svg>

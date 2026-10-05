@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.2 — 2026-10-06
+
+- Refreshed theme-aware card with larger logos, clear viewer identities, source
+  quality chips and two columns when the card has enough space.
+- Visual card-language selection: follow Home Assistant, English or German.
+- Translated identity labels, localized numbers and explicit documentation links.
+- Original bundled brand icons and light/dark logos for Home Assistant and HACS.
+- Chromium regression checks for language changes, mobile/wide layouts, missing
+  data and exact-client versus whole-channel confirmations.
+- Full HACS validation with no ignored brand check.
+
+No changes to backend polling or session-control semantics.
+
 ## 0.1.1 — 2026-10-06
 
 - English README and HACS description, with a separate German guide.

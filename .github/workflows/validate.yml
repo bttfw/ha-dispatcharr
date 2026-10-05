@@ -18,6 +18,11 @@ jobs:
           -c 'pip install -q -r requirements-test.txt && python -m pytest -q && ruff check custom_components tests && ruff format --check custom_components tests'
       - name: Check bundled JavaScript
         run: node --check custom_components/dispatcharr/www/dispatcharr-card.js
+      - name: Check bilingual card and safe action buttons in Chromium
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+          python tests/card_browser.py
   hassfest:
     runs-on: ubuntu-latest
     steps:
@@ -29,4 +34,3 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
-          ignore: brands

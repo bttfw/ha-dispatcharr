@@ -5,6 +5,10 @@
 
 # Dispatcharr für Home Assistant
 
+[English](../README.md) | **Deutsch**
+
+<img src="../custom_components/dispatcharr/brand/icon.png" width="96" alt="Dispatcharr-Projektlogo">
+
 Wer schaut gerade welchen Sender? Eine eigenständige Dispatcharr-Integration
 mit GUI-Einrichtung und einer mitgelieferten Dashboard-Karte.
 
@@ -13,11 +17,11 @@ Vollständig neu implementiert, ohne Code aus anderen Dispatcharr-Integrationen
 für Home Assistant. Grundlage sind die offiziellen APIs und Entwicklerdokumentationen.
 Unabhängiges Community-Projekt.
 
-**AI development disclosure:** This integration was developed with OpenAI Codex
-(AI). Its implementation is independent and based on official Home Assistant
-documentation and the verified Dispatcharr API. Automated and browser tests are
-documented below; no real IPTV session was terminated during development.
-See the [AI transparency notice](../AI_TRANSPARENCY.md) for scope and verification.
+**KI-gestützte Entwicklung:** Diese Integration wurde mit OpenAI Codex entwickelt.
+Die eigenständige Implementierung basiert auf offiziellen Dokumentationen und
+der verifizierten Dispatcharr-API. Automatische Tests und Browserprüfungen sind
+dokumentiert; keine echte IPTV-Session wurde beendet.
+Details stehen im [Transparenzhinweis](../AI_TRANSPARENCY.md).
 
 ![Dispatcharr auf dem Smartphone mit synthetischen Testdaten](screenshots/mobile.png)
 
@@ -33,6 +37,19 @@ See the [AI transparency notice](../AI_TRANSPARENCY.md) for scope and verificati
 - Mehrere Instanzen, GUI-Optionen, GUI-Aliase, Reauthentifizierung und URL-/Key-Wechsel.
 - Deutsche und englische Oberfläche, HA-Themes, Desktop und Smartphone.
 - Keine zusätzlichen Wiedergaben, keine XMLTV-Komplettabfrage, keine Keys im Browser.
+
+## Sprache auswählen
+
+Einrichtung und Integrationsoptionen folgen der Sprache von Home Assistant.
+Die Karte übernimmt diese ebenfalls automatisch; für andere Sprachen als Deutsch
+wird Englisch verwendet. Unter **Dashboard bearbeiten → Karte bearbeiten →
+Kartensprache** lassen sich **Home-Assistant-Sprache**, **English** oder **Deutsch**
+auswählen. Die Auswahl gilt nur für diese Karte, einschließlich Bestätigungen und
+Datums-/Zahlenformaten. YAML ist nicht erforderlich. Benutzer-, Sender- und
+Sendungsnamen werden unverändert von Dispatcharr übernommen.
+
+Die Hauptbeschreibung in HACS ist Englisch. Über **Deutsch** gelangt man zu
+dieser Anleitung; HACS bietet keine eigene Sprachauswahl für die README.
 
 ## Installation mit HACS
 
