@@ -1,8 +1,10 @@
 """Stable summary sensors; sessions are transient attributes."""
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity import EntityCategory
 
+from .const import DOMAIN
 from .entity import DispatcharrEntity
 
 
@@ -52,3 +54,14 @@ class LastSuccess(DispatcharrEntity, SensorEntity):
     @property
     def native_value(self):
         return self.coordinator.last_success
+
+    @property
+    def extra_state_attributes(self):
+        # HA removes normal attributes when a count sensor becomes unavailable.
+        # Keep an explicit registry-based link so the card can show this timestamp
+        # even when opened during an outage or after the viewer entity is renamed.
+        return {
+            "viewer_entity_id": er.async_get(self.hass).async_get_entity_id(
+                "sensor", DOMAIN, f"{self.coordinator.entry.entry_id}_viewer_count"
+            )
+        }

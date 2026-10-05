@@ -66,9 +66,9 @@ class Handler(BaseHTTPRequestHandler):
                 "clients": [
                     {
                         "client_id": c,
-                        "user_id": 42 + i,
+                        "user_id": 42 + int(c.removeprefix("client_")),
                         "user_agent": "Example Player",
-                        "ip_address": f"192.0.2.{i + 1}",
+                        "ip_address": f"192.0.2.{int(c.removeprefix('client_')) + 1}",
                         "connected_at": time.time() - 1234,
                         "output_profile_id": 7,
                     }

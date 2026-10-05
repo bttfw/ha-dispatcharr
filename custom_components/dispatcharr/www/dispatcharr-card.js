@@ -1,4 +1,8 @@
 /* Independent Dispatcharr card. No external libraries, playback or credentials. */
+// Extra modules can run before HA replaces the native custom-element registry.
+// Wait for its application element before extending HTMLElement or registering.
+await customElements.whenDefined("home-assistant");
+
 const messages = {
   de: {
     title: "Dispatcharr", viewers: "Zuschauer", channels: "Aktive Kanäle", online: "Verbunden", offline: "Verbindung unterbrochen",
@@ -55,7 +59,7 @@ class DispatcharrCard extends HTMLElement {
       .list{display:grid;gap:12px}.viewer{border:1px solid var(--divider-color);border-radius:12px;padding:16px;min-width:0}.identity{display:flex;gap:12px;align-items:center}.logo{width:52px;height:52px;flex:0 0 52px;background:var(--secondary-background-color);border-radius:10px;display:grid;place-items:center;overflow:hidden;text-align:center;font-size:10px;color:var(--secondary-text-color)}
       .logo img{width:44px;height:44px;object-fit:contain}.who{min-width:0;flex:1}.who strong,.channel{display:block;overflow-wrap:anywhere}.channel{margin-top:3px;color:var(--secondary-text-color);font-size:14px}.time{margin-top:7px}
       .programme{margin-top:14px;font-size:14px;overflow-wrap:anywhere}.programme-title{font-weight:500}.programme-line{display:flex;justify-content:space-between;gap:8px;margin:7px 0;font-size:12px;color:var(--secondary-text-color)}progress{display:block;width:100%;height:5px;accent-color:var(--primary-color);border:0;border-radius:8px;overflow:hidden}progress::-webkit-progress-bar{background:var(--divider-color)}progress::-webkit-progress-value{background:var(--primary-color)}
-      .quality{font-size:12px;color:var(--secondary-text-color);margin-top:12px;line-height:1.7}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}button{font:inherit;cursor:pointer;min-height:44px;border:1px solid var(--divider-color);border-radius:8px;padding:8px 12px;background:transparent;color:var(--primary-color)}button:hover{background:var(--secondary-background-color)}button:focus-visible,summary:focus-visible{outline:2px solid var(--primary-color);outline-offset:3px}button:disabled{opacity:.5;cursor:default}.danger{color:var(--error-color,#db4437)}
+      .quality{font-size:12px;color:var(--secondary-text-color);margin-top:12px;line-height:1.7;white-space:pre-line}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}button{font:inherit;cursor:pointer;min-height:44px;border:1px solid var(--divider-color);border-radius:8px;padding:8px 12px;background:transparent;color:var(--primary-color)}button:hover{background:var(--secondary-background-color)}button:focus-visible,summary:focus-visible{outline:2px solid var(--primary-color);outline-offset:3px}button:disabled{opacity:.5;cursor:default}.danger{color:var(--error-color,#db4437)}
       details{margin-top:12px;font-size:13px}summary{cursor:pointer;color:var(--primary-color);min-height:32px;line-height:32px}dl{display:grid;grid-template-columns:minmax(90px,1fr) minmax(0,1.5fr);gap:8px;margin:8px 0}dt{color:var(--secondary-text-color)}dd{margin:0;overflow-wrap:anywhere}
       .empty{text-align:center;padding:32px 12px}.empty ha-icon{--mdc-icon-size:36px;color:var(--secondary-text-color);margin-bottom:12px}.empty strong{display:block;font-weight:500;margin-bottom:8px}.footer{margin-top:16px;font-size:12px;color:var(--secondary-text-color);line-height:1.8}.notice{padding:0 20px 16px;font-size:14px;overflow-wrap:anywhere}.notice:empty{display:none}.notice.error{color:var(--error-color,#db4437)}
       dialog{border:1px solid var(--divider-color);border-radius:16px;color:var(--primary-text-color);background:var(--card-background-color,#fff);padding:24px;max-width:min(440px,calc(100vw - 64px));box-shadow:0 8px 36px #0004}dialog::backdrop{background:#0007}dialog h3{margin-top:0;font-size:18px}dialog p{overflow-wrap:anywhere;line-height:1.5}.dialog-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:20px}
@@ -64,7 +68,17 @@ class DispatcharrCard extends HTMLElement {
     this.shadowRoot.querySelector(".cancel").onclick = () => this.shadowRoot.querySelector("dialog").close();
     this.shadowRoot.querySelector(".confirm").onclick = () => this._execute();
   }
-  static getConfigElement() { return document.createElement("dispatcharr-card-editor"); }
+  static async getConfigElement() {
+    // HA loads form controls lazily. Load its public card editor before creating
+    // our form so opening this editor first also works in a fresh browser.
+    if (!customElements.get("ha-form")) {
+      const helpers = await window.loadCardHelpers();
+      const card = helpers.createCardElement({ type: "entities", entities: [] });
+      await card.constructor.getConfigElement();
+      await customElements.whenDefined("ha-form");
+    }
+    return document.createElement("dispatcharr-card-editor");
+  }
   static getStubConfig(hass) { return { entity: candidates(hass)[0]?.entity_id || "", show_controls: true }; }
   setConfig(config) { this._config = { title: "Dispatcharr", compact: false, show_controls: true, ...config }; this._render(); }
   set hass(hass) {
@@ -82,6 +96,10 @@ class DispatcharrCard extends HTMLElement {
     this._logos.clear();
   }
   _state() { return this._hass?.states[this._config?.entity]; }
+  _lastSuccess() {
+    const stamp = Object.values(this._hass?.states || {}).find(s => s.attributes.viewer_entity_id === this._config?.entity);
+    return stamp && !["unknown", "unavailable"].includes(stamp.state) ? stamp.state : null;
+  }
   _t(key) { return messages[language(this._hass)][key] || key; }
   _value(value) { return value === null || value === undefined || value === "" ? this._t("unknown") : String(value); }
   _notice(text, error = false) {
@@ -100,7 +118,8 @@ class DispatcharrCard extends HTMLElement {
     const status = el("span", null, live ? "status" : "status offline"); status.append(el("i", null, "dot"), el("span", this._t(live ? "online" : "offline"))); header.append(status); body.append(header);
     if (!state || !live) {
       body.append(el("p", this._t(!this._config.entity ? "configure" : !state ? "gone" : "offline"), "empty"));
-      if (data.last_success) body.append(el("div", `${this._t("last")}: ${new Date(data.last_success).toLocaleString(this._hass.language)}`, "footer"));
+      const lastSuccess = data.last_success || this._lastSuccess();
+      if (lastSuccess) body.append(el("div", `${this._t("last")}: ${new Date(lastSuccess).toLocaleString(this._hass.language)}`, "footer"));
       return;
     }
     const stats = el("div", null, "stats");

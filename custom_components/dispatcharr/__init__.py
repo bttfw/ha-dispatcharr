@@ -11,14 +11,15 @@ from .services import async_setup_services
 
 
 async def async_setup_entry(hass, entry):
+    # The card must remain loadable even if Dispatcharr is offline at HA startup.
+    await async_setup_frontend(hass)
+    async_setup_services(hass)
     api = DispatcharrClient(
         async_get_clientsession(hass), entry.data[CONF_URL], entry.data[CONF_API_KEY]
     )
     coordinator = DispatcharrCoordinator(hass, entry, api)
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator
-    await async_setup_frontend(hass)
-    async_setup_services(hass)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 

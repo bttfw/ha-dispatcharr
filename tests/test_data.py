@@ -95,6 +95,36 @@ async def test_optional_endpoint_failure_does_not_hide_viewers(dispatcharr):
     assert set(result["warnings"]) == {"epg_unavailable", "metadata_unavailable"}
 
 
+async def test_metadata_failure_remains_visible_and_recovers_without_fifteen_minute_wait(
+    dispatcharr,
+):
+    clock = [1000]
+    loader = SnapshotLoader(dispatcharr.client, clock=lambda: clock[0])
+    dispatcharr.failures["/api/channels/channels/by-uuids/"] = 500
+    assert "metadata_unavailable" in (await loader.snapshot())["warnings"]
+    clock[0] += 10
+    assert "metadata_unavailable" in (await loader.snapshot())["warnings"]
+    dispatcharr.failures.clear()
+    clock[0] += 51
+    result = await loader.snapshot()
+    assert result["warnings"] == [] and result["viewers"][0]["logo_id"] == 3
+
+
+async def test_expired_channel_fails_without_post(dispatcharr):
+    dispatcharr.channels.clear()
+    with pytest.raises(DispatcharrError, match="session_expired"):
+        await SessionController(dispatcharr.client, AsyncMock(), lambda: True).stop(
+            UUID, "client_0"
+        )
+    assert not any(c[0] == "POST" for c in dispatcharr.calls)
+
+
+async def test_cached_viewer_data_excludes_key_even_if_upstream_echoes_it(dispatcharr):
+    dispatcharr.channels[0]["clients"][0]["user_agent"] = "Player " + KEY
+    result = await SnapshotLoader(dispatcharr.client).snapshot()
+    assert KEY not in json.dumps(result)
+
+
 async def test_alias_is_explicit_and_instance_local(dispatcharr):
     key = device_key(dispatcharr.channels[0]["clients"][0])
     one, two = SnapshotLoader(dispatcharr.client), SnapshotLoader(dispatcharr.client)

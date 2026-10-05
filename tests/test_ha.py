@@ -1,17 +1,20 @@
 """Exercise real HA classes against the synthetic Dispatcharr API."""
 
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import AsyncMock
 
 import pytest
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.core import Context, HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed, Unauthorized
 
 from custom_components.dispatcharr.binary_sensor import DispatcharrConnectivity
 from custom_components.dispatcharr.config_flow import DispatcharrConfigFlow, DispatcharrOptionsFlow
 from custom_components.dispatcharr.coordinator import DispatcharrCoordinator
 from custom_components.dispatcharr.diagnostics import async_get_config_entry_diagnostics
 from custom_components.dispatcharr.sensor import DispatcharrCount, LastSuccess
+from custom_components.dispatcharr.services import async_setup_services
 
 
 @pytest.fixture
@@ -75,6 +78,29 @@ async def test_entity_ids_survive_new_coordinator(hass, entry, dispatcharr):
     )
     assert one.unique_id == two.unique_id
     assert dispatcharr.client.url not in one.unique_id
+
+
+async def test_last_success_link_uses_entity_registry_after_rename(hass, entry, dispatcharr):
+    from homeassistant.helpers import device_registry as dr
+    from homeassistant.helpers import entity_registry as er
+
+    dr.async_setup(hass)
+    await dr.async_load(hass, load_empty=True)
+    registry = er.async_get(hass)
+    await registry.async_load()
+    viewer = registry.async_get_or_create("sensor", "dispatcharr", f"{entry.entry_id}_viewer_count")
+    registry.async_update_entity(viewer.entity_id, new_entity_id="sensor.renamed_viewers")
+    coordinator = DispatcharrCoordinator(hass, entry, dispatcharr.client)
+    last = LastSuccess(coordinator)
+    last.hass = hass
+    assert last.extra_state_attributes == {"viewer_entity_id": "sensor.renamed_viewers"}
+    await coordinator.async_refresh()
+    timestamp = last.native_value
+    dispatcharr.failures["/proxy/ts/status"] = 503
+    await coordinator.async_refresh()
+    assert last.available and last.native_value == timestamp
+    assert last.extra_state_attributes["viewer_entity_id"] == "sensor.renamed_viewers"
+    await coordinator.async_shutdown()
 
 
 async def test_diagnostics_never_dump_private_data(hass, entry, dispatcharr):
@@ -162,3 +188,23 @@ def test_translations_cover_every_error_and_control():
         }
 
     assert paths(en) == paths(de)
+
+
+async def test_stop_service_rejects_non_admin_before_network(hass, dispatcharr):
+    hass.auth = SimpleNamespace(
+        async_get_user=AsyncMock(return_value=SimpleNamespace(is_admin=False))
+    )
+    async_setup_services(hass)
+    with pytest.raises(Unauthorized):
+        await hass.services.async_call(
+            "dispatcharr",
+            "stop_session",
+            {
+                "config_entry_id": "any",
+                "channel_uuid": "11111111-2222-4333-8444-555555555555",
+                "client_id": "client_0",
+            },
+            blocking=True,
+            context=Context(user_id="not-an-admin"),
+        )
+    assert dispatcharr.calls == []
