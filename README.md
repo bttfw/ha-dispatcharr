@@ -1,3 +1,8 @@
+[![Tests](https://github.com/bttfw/ha-dispatcharr/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/bttfw/ha-dispatcharr/actions/workflows/validate.yml)
+[![Release](https://img.shields.io/github/v/release/bttfw/ha-dispatcharr)](https://github.com/bttfw/ha-dispatcharr/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![AI-assisted](https://img.shields.io/badge/AI-assisted-8B5CF6)](AI_TRANSPARENCY.md)
+
 # Dispatcharr für Home Assistant
 
 Wer schaut gerade welchen Sender? Eine eigenständige Dispatcharr-Integration
@@ -12,6 +17,7 @@ Unabhängiges Community-Projekt.
 (AI). Its implementation is independent and based on official Home Assistant
 documentation and the verified Dispatcharr API. Automated and browser tests are
 documented below; no real IPTV session was terminated during development.
+See the [AI transparency notice](AI_TRANSPARENCY.md) for scope and verification.
 
 ![Dispatcharr auf dem Smartphone mit synthetischen Testdaten](docs/screenshots/mobile.png)
 
