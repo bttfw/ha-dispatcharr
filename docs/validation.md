@@ -120,6 +120,21 @@ den authentifizierten Bildtransport; es ist kein echter Sender.
 
 ## Aufräumen
 
+## Installation im produktiven Home Assistant
+
+Nach Abschluss der isolierten Tests wurde 0.1.0 über die echte HACS-Oberfläche
+als benutzerdefiniertes Repository installiert. Die HA-Konfigurationsprüfung
+meldete keine Fehler. Nach dem erforderlichen Neustart wurde die Verbindung
+über den normalen Einrichtungsdialog mit URL und API-Key erstellt.
+
+Die neue Dashboard-Ansicht wurde auf Desktop und Smartphone im echten
+HA-Frontend geprüft: Verbindung aktiv, null Kanäle, null Zuschauer,
+„Niemand schaut gerade“, aktuelle Zeit und abgeschaltete Steuerung.
+Es gab keine JavaScript-Fehler. Die bisherigen Dashboard-Ansichten wurden
+vorher gesichert und beim Ergänzen unverändert erhalten.
+
+## Aufräumen
+
 Temporäre Unraid-Testcontainer, deren Testverzeichnis und das dafür geladene
 HA-Image wurden nach dem Wechsel zu Docker Desktop entfernt. Docker-Desktop-
 Testcontainer werden nach Abschluss ebenfalls entfernt; Testläufe verwenden

@@ -67,7 +67,7 @@ class Handler(BaseHTTPRequestHandler):
                     {
                         "client_id": c,
                         "user_id": 42 + int(c.removeprefix("client_")),
-                        "user_agent": "Example Player",
+                        "user_agent": "Demo Player",
                         "ip_address": f"192.0.2.{int(c.removeprefix('client_')) + 1}",
                         "connected_at": time.time() - 1234,
                         "output_profile_id": 7,
@@ -137,7 +137,7 @@ class Handler(BaseHTTPRequestHandler):
                 [
                     {
                         "channel_uuid": UUID,
-                        "title": "Natur entdecken",
+                        "title": "Nature discoveries",
                         "start_time": time.time() - 900,
                         "end_time": time.time() + 1800,
                     }
