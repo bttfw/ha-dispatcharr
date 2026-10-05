@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Setup and usage guide (English)
+    url: https://github.com/bttfw/ha-dispatcharr#readme
+    about: Installation, card language, options, session controls and troubleshooting.
+  - name: Einrichtung und Bedienung (Deutsch)
+    url: https://github.com/bttfw/ha-dispatcharr/blob/main/docs/README.de.md
+    about: Deutsche Anleitung zur Integration und Dashboard-Karte.

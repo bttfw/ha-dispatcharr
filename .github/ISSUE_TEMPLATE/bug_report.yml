@@ -1,0 +1,96 @@
+name: Bug report
+description: Report a problem with the Dispatcharr integration or dashboard card.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the problem in English when possible. German reports are also welcome.
+        This repository covers the Home Assistant integration and its bundled card.
+        Do not include API keys, HA tokens, private stream URLs or raw account API responses.
+        Review logs, diagnostics and screenshots before attaching them.
+  - type: checkboxes
+    id: existing_issues
+    attributes:
+      label: Existing reports
+      options:
+        - label: I searched existing issues for the same problem.
+          required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Setup or authentication
+        - Connection or refresh
+        - Viewers or user identity
+        - Logos, EPG or source information
+        - Session or channel controls
+        - Card layout, language or visual editor
+        - Device aliases or options
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: integration_version
+    attributes:
+      label: Integration version
+      description: The installed version shown on the Dispatcharr repository page in HACS.
+      placeholder: "For example: 0.1.2"
+    validations:
+      required: true
+  - type: input
+    id: home_assistant_version
+    attributes:
+      label: Home Assistant Core version
+      placeholder: "For example: 2026.9.4"
+    validations:
+      required: true
+  - type: input
+    id: dispatcharr_version
+    attributes:
+      label: Dispatcharr version
+      placeholder: "For example: 0.31.0 (or Unknown if unavailable)"
+    validations:
+      required: true
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: What happened?
+      description: Include the exact error message, if available, with private data removed.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Describe what you already observed. Do not interrupt other viewers to reproduce a bug.
+      placeholder: |
+        1. Open ...
+        2. Select ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Relevant environment and session details
+      description: Optional. Browser or HA app, device, installation method, card language, and number of channels/viewers. For a control issue, identify whether you used End session or Stop channel for everyone, without sharing private IDs.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log excerpt
+      description: Optional. Paste only the relevant lines after removing credentials and private URLs.
+      render: text
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Diagnostics or screenshots
+      description: Optional. Attach reviewed integration diagnostics or screenshots with personal data hidden.
