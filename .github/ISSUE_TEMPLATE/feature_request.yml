@@ -1,0 +1,57 @@
+name: Improvement or feature request
+description: Suggest an improvement to the Dispatcharr integration or dashboard card.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe your idea in English when possible. German suggestions are also welcome.
+        Please focus on this Dispatcharr integration and its bundled Home Assistant card.
+        Do not include API keys, HA tokens, private stream URLs or personal viewer data.
+  - type: checkboxes
+    id: existing_requests
+    attributes:
+      label: Existing requests
+      options:
+        - label: I searched existing issues for a similar request.
+          required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area to improve
+      options:
+        - Dashboard appearance or usability
+        - Viewer or programme information
+        - Setup, options or device aliases
+        - Session controls
+        - Performance or reliability
+        - Accessibility or translations
+        - Documentation
+        - Other Dispatcharr integration feature
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: Explain what you are trying to do and what is difficult or missing today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed improvement
+      description: Describe the desired behavior and how it would help. Implementation details are optional.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Optional. Describe existing settings, workarounds or other approaches you tried.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Optional. Add sketches, redacted screenshots or links to official Dispatcharr API documentation that support the idea.
