@@ -3,185 +3,179 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![AI-assisted](https://img.shields.io/badge/AI-assisted-8B5CF6)](AI_TRANSPARENCY.md)
 
-# Dispatcharr für Home Assistant
+# Dispatcharr for Home Assistant
 
-Wer schaut gerade welchen Sender? Eine eigenständige Dispatcharr-Integration
-mit GUI-Einrichtung und einer mitgelieferten Dashboard-Karte.
+See who is watching which channel. An independent Dispatcharr integration with
+GUI setup and a bundled dashboard card.
 
-**Geprüfte Basis:** Home Assistant 2026.9.4, Dispatcharr 0.31.0.
-Vollständig neu implementiert, ohne Code aus anderen Dispatcharr-Integrationen
-für Home Assistant. Grundlage sind die offiziellen APIs und Entwicklerdokumentationen.
-Unabhängiges Community-Projekt.
+**Verified with:** Home Assistant 2026.9.4 and Dispatcharr 0.31.0.
+Built from scratch using official documentation and the verified Dispatcharr API.
+No code was copied from existing Dispatcharr integrations for Home Assistant.
+Independent community project.
 
-**AI development disclosure:** This integration was developed with OpenAI Codex
-(AI). Its implementation is independent and based on official Home Assistant
-documentation and the verified Dispatcharr API. Automated and browser tests are
-documented below; no real IPTV session was terminated during development.
-See the [AI transparency notice](AI_TRANSPARENCY.md) for scope and verification.
+**AI-assisted development:** This integration was developed with OpenAI Codex
+(AI). Read the [AI transparency notice](AI_TRANSPARENCY.md) for its contribution,
+tests performed and remaining validation limits.
 
-![Dispatcharr auf dem Smartphone mit synthetischen Testdaten](docs/screenshots/mobile.png)
+[Deutsche Anleitung](docs/README.de.md)
 
-## Funktionen
+![Mobile dashboard with synthetic demo data](docs/screenshots/mobile-en.png)
 
-- Erreichbarkeit, letzte erfolgreiche Aktualisierung, aktive Kanäle und Zuschauer.
-- Eine automatisch aktualisierte Zeile je tatsächlicher Client-Session: Benutzer,
-  optionaler Geräte-Alias, Senderlogo, Verbindungsdauer und aktuelles EPG.
-- Sendungsfortschritt, gemeldete Quellauflösung, Bildrate, mittlere Datenrate,
-  Video-/Audiocodec sowie aufklappbare Provider- und Profilinformationen.
-- Einzelne Sessions beenden; gesamten Kanal als getrennte Aktion mit Bestätigung
-  beenden. Steuerung standardmäßig aus und auf HA-Administratoren beschränkt.
-- Mehrere Instanzen, GUI-Optionen, GUI-Aliase, Reauthentifizierung und URL-/Key-Wechsel.
-- Deutsche und englische Oberfläche, HA-Themes, Desktop und Smartphone.
-- Keine zusätzlichen Wiedergaben, keine XMLTV-Komplettabfrage, keine Keys im Browser.
+## Features
 
-## Installation mit HACS
+- Connection status, last successful update, active channels and connected viewers.
+- One automatically updated row per actual client session: user, optional device
+  alias, channel logo, connection duration and current EPG programme.
+- Programme progress, reported source resolution, frame rate, average bitrate,
+  video/audio codecs and expandable provider/profile details.
+- End one client session or separately confirm stopping a channel for everyone.
+  Controls default to off and require a Home Assistant administrator.
+- Multiple instances, GUI options and aliases, reauthentication and URL/key changes.
+- English and German UI, Home Assistant themes, desktop and mobile layouts.
+- No extra playback sessions, full XMLTV downloads or Dispatcharr keys in the browser.
 
-1. **HACS → Menü ⋮ → Benutzerdefinierte Repositories** öffnen.
-2. `https://github.com/bttfw/ha-dispatcharr` hinzufügen, Typ **Integration**.
-3. In HACS nach **Dispatcharr** suchen und herunterladen.
-4. Home Assistant über **Einstellungen → System → Neu starten** neu starten.
-5. **Einstellungen → Geräte & Dienste → Integration hinzufügen → Dispatcharr**.
-6. Dispatcharr-URL und API-Key eingeben. Benutzername und Passwort werden nicht
-   verlangt. Für eine zweite Instanz „Dienst hinzufügen“ verwenden.
+## Install with HACS
 
-Als benutzerdefiniertes HACS-Repository installierbar; nicht im HACS-Standardkatalog
-beantragt. Die Karte wird von der Integration mitgeladen, ohne zweites Repository.
+1. Open **HACS > menu > Custom repositories**.
+2. Add `https://github.com/bttfw/ha-dispatcharr`, type **Integration**.
+3. Find **Dispatcharr** in HACS and download it.
+4. Restart Home Assistant through **Settings > System > Restart**.
+5. Open **Settings > Devices & services > Add integration > Dispatcharr**.
+6. Enter the Dispatcharr URL and API key. No username or password is required.
+   Use **Add service** to configure another instance.
 
-Manuell: Das Release-ZIP so entpacken, dass
-`config/custom_components/dispatcharr/manifest.json` existiert; anschließend
-HA neu starten und die Schritte ab 5 ausführen. Keine YAML-Konfiguration nötig.
+Available as a HACS custom repository; not submitted to the default HACS catalog.
+The integration includes the card, so a second repository is unnecessary.
 
-## API-Key und Berechtigungen
+For manual installation, extract the release ZIP so that
+`config/custom_components/dispatcharr/manifest.json` exists. Restart HA and
+continue from step 5. No YAML configuration is required.
 
-In Dispatcharr 0.31.0 einen Benutzer mit **Admin-Rechten (Stufe 10)** verwenden.
-Im Benutzerformular gibt es **Generate API Key** beziehungsweise einen bereits
-vorhandenen **API Key**. Ein bestehender Key muss nicht neu erzeugt werden.
-Regenerieren widerruft gegebenenfalls den bisher verwendeten Key.
+## API key and permissions
 
-Auch die lesende Zuschauer-Statusabfrage benötigt in dieser Dispatcharr-Version
-Admin-Rechte. Der HA-Schalter verhindert Schreibaktionen innerhalb dieser
-Integration; er ändert nicht die Berechtigungen des Dispatcharr-Keys.
+For Dispatcharr 0.31.0, use an **administrator account (level 10)**. Its user
+form provides **Generate API Key**, or an existing **API Key**. You do not need
+to regenerate an existing key; regeneration can invalidate the previous key.
 
-Die Einrichtung prüft Verbindung, Anmeldung, Status-, Metadaten- und EPG-API
-sowie die Rechte der Stoppendpunkte mittels `OPTIONS`. Dabei wird kein Stream
-gestartet oder beendet. Dispatcharr muss von Home Assistant aus erreichbar sein;
-ein Browser-Zugriff allein reicht nicht. HTTPS-Zertifikate werden validiert.
+Even the viewer status API requires admin permissions in this Dispatcharr
+version. The HA control switch prevents this integration from sending stop
+actions; it does not reduce the underlying Dispatcharr key's permissions.
 
-## Dashboard ohne YAML
+Setup validates connectivity, authentication, status, metadata and current-EPG
+endpoints. It checks stop-endpoint permissions using `OPTIONS`, without starting
+or stopping any stream. Dispatcharr must be reachable from the HA server;
+browser access alone is insufficient. HTTPS certificates are validated.
 
-1. Ein bearbeitbares Dashboard öffnen, **Dashboard bearbeiten → Karte hinzufügen**.
-2. Die Karte **Dispatcharr** auswählen.
-3. Im visuellen Editor den **Zuschauer-Sensor** der gewünschten Instanz auswählen.
-4. Optional Titel, kompakte Ansicht und sichtbare Aktionsschaltflächen einstellen.
-5. Speichern. Falls die Karte nach der erstmaligen Einrichtung noch nicht im
-   Kartenkatalog erscheint, die Browserseite vollständig neu laden.
+## Dashboard without YAML
 
-Die Karte wird automatisch als Frontend-Modul registriert. Kein manuelles
-Eintragen von JavaScript-Ressourcen erforderlich. Die normalen Sensoren und der
-Konfigurationsschalter lassen sich zusätzlich über HA-Standardkarten wie
-„Kachel“ oder „Entitäten“ auswählen.
+1. Open an editable dashboard and choose **Edit dashboard > Add card**.
+2. Select **Dispatcharr**.
+3. In the visual editor, select the instance's **Viewer sensor**.
+4. Optionally adjust the title, compact mode and action-button visibility.
+5. Save. If the card is missing from the card picker immediately after initial
+   setup, fully reload the browser page.
 
-## Konfigurieren und bedienen
+The integration registers its frontend module automatically. There is no manual
+JavaScript resource configuration. Summary sensors and the control switch also
+work with standard HA cards such as Tile and Entities.
 
-**Einstellungen → Geräte & Dienste → Dispatcharr → gewünschte Instanz → Konfigurieren**:
+## Configure and operate
 
-| Bereich | Funktion |
+Open **Settings > Devices & services > Dispatcharr > instance > Configure**:
+
+| Section | Purpose |
 | --- | --- |
-| Steuerung | „Steuerung aktivieren“, standardmäßig aus |
-| Geräte-Aliase | Beobachtetes Gerät auswählen und Alias eingeben; leer entfernt ihn |
-| Erweitert | Statusintervall, Metadaten-Cache und EPG-Intervall in Sekunden |
+| Controls | Enable controls; off by default |
+| Device aliases | Select an observed device and enter an alias; leave empty to remove it |
+| Advanced | Status interval, metadata cache and current-EPG interval, in seconds |
 
-Zusätzlich gibt es auf der Geräteseite die Schalter-Entität **Steuerung aktivieren**.
-Für URL-/Key-Wechsel das **⋮-Menü der Instanz → Neu konfigurieren** verwenden.
-Bei einem abgewiesenen Key bietet HA die erneute Authentifizierung an.
+The device page also exposes an **Enable controls** switch. To change the URL
+or key, use the instance's **menu > Reconfigure** action. HA offers a
+reauthentication flow when a key is rejected.
 
-Die Alias-Auswahl umfasst aktuell beobachtete Geräte und bereits gespeicherte
-Aliase. Ein Alias basiert auf der Kombination aus gemeldeter IP und User-Agent.
-Das ist keine sichere Hardware-ID: Bei gemeinsamem Proxy oder geänderter IP
-kann die Zuordnung uneindeutig werden. Die eigentliche Benutzerzuordnung nutzt
-ausschließlich Dispatcharrs `user_id`, niemals Namen oder Listenpositionen.
+Aliases can be assigned to currently observed devices or previously saved
+aliases. Their identifier combines the reported IP and User-Agent; it is not a
+hardware identity and can be ambiguous behind a shared proxy or after an IP
+change. User accounts are matched only by Dispatcharr's actual `user_id`, never
+by name or list position.
 
-Bei aktiver Steuerung erscheint **Session beenden** an der betreffenden Zeile.
-Der Dialog nennt die konkrete Client-ID. Die Aktion betrifft nur diese Session.
-Unter **Details → Kanal für alle beenden** befindet sich die getrennte
-Kanalaktion mit ausdrücklicher Bestätigung für alle Zuschauer.
+With controls enabled, **End session** appears on the corresponding viewer row.
+Its confirmation dialog identifies the exact client ID. **Details > Stop channel
+for everyone** is a separate action with an explicit warning affecting all viewers.
 
-Vor jeder Aktion wird der aktuelle Kanalstatus geprüft. Abgelaufene IDs erzeugen
-eine verständliche Meldung. Ein erfolgreicher HTTP-Aufruf gilt nicht automatisch
-als erfolgreicher Stopp: Die Integration fragt den tatsächlichen Status erneut
-ab. Ein Clientstopp wird niemals durch einen Kanalstopp ersetzt. Manche Player
-verbinden sich selbstständig erneut; das ist dann eine neue Client-Session.
+Every action checks current channel details first. Expired IDs produce a clear
+error. An HTTP success response alone is not treated as a confirmed stop: the
+integration reads the actual status again. A failed client stop never falls back
+to stopping the whole channel. Some players automatically reconnect as a new session.
 
-## Was die Anzeige tatsächlich aussagt
+## What the data means
 
-- **Zuschauer** zählt verbundene Client-Sessions, nicht eindeutige Personen.
-  Zwei Geräte desselben Benutzers sind zwei Zuschauer.
-- **Aktive Kanäle** zählt gemeldete Kanal-Proxys, auch einen kurzfristig noch
-  laufenden Kanal ohne Zuschauer.
-- Dispatcharr meldet keinen verlässlichen Play-/Pause-Zustand des Endgeräts.
-  Die Karte zeigt die Verbindungsdauer und unter „Details“ den Kanal-Proxy;
-  der Wiedergabestatus des Geräts bleibt ohne Daten **Unbekannt**.
-- Auflösung, Bildrate und Codecs beschreiben die gemeldete **Quelle**, nicht die
-  Ausgabequalität nach Client-Transcoding. „Ø Datenrate“ ist Dispatcharrs mittlere
-  Kanal-Datenrate, umgerechnet in Mbit/s. „4K“ im Namen ist kein Messwert.
-- Fehlende EPG-Daten und Logos werden ausdrücklich angezeigt. Abgelaufene
-  Sendungen verschwinden. Keine Sendungen oder Identitäten werden erfunden.
-- Live-TV-Sessions der TS-Proxy-API werden unterstützt. VOD, DVR und Wiedergaben,
-  die Dispatcharrs Proxy umgehen, sind nicht Teil dieser Version.
+- **Viewers** counts connected client sessions, not unique people. Two devices
+  belonging to one user count as two viewers.
+- **Active channels** counts reported channel proxies, including a proxy that
+  briefly remains active without viewers.
+- Dispatcharr does not expose reliable play/pause state for the end device.
+  Connection duration and channel proxy state are available; device playback
+  state remains **Unknown** when no data is provided.
+- Resolution, frame rate and codecs describe the reported **source**, not
+  guaranteed output quality after client transcoding. **Avg. data rate** is
+  Dispatcharr's average channel bitrate, converted to Mbit/s. A channel name
+  containing "4K" is not a quality measurement.
+- Missing logos and EPG are shown explicitly. Expired programmes disappear.
+  Identities, programmes and quality values are not invented.
+- Live TV through the TS proxy is supported. VOD, DVR and playback that bypasses
+  Dispatcharr's proxy are outside this version's scope.
 
-## Abfragen und Datenschutz
+## Polling and privacy
 
-Pro Instanz ein gemeinsamer asynchroner Coordinator. Standardmäßig Status alle
-10 Sekunden, Benutzer/Provider/Profile und Kanalmetadaten alle 15 Minuten;
-neue aktive Kanäle werden gezielt ergänzt. Aktuelle Sendungen werden alle
-60 Sekunden ausschließlich für aktive Kanal-UUIDs geladen. Bei null aktiven
-Kanälen gibt es keine laufenden EPG-Abfragen. Fehlgeschlagene Zusatzabfragen
-werden nach 60 Sekunden erneut versucht.
+Each instance uses one shared asynchronous coordinator. Defaults are 10 seconds
+for status and 15 minutes for user/provider/profile directories and channel
+metadata. Newly active channels trigger targeted metadata requests. Current
+programmes are loaded every 60 seconds, only for active channel UUIDs. There are
+no recurring EPG calls with no active channels. Failed auxiliary requests retry
+after 60 seconds.
 
-Dispatcharr kürzt die Übersicht auf zehn Clients pro Kanal. Bei Abweichungen
-zu `client_count` werden vollständige Details abgefragt. Eine weiterhin
-unvollständige Antwort wird nicht als vollständiger Status ausgegeben.
+Dispatcharr truncates the overview to ten clients per channel. If the list differs
+from `client_count`, full channel details are requested. A response that remains
+incomplete is not presented as a complete status.
 
-Logos werden über einen authentifizierten HA-Endpunkt geladen und im Backend
-begrenzt gecacht. Unterstützt: PNG, JPEG, WebP und GIF. Externe Bild-URLs, SVG,
-Weiterleitungen und API-Key-Parameter werden nicht durchgereicht.
+Logos pass through an authenticated HA endpoint and a bounded backend cache.
+PNG, JPEG, WebP and GIF are supported. External image URLs, SVG, redirects and
+API-key query parameters are not passed through to the browser.
 
-Der API-Key liegt nur in HA-Konfigurationsdaten und wird ausschließlich im
-Backend als Header verwendet. HA-Backups entsprechend vertraulich behandeln.
-Diagnosen enthalten Versionen, Intervalle und Zähler, keine Zugangsdaten,
-Benutzernamen, IPs oder Session-IDs. Transiente Zuschauerattribute sind vom
-Recorder ausgeschlossen. Angemeldete HA-Benutzer mit Zugriff auf die Entitäten
-können die aktuellen Zuschauerinformationen sehen; nur Administratoren können
-Stoppaktionen auslösen. Keine zusätzliche individuelle Sichtbarkeitsverwaltung.
+The API key is stored in HA configuration data and sent only by the backend as
+a header. Treat HA backups accordingly. Diagnostics contain versions, intervals
+and counts, without credentials, usernames, IP addresses or session IDs.
+Transient viewer attributes are excluded from Recorder. HA users who can access
+the entities can see current viewer data; only administrators can execute stop
+actions. There is no additional per-viewer visibility policy.
 
-## Fehlerbehebung
+## Troubleshooting
 
-| Anzeige | Vorgehen |
+| Message | Check |
 | --- | --- |
-| API-Key abgewiesen | Über den HA-Dialog einen gültigen Key hinterlegen |
-| Fehlende Berechtigungen | Dispatcharr-Admin und Netzwerkfreigaben prüfen |
-| Verbindung unterbrochen | Erreichbarkeit aus HA, URL, Reverse Proxy und TLS prüfen |
-| Unbekannte Metadaten | Dispatcharr-Zuordnung prüfen; Zusatzdaten werden erneut geladen |
-| Kein Logo | Logo in Dispatcharr und unterstütztes Rasterformat prüfen |
-| Stopp nicht bestätigt | Tatsächlichen Status prüfen; der Player kann erneut verbinden |
+| API key rejected | Enter a valid key through the HA authentication dialog |
+| Missing permissions | Dispatcharr admin rights and network permissions |
+| Connection lost | Reachability from HA, URL, reverse proxy and TLS |
+| Unknown metadata | Channel mappings in Dispatcharr; auxiliary requests will retry |
+| No logo | Logo configuration and a supported raster format |
+| Stop not confirmed | Actual session status; the player may have reconnected |
 
-Bei Problemen über die Integration **Diagnosedaten herunterladen** und ein
-[Issue](https://github.com/bttfw/ha-dispatcharr/issues) mit den Versionen erstellen.
-Keine API-Keys, Rohantworten der Benutzer-API oder Stream-URLs veröffentlichen.
+Download diagnostics from the integration and open an
+[issue](https://github.com/bttfw/ha-dispatcharr/issues) with your versions.
+Do not publish API keys, raw account API responses or stream URLs.
 
-## Entwicklung und Nachweise
+## Development and evidence
 
-- [Architektur und verifizierter API-Vertrag](docs/architecture.md)
-- [Test- und Live-Prüfbericht](docs/validation.md)
+- [Architecture and verified API contract](docs/architecture.md)
+- [Test and live-check report, in German](docs/validation.md)
+- [AI transparency notice](AI_TRANSPARENCY.md)
 - [Changelog](CHANGELOG.md)
-- [GitHub-Prüfungen](https://github.com/bttfw/ha-dispatcharr/actions)
+- [GitHub checks](https://github.com/bttfw/ha-dispatcharr/actions)
 
-Automatische Tests verwenden synthetische API-Daten. Echte Abbruchtests erfolgen
-nur mit ausdrücklich freigegebenen Testsession-IDs. Ein solcher Live-Abbruchtest
-wurde für die Erstversion nicht durchgeführt.
-
-English: Independent Dispatcharr integration with GUI setup, API-key-only
-authentication, multiple instances, a bundled visual-editor dashboard card and
-exact client-session controls. English UI included. Install through HACS as a
-custom Integration repository, restart HA, then add Dispatcharr in Devices &
-services. Tested with HA 2026.9.4 / Dispatcharr 0.31.0. Controls default off.
+60 automated tests passed against HA 2026.9.4, along with hassfest, HACS and code
+checks. Browser tests cover synthetic multi-viewer scenarios, exact-client and
+whole-channel stops, outages, missing data, aliases and visual configuration.
+Production installation through HACS and the empty live dashboard were also
+verified. No real IPTV session was terminated: that acceptance test requires an
+explicitly authorized test session.

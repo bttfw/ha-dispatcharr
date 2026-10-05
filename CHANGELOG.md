@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.1 — 2026-10-06
+
+- English README and HACS description, with a separate German guide.
+- English dashboard preview using synthetic data.
+- Test, release, MIT license and AI-assisted badges.
+- Explicit Codex development disclosure, English transparency notice and PR template.
+- Production HACS installation and dashboard display verified; no real client stopped.
+
+No functional changes to session control or polling.
+
 ## 0.1.0 — 2026-10-06
 
 Initial independent implementation, based on official Home Assistant developer
