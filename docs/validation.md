@@ -21,9 +21,14 @@ dashboard; its existing views were preserved. Controls were initially disabled.
 The empty state and then an active viewer were verified on desktop and mobile.
 The active viewer's name came from the actual Dispatcharr user ID. Current EPG,
 source resolution, frame rate, codecs and average bitrate were present. No
-JavaScript errors occurred. No extra IPTV playback was started and no real
-session was stopped. Real termination remains untested until a test session is
-explicitly authorized.
+JavaScript errors occurred. The agent did not start extra IPTV playback or
+terminate a real session. Stop scenarios in the automated suite use synthetic data.
+
+The repository owner separately confirmed on 6 October 2026 that they successfully
+ended **one real IPTV client session** manually. This is an owner-reported
+functional test, not a claim of independent human source-code review.
+Preservation of a second viewer on the same channel and the separate whole-channel
+stop are covered by synthetic tests; their live verification has not been confirmed.
 
 Version 0.1.2 was then updated through HACS and verified after restart: installed
 file hashes, the local brand-image endpoint, English HACS README, German guide

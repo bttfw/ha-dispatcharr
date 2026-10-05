@@ -20,7 +20,8 @@ Unabhängiges Community-Projekt.
 **KI-gestützte Entwicklung:** Diese Integration wurde mit OpenAI Codex entwickelt.
 Die eigenständige Implementierung basiert auf offiziellen Dokumentationen und
 der verifizierten Dispatcharr-API. Automatische Tests und Browserprüfungen sind
-dokumentiert; keine echte IPTV-Session wurde beendet.
+dokumentiert. Der Repository-Inhaber hat zusätzlich einen manuellen
+Live-Abbruchtest bestätigt; automatisierte Stopptests verwenden synthetische Daten.
 Details stehen im [Transparenzhinweis](../AI_TRANSPARENCY.md).
 
 ![Dispatcharr auf dem Smartphone mit synthetischen Testdaten](screenshots/mobile.png)
@@ -199,12 +200,8 @@ Keine API-Keys, Rohantworten der Benutzer-API oder Stream-URLs veröffentlichen.
 - [Changelog](../CHANGELOG.md)
 - [GitHub-Prüfungen](https://github.com/bttfw/ha-dispatcharr/actions)
 
-Automatische Tests verwenden synthetische API-Daten. Echte Abbruchtests erfolgen
-nur mit ausdrücklich freigegebenen Testsession-IDs. Ein solcher Live-Abbruchtest
-wurde für die Erstversion nicht durchgeführt.
-
-English: Independent Dispatcharr integration with GUI setup, API-key-only
-authentication, multiple instances, a bundled visual-editor dashboard card and
-exact client-session controls. English UI included. Install through HACS as a
-custom Integration repository, restart HA, then add Dispatcharr in Devices &
-services. Tested with HA 2026.9.4 / Dispatcharr 0.31.0. Controls default off.
+Automatische Tests verwenden synthetische API-Daten. Der Repository-Inhaber
+hat am 6. Oktober 2026 das erfolgreiche Beenden einer einzelnen echten IPTV-Session bestätigt.
+Das ist eine Funktionsprüfung durch den Inhaber; eine unabhängige menschliche
+Codeprüfung wird damit nicht behauptet. Den genauen Testumfang dokumentiert
+der Prüfbericht.

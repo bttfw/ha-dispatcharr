@@ -23,9 +23,10 @@ including multiple viewers, exact client stops, separate whole-channel stops,
 missing metadata, outages, recovery and a visual card editor. Twelve fresh
 browser sessions checked startup and editor loading.
 
-The installed Dispatcharr 0.31.0 API was also checked without starting or
-terminating IPTV playback. **No real client termination was performed.** That
-acceptance check requires an explicitly authorized live test session. Source
+The installed Dispatcharr 0.31.0 API was also checked read-only by the agent.
+The repository owner separately confirmed successfully ending one real IPTV
+client session. This is an owner-reported functional test. Automated stop checks use
+synthetic sessions; the agent did not terminate real IPTV playback. Source
 quality fields and device playback state are shown only when the API provides
 them; unsupported or missing information is not invented.
 

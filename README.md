@@ -199,8 +199,9 @@ checks. Browser tests cover synthetic multi-viewer scenarios, exact-client and
 whole-channel stops, outages, missing data, aliases and visual configuration.
 Production installation through HACS, empty and active live dashboards, actual
 user-ID mapping and reported programme/source fields were also verified.
-No real IPTV session was terminated: that acceptance test requires an
-explicitly authorized test session.
+The repository owner also confirmed successfully ending one real IPTV client session.
+Automated stop tests use synthetic sessions. See the validation report for the
+scope and source of each check; no independent human code review is claimed.
 
 The bundled logo is an original community-integration mark, not an official
 Dispatcharr or Home Assistant endorsement. See [HACS catalog submission](docs/hacs-submission.md)

@@ -5,7 +5,7 @@
 Stand: 6. Oktober 2026. Geprüft mit **Home Assistant 2026.9.4** und
 **Dispatcharr 0.31.0**. Andere Versionen sind damit nicht automatisch verifiziert.
 
-## Reale Installation: ausschließlich lesend
+## Reale Installation und manuelle Prüfung
 
 Die installierten Versionen und HACS wurden an der vorhandenen Umgebung geprüft.
 Ein gültiger Dispatcharr-Key wurde akzeptiert, ein absichtlich ungültiger Key
@@ -14,12 +14,16 @@ EPG-Daten, Provider-/Profilverzeichnisse und die Berechtigungen der Stoppendpunk
 wurden gegen den offiziellen API-Vertrag geprüft. `OPTIONS` prüft Berechtigungen,
 ohne eine Stoppaktion auszuführen.
 
-Während der Bestandsprüfung waren keine Zuschauer aktiv. Deshalb sind echte
-aktive Zuschauer, deren Qualitätswerte und ein echter Client-Abbruch **noch
-nicht live abgenommen**. Dafür wäre eine ausdrücklich freigegebene Testsession
-mit tatsächlicher Client-ID erforderlich. Es wurde weder ein IPTV-Stream
-gestartet noch eine vorhandene Session beendet. Während dieser Bestandsprüfung
-blieb das produktive HA unverändert.
+Während der anfänglichen Bestandsprüfung waren keine Zuschauer aktiv. Später
+wurden ein tatsächlicher Zuschauer, die Zuordnung über seine Benutzer-ID,
+EPG und Quellmesswerte live angezeigt. Der Agent hat weder einen IPTV-Stream
+gestartet noch eine reale Session beendet.
+
+Der Repository-Inhaber hat am 6. Oktober 2026 bestätigt, **eine einzelne echte
+IPTV-Session erfolgreich beendet** zu haben. Dies ist eine manuelle Funktionsprüfung.
+Der Erhalt eines zweiten Zuschauers desselben Kanals und der separate Kanalstopp
+für alle sind synthetisch geprüft; eine Live-Bestätigung dafür liegt nicht vor.
+Eine unabhängige menschliche Codeprüfung wird nicht behauptet.
 
 ## Automatische Tests
 
