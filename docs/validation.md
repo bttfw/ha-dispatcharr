@@ -1,54 +1,55 @@
-# Prüfbericht zur Erstversion
+# Validation report
 
-Stand: 6. Oktober 2026. Geprüft mit **Home Assistant 2026.9.4** und
-**Dispatcharr 0.31.0**. Andere Versionen sind damit nicht automatisch verifiziert.
+**English** | [Deutsch: initial validation](validation.de.md)
 
-## Reale Installation: ausschließlich lesend
+Verified on 6 October 2026 with **Home Assistant 2026.9.4** and
+**Dispatcharr 0.31.0**. This does not imply compatibility with untested versions.
 
-Die installierten Versionen und HACS wurden an der vorhandenen Umgebung geprüft.
-Ein gültiger Dispatcharr-Key wurde akzeptiert, ein absichtlich ungültiger Key
-mit HTTP 401 abgewiesen. Status, Benutzer-IDs, gezielte Kanalmetadaten, aktuelle
-EPG-Daten, Provider-/Profilverzeichnisse und die Berechtigungen der Stoppendpunkte
-wurden gegen den offiziellen API-Vertrag geprüft. `OPTIONS` prüft Berechtigungen,
-ohne eine Stoppaktion auszuführen.
+## Production verification
 
-Während der Bestandsprüfung waren keine Zuschauer aktiv. Deshalb sind echte
-aktive Zuschauer, deren Qualitätswerte und ein echter Client-Abbruch **noch
-nicht live abgenommen**. Dafür wäre eine ausdrücklich freigegebene Testsession
-mit tatsächlicher Client-ID erforderlich. Es wurde weder ein IPTV-Stream
-gestartet noch eine vorhandene Session beendet. Während dieser Bestandsprüfung
-blieb das produktive HA unverändert.
+The installed versions, API permissions and HACS were checked in the actual
+environment. A valid API key was accepted and an intentionally invalid key was
+rejected with HTTP 401. Status, actual user IDs, targeted channel metadata,
+current EPG, provider/profile directories and harmless stop-endpoint `OPTIONS`
+requests were checked against the official API contract.
 
-## Automatische Tests
+Version 0.1.0 was installed through the real HACS UI. HA configuration validation
+passed before restarting. The integration was configured with URL and API key
+through the GUI. A new dashboard view was added after backing up the existing
+dashboard; its existing views were preserved. Controls remain disabled.
 
-**60 Tests bestanden** gegen die tatsächlichen Klassen aus dem offiziellen
-HA-Container `ghcr.io/home-assistant/home-assistant:2026.9.4`.
-Die API-Gegenstelle ist vollständig synthetisch.
+The empty state and then an active viewer were verified on desktop and mobile.
+The active viewer's name came from the actual Dispatcharr user ID. Current EPG,
+source resolution, frame rate, codecs and average bitrate were present. No
+JavaScript errors occurred. No extra IPTV playback was started and no real
+session was stopped. Real termination remains untested until a test session is
+explicitly authorized.
 
-| Prüfung | Ergebnis |
+## Automated backend checks
+
+**60 tests passed** using actual HA classes from the official
+`ghcr.io/home-assistant/home-assistant:2026.9.4` container with a synthetic API.
+
+| Scenario | Verified behavior |
 | --- | --- |
-| Zwei Zuschauer desselben Kanals | Ein Kanal, zwei Clients; korrekte Zuordnung über User-ID |
-| Mehr als zehn Zuschauer | Gekürzte Übersicht erkannt, vollständige Details geladen |
-| Einzelner Clientstopp | Exakte ID; zweiter Client bleibt; kein Kanalstopp als Ersatz |
-| Gesamten Kanal stoppen | Eigene Aktion; explizite Bestätigung erforderlich |
-| Abgelaufene IDs / scheinbar erfolgreicher Stopp | Vor- und Nachprüfung; verständlicher Fehler |
-| Steuerung aus / fehlende Adminrechte | Aktion vor dem API-Schreibzugriff abgewiesen |
-| Ungültiger Key / HTTP 403 / API-Ausfall | Einrichtungs- und Laufzeitfehler korrekt behandelt |
-| Wiederverbindung | Gemeinsamer Coordinator aktualisiert Verfügbarkeit und Daten |
-| Fehlende Identitäten, Metadaten und EPG | Unbekannt; keine Namensheuristik oder erfundenen Werte |
-| Metadaten-/EPG-Caches | Unterschiedliche Intervalle; nur aktive UUIDs; Wiederholungen nach Fehler |
-| URL und Pagination | Keine Credentials in URLs; fremde Weiterleitungen abgewiesen |
-| API-Key in Antworten | Nicht in Sensordaten oder Diagnosen übernommen |
-| Stabile IDs | Gleiche Entität bei neuem Coordinator; Timestamp-Verweis folgt Registry-Umbenennung |
-| GUI-Konfiguration | Nur URL/Key erforderlich; getrennte Optionen, Aliase, Intervallgrenzen |
+| Two viewers on one channel | One channel, two clients, actual user-ID mapping |
+| More than ten clients | Truncated overview detected and full details fetched |
+| Individual stop | Exact ID; other viewer remains; no channel-stop fallback |
+| Whole-channel stop | Separate action requiring explicit confirmation |
+| Expired IDs or misleading success | Preflight and post-action checks, clear errors |
+| Disabled controls or non-admin HA user | Rejected before a write request |
+| Invalid key, HTTP 403, outage | Setup and runtime errors handled |
+| Reconnection | Coordinator restores data and availability |
+| Missing user, metadata or EPG | Unknown values, no fabricated identities |
+| Metadata and EPG caches | Separate intervals, targeted UUIDs, bounded retries |
+| URLs and pagination | Credential URLs and cross-origin redirects rejected |
+| Secrets in responses | Excluded from entities and diagnostics |
+| Stable IDs | Coordinator reload and renamed timestamp entity references |
+| Configuration | URL/key only, options, aliases and interval bounds |
 
-Ruff, Python-Formatierung und JavaScript-Syntaxprüfung bestehen ebenfalls.
-GitHub Actions führt zusätzlich **hassfest** und die **HACS-Validierung** aus.
-Die HACS-Prüfung überspringt ausschließlich `brands`, da keine Aufnahme in das
-offizielle HA-Markenverzeichnis behauptet wird.
-
-Aus dem Repository auf Linux/macOS, beziehungsweise mit einem passenden
-absoluten Bind-Mount unter Docker Desktop:
+Ruff, Python formatting, JavaScript syntax, hassfest and HACS validation are part
+of GitHub Actions. From 0.1.2, brand assets are bundled and the HACS action has no
+ignored checks.
 
 ```sh
 docker run --rm --entrypoint /bin/sh \
@@ -58,84 +59,67 @@ docker run --rm --entrypoint /bin/sh \
 node --check custom_components/dispatcharr/www/dispatcharr-card.js
 ```
 
-Die Warnung zur `HomeAssistantApplication`-Vererbung stammt aus HA/aiohttp;
-sie ist kein fehlgeschlagener Integrationstest.
+On Windows, use an absolute Docker Desktop bind mount. An upstream aiohttp/HA
+inheritance warning is not a failed integration test.
 
-## Browserprüfung mit echtem HA-Frontend
+## Frontend checks
 
-Eine separate HA-Installation in **Docker Desktop**, ausschließlich am lokalen
-Loopback-Port veröffentlicht, lief mit zwei getrennten Integrationseinträgen:
-reale Dispatcharr-Instanz mit abgeschalteter Steuerung sowie synthetische
-API mit freigegebenen Testaktionen. Die synthetische API ist unter
+The original full frontend tests used a disposable HA instance in Docker
+Desktop, published only on loopback. The synthetic API in
 [`tests/support/fake_dispatcharr.py`](../tests/support/fake_dispatcharr.py)
-enthalten und erzeugt keine IPTV-Wiedergaben.
+does not start IPTV playback. Verified through real Chromium rendering:
 
-Mit Chromium/Playwright über die tatsächlich gerenderte Oberfläche geprüft:
+- Light/dark themes, desktop and 390-pixel mobile viewport.
+- Two clients on one channel, then 15 clients and separate channel/viewer counts.
+- Cancel a stop confirmation and preserve both sessions.
+- Stop only `client_0`; `client_1` remains visible.
+- Separately confirm stopping the whole synthetic channel.
+- Missing EPG/logos/quality, outage and recovery, last-success after reload.
+- GUI aliases, visual title editor, HA restart and integration reload.
+- Twelve fresh browser contexts with the visual editor, checking startup races.
+- No Dispatcharr keys or direct Dispatcharr requests in browser URLs.
 
-- Helle und dunkle Darstellung, Desktop und 390 Pixel breites Smartphone.
-- Zwei Clients desselben Kanals und eine automatisch aktualisierte Liste mit
-  15 Clients; getrennte Kanal- und Zuschauerzähler.
-- Bestätigungsdialog abbrechen; danach weiterhin beide Clients vorhanden.
-- Nur `client_0` beenden; `client_1` mit Benutzer Sam bleibt sichtbar.
-- Kanalaktion separat bestätigen; anschließend „Niemand schaut gerade“.
-- Fehlende EPG-, Logo- und Qualitätsdaten; Verbindungsabbruch und Erholung.
-- Neuladen während des Ausfalls; letzter erfolgreicher Zeitpunkt bleibt sichtbar.
-- Visuellen Editor öffnen, Titel ändern und über HA speichern.
-- Zwölf frische Browserkontexte einschließlich Editor als Regressionstest.
-- Keine Dispatcharr-Requests oder Dispatcharr-Keys in den Browser-URLs.
-- Neustart und mehrfaches Neuladen der Testintegration mit bestehenden Entitäten.
+The module waits for HA's application element before defining custom elements.
+The HA form controls are loaded before opening the visual editor. The upstream
+registry race is described in [frontend issue #52960](https://github.com/home-assistant/frontend/issues/52960).
 
-Die Kartenregistrierung wartet auf die HA-Anwendung, damit ein Austausch des
-Custom-Element-Registers beim Start keine gelegentlichen Konfigurationsfehler
-erzeugt. Diese Fehlerklasse ist auch im
-[offiziellen Frontend-Issue #52960](https://github.com/home-assistant/frontend/issues/52960)
-beschrieben. HA-Formulare für den Editor werden vor dessen Erstellung geladen.
-
-Der Browser-Regressionstest ist als `tests/browser_smoke.py` enthalten.
-Er setzt einen angemeldeten, privaten Playwright-Storage-State und ein
-Testdashboard mit zwei synthetischen Zuschauern voraus:
+Version 0.1.2 adds a credential-free synthetic Chromium regression suite for
+English/German/automatic language selection, unsupported-language fallback,
+translated IDs and confirmations, exact-client service payloads, missing data,
+outage/recovery, and mobile versus wide two-column layouts. It runs in CI:
 
 ```sh
 pip install playwright
 python -m playwright install chromium
+python tests/card_browser.py
+```
+
+Its service and image functions are local stubs; they cannot stop a real session.
+The redesigned visual editor is additionally exercised against the real HA
+frontend, with changes cancelled, and synthetic screenshots use isolated card
+data with stubbed actions. No test container is needed for this card-only check.
+
+The optional `tests/browser_smoke.py` checks a disposable local HA dashboard:
+
+```sh
 python tests/browser_smoke.py --storage-state .local/browser-storage.json
 ```
 
-Er akzeptiert ausschließlich ein lokales Test-HA, öffnet den Editor und bricht
-ihn wieder ab. Die Storage-Datei enthält Test-Anmeldedaten und darf nicht ins Git.
-Die vollständigen Stopp- und Ausfallszenarien wurden zusätzlich im Browser
-durchgeführt; der kleine Browser-Smoke-Test allein deckt sie nicht ab.
+It requires a private test login and a dashboard with two synthetic viewers.
+Never commit the storage-state file. This small smoke test alone does not cover
+all full-stack stop and outage scenarios listed above.
 
-## Darstellung
+## Screenshots
 
-Alle dargestellten Personen, Programme und Qualitätswerte in diesen Bildern
-stammen ausdrücklich aus der synthetischen Test-API. Das weiße Testlogo prüft
-den authentifizierten Bildtransport; es ist kein echter Sender.
+All public screenshots contain synthetic users, programmes, logos and source
+measurements. They are not real customer or provider data.
 
-| Smartphone, dunkles Theme | Fehlende Metadaten |
-| --- | --- |
-| ![Karte auf dem Smartphone](screenshots/mobile.png) | ![Fehlende Metadaten](screenshots/missing.png) |
+![English mobile card](screenshots/mobile-en.png)
+![Missing metadata](screenshots/missing.png)
+![Connection loss](screenshots/offline.png)
 
-![Verbindungsabbruch mit letztem erfolgreichen Zeitpunkt](screenshots/offline.png)
+## Test infrastructure
 
-## Aufräumen
-
-## Installation im produktiven Home Assistant
-
-Nach Abschluss der isolierten Tests wurde 0.1.0 über die echte HACS-Oberfläche
-als benutzerdefiniertes Repository installiert. Die HA-Konfigurationsprüfung
-meldete keine Fehler. Nach dem erforderlichen Neustart wurde die Verbindung
-über den normalen Einrichtungsdialog mit URL und API-Key erstellt.
-
-Die neue Dashboard-Ansicht wurde auf Desktop und Smartphone im echten
-HA-Frontend geprüft: Verbindung aktiv, null Kanäle, null Zuschauer,
-„Niemand schaut gerade“, aktuelle Zeit und abgeschaltete Steuerung.
-Es gab keine JavaScript-Fehler. Die bisherigen Dashboard-Ansichten wurden
-vorher gesichert und beim Ergänzen unverändert erhalten.
-
-## Aufräumen
-
-Temporäre Unraid-Testcontainer, deren Testverzeichnis und das dafür geladene
-HA-Image wurden nach dem Wechsel zu Docker Desktop entfernt. Docker-Desktop-
-Testcontainer werden nach Abschluss ebenfalls entfernt; Testläufe verwenden
-`--rm`. Es verbleibt kein dauerhaft laufender Testdienst auf Unraid.
+Temporary Unraid containers, test directory and downloaded HA image were removed.
+Docker Desktop containers and the temporary HA image were also removed after the
+initial test cycle. No permanently running test service is required.

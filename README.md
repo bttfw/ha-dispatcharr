@@ -3,7 +3,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![AI-assisted](https://img.shields.io/badge/AI-assisted-8B5CF6)](AI_TRANSPARENCY.md)
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="custom_components/dispatcharr/brand/dark_logo@2x.png">
+  <img src="custom_components/dispatcharr/brand/logo@2x.png" width="400" alt="Dispatcharr for Home Assistant">
+</picture>
+
 # Dispatcharr for Home Assistant
+
+**English** | [Deutsch](docs/README.de.md)
 
 See who is watching which channel. An independent Dispatcharr integration with
 GUI setup and a bundled dashboard card.
@@ -16,8 +23,6 @@ Independent community project.
 **AI-assisted development:** This integration was developed with OpenAI Codex
 (AI). Read the [AI transparency notice](AI_TRANSPARENCY.md) for its contribution,
 tests performed and remaining validation limits.
-
-[Deutsche Anleitung](docs/README.de.md)
 
 ![Mobile dashboard with synthetic demo data](docs/screenshots/mobile-en.png)
 
@@ -71,13 +76,25 @@ browser access alone is insufficient. HTTPS certificates are validated.
 1. Open an editable dashboard and choose **Edit dashboard > Add card**.
 2. Select **Dispatcharr**.
 3. In the visual editor, select the instance's **Viewer sensor**.
-4. Optionally adjust the title, compact mode and action-button visibility.
+4. Optionally adjust the title, **Card language**, compact mode and action-button visibility.
 5. Save. If the card is missing from the card picker immediately after initial
    setup, fully reload the browser page.
 
 The integration registers its frontend module automatically. There is no manual
 JavaScript resource configuration. Summary sensors and the control switch also
 work with standard HA cards such as Tile and Entities.
+
+## Choose a language
+
+The setup dialogs and integration options follow your Home Assistant language.
+The card also follows it by default, with English as the fallback for languages
+other than German. In **Edit dashboard > Edit card > Card language**, choose
+**Home Assistant language**, **English** or **Deutsch**. This affects only that
+card, including its confirmations and date/number formatting, and requires no YAML.
+Usernames, channel names and programme titles are displayed as reported by Dispatcharr.
+
+The main HACS description is English. Use **Deutsch** above for the German guide;
+HACS does not provide a separate README language selector.
 
 ## Configure and operate
 
@@ -168,7 +185,7 @@ Do not publish API keys, raw account API responses or stream URLs.
 ## Development and evidence
 
 - [Architecture and verified API contract](docs/architecture.md)
-- [Test and live-check report, in German](docs/validation.md)
+- [Test and live-check report](docs/validation.md)
 - [AI transparency notice](AI_TRANSPARENCY.md)
 - [Changelog](CHANGELOG.md)
 - [GitHub checks](https://github.com/bttfw/ha-dispatcharr/actions)
@@ -176,6 +193,11 @@ Do not publish API keys, raw account API responses or stream URLs.
 60 automated tests passed against HA 2026.9.4, along with hassfest, HACS and code
 checks. Browser tests cover synthetic multi-viewer scenarios, exact-client and
 whole-channel stops, outages, missing data, aliases and visual configuration.
-Production installation through HACS and the empty live dashboard were also
-verified. No real IPTV session was terminated: that acceptance test requires an
+Production installation through HACS, empty and active live dashboards, actual
+user-ID mapping and reported programme/source fields were also verified.
+No real IPTV session was terminated: that acceptance test requires an
 explicitly authorized test session.
+
+The bundled logo is an original community-integration mark, not an official
+Dispatcharr or Home Assistant endorsement. See [HACS catalog submission](docs/hacs-submission.md)
+for the requirements and current submission status.

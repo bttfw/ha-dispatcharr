@@ -14,7 +14,7 @@ archive = destination / f"ha-dispatcharr-{version}.zip"
 files = [
     path
     for path in COMPONENT.rglob("*")
-    if path.is_file() and path.suffix in {".py", ".json", ".yaml", ".js"}
+    if path.is_file() and path.suffix in {".py", ".json", ".yaml", ".js", ".png"}
 ]
 files.append(ROOT / "LICENSE")
 with ZipFile(archive, "w", compression=ZIP_DEFLATED, compresslevel=9) as bundle:
@@ -23,6 +23,7 @@ with ZipFile(archive, "w", compression=ZIP_DEFLATED, compresslevel=9) as bundle:
 with ZipFile(archive) as bundle:
     assert bundle.testzip() is None
     assert "custom_components/dispatcharr/manifest.json" in bundle.namelist()
+    assert "custom_components/dispatcharr/brand/icon.png" in bundle.namelist()
 digest = hashlib.sha256(archive.read_bytes()).hexdigest()
 archive.with_suffix(".zip.sha256").write_text(f"{digest}  {archive.name}\n", encoding="utf8")
 print(f"{archive.name}: {len(files)} files, {archive.stat().st_size} bytes, SHA256 {digest}")

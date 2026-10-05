@@ -1,7 +1,7 @@
 """Constants for the independently developed Dispatcharr integration."""
 
 DOMAIN = "dispatcharr"
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 PLATFORMS = ["sensor", "binary_sensor", "switch"]
 CONF_CONTROL = "enable_control"
 CONF_ALIASES = "device_aliases"
