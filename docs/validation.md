@@ -16,7 +16,7 @@ requests were checked against the official API contract.
 Version 0.1.0 was installed through the real HACS UI. HA configuration validation
 passed before restarting. The integration was configured with URL and API key
 through the GUI. A new dashboard view was added after backing up the existing
-dashboard; its existing views were preserved. Controls remain disabled.
+dashboard; its existing views were preserved. Controls were initially disabled.
 
 The empty state and then an active viewer were verified on desktop and mobile.
 The active viewer's name came from the actual Dispatcharr user ID. Current EPG,
@@ -24,6 +24,11 @@ source resolution, frame rate, codecs and average bitrate were present. No
 JavaScript errors occurred. No extra IPTV playback was started and no real
 session was stopped. Real termination remains untested until a test session is
 explicitly authorized.
+
+Version 0.1.2 was then updated through HACS and verified after restart: installed
+file hashes, the local brand-image endpoint, English HACS README, German guide
+link and both language choices in the installed visual editor. The existing
+control-switch setting was preserved. No JavaScript errors occurred.
 
 ## Automated backend checks
 

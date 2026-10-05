@@ -61,8 +61,14 @@ dieser Anleitung; HACS bietet keine eigene Sprachauswahl für die README.
 6. Dispatcharr-URL und API-Key eingeben. Benutzername und Passwort werden nicht
    verlangt. Für eine zweite Instanz „Dienst hinzufügen“ verwenden.
 
-Als benutzerdefiniertes HACS-Repository installierbar; nicht im HACS-Standardkatalog
-beantragt. Die Karte wird von der Integration mitgeladen, ohne zweites Repository.
+Als benutzerdefiniertes HACS-Repository installierbar. Der
+[Aufnahmeantrag für den Standardkatalog](https://github.com/hacs/default/pull/11610)
+steht in der Prüfwarteschlange und ist noch nicht angenommen.
+Die Karte wird von der Integration mitgeladen, ohne zweites Repository.
+
+Künftige Updates brauchen keinen neuen Aufnahmeantrag. Neue GitHub-Releases
+erscheinen als HACS-Update. Update in HA installieren, HA neu starten und den
+Browser neu laden.
 
 Manuell: Das Release-ZIP so entpacken, dass
 `config/custom_components/dispatcharr/manifest.json` existiert; anschließend

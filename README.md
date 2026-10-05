@@ -49,12 +49,16 @@ tests performed and remaining validation limits.
 6. Enter the Dispatcharr URL and API key. No username or password is required.
    Use **Add service** to configure another instance.
 
-Available as a HACS custom repository; not submitted to the default HACS catalog.
+Available as a HACS custom repository. The [default-catalog submission](https://github.com/hacs/default/pull/11610)
+is in the review queue and has not been accepted yet.
 The integration includes the card, so a second repository is unnecessary.
 
 For manual installation, extract the release ZIP so that
 `config/custom_components/dispatcharr/manifest.json` exists. Restart HA and
 continue from step 5. No YAML configuration is required.
+
+Future updates do not need another catalog submission. Published GitHub releases
+appear as HACS updates; install the update in HA, restart HA and refresh the browser.
 
 ## API key and permissions
 

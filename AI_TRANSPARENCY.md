@@ -2,7 +2,7 @@
 
 This integration was developed with **OpenAI Codex (AI)** under the repository
 owner's direction. The AI contribution includes architecture, Python backend
-implementation, the JavaScript dashboard card, tests, documentation and release
+implementation, the JavaScript dashboard card, tests, original project branding, documentation and release
 preparation. The **AI-assisted** badge is a project disclosure, not a GitHub
 certification or an assertion that the code has received independent human review.
 
