@@ -1,0 +1,165 @@
+{
+  "title": "Dispatcharr",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Dispatcharr verbinden",
+        "description": "URL und API-Key eines Dispatcharr-Administrators eingeben. Der Key bleibt im HA-Backend.",
+        "data": {
+          "url": "Dispatcharr URL",
+          "api_key": "API-Key"
+        }
+      },
+      "reconfigure": {
+        "title": "Verbindung ändern",
+        "description": "URL und API-Key eines Dispatcharr-Administrators eingeben. Der Key bleibt im HA-Backend.",
+        "data": {
+          "url": "Dispatcharr URL",
+          "api_key": "API-Key"
+        }
+      },
+      "reauth_confirm": {
+        "title": "API-Key erneuern",
+        "description": "URL und API-Key eines Dispatcharr-Administrators eingeben. Der Key bleibt im HA-Backend.",
+        "data": {
+          "url": "Dispatcharr URL",
+          "api_key": "API-Key"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Eine HTTP(S)-Server-URL ohne Zugangsdaten, Abfrageparameter oder Fragment eingeben.",
+      "invalid_auth": "Der API-Key wurde abgewiesen. Einen gültigen Dispatcharr-API-Key eingeben.",
+      "insufficient_permissions": "Dispatcharr verlangt für Zuschauerstatus und Steuerung einen aktiven Administrator-API-Key (Benutzerstufe 10).",
+      "cannot_connect": "Dispatcharr ist nicht erreichbar. URL, Netzwerk und TLS-Zertifikat prüfen.",
+      "unsupported_api": "Der Server stellt die benötigte Dispatcharr-API nicht bereit. Geprüft mit Dispatcharr 0.31.0."
+    },
+    "abort": {
+      "already_configured": "Diese URL ist bereits eingerichtet.",
+      "reauth_successful": "API-Key aktualisiert.",
+      "reconfigure_successful": "Verbindung aktualisiert."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Dispatcharr konfigurieren",
+        "menu_options": {
+          "control": "Steuerung",
+          "aliases": "Geräte-Aliase",
+          "advanced": "Erweitert"
+        }
+      },
+      "control": {
+        "title": "Steuerung",
+        "description": "Stoppaktionen erlauben. Nur HA-Administratoren können Sessions oder Kanäle beenden. Standardmäßig ausgeschaltet.",
+        "data": {
+          "enable_control": "Steuerung aktivieren"
+        }
+      },
+      "advanced": {
+        "title": "Erweitert",
+        "data": {
+          "poll_interval": "Statusintervall (Sekunden)",
+          "metadata_interval": "Metadaten-Cache (Sekunden)",
+          "epg_interval": "Aktuelle Sendungen (Sekunden)"
+        }
+      },
+      "aliases": {
+        "title": "Geräte-Alias bearbeiten",
+        "description": "Ein beobachtetes Gerät auswählen und einen Alias eingeben. Ein leeres Alias-Feld entfernt die Zuordnung. Grundlage ist IP + User-Agent; hinter einem Proxy können Geräte gleich erscheinen.",
+        "data": {
+          "device": "Beobachtetes Gerät",
+          "alias": "Alias (leer = entfernen)"
+        }
+      }
+    },
+    "abort": {
+      "no_devices": "Noch keine Geräte beobachtet. Eine vorhandene Wiedergabe abwarten und diese Ansicht erneut öffnen."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "active_channels": {
+        "name": "Aktive Kanäle"
+      },
+      "viewer_count": {
+        "name": "Zuschauer"
+      },
+      "last_success": {
+        "name": "Letzte erfolgreiche Aktualisierung"
+      }
+    },
+    "binary_sensor": {
+      "connectivity": {
+        "name": "Verbindung"
+      }
+    },
+    "switch": {
+      "enable_control": {
+        "name": "Steuerung aktivieren"
+      }
+    }
+  },
+  "services": {
+    "stop_session": {
+      "name": "Einzelne Session beenden",
+      "description": "Beendet ausschließlich die angegebene Client-ID. Keine Ersatzaktion gegen den gesamten Kanal.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Dispatcharr-Instanz"
+        },
+        "channel_uuid": {
+          "name": "Kanal-UUID",
+          "description": "Die tatsächliche Dispatcharr-Kanal-UUID aus den Zuschauer-Sensordaten."
+        },
+        "client_id": {
+          "name": "Client ID",
+          "description": "Die tatsächliche client_id aus Dispatcharr, kein Benutzername."
+        }
+      }
+    },
+    "stop_channel": {
+      "name": "Kanal für alle Zuschauer beenden",
+      "description": "Beendet den gesamten Kanal einschließlich aller Zuschauer. Ausdrückliche Bestätigung erforderlich.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Dispatcharr-Instanz"
+        },
+        "channel_uuid": {
+          "name": "Kanal-UUID",
+          "description": "Die tatsächliche Dispatcharr-Kanal-UUID aus den Zuschauer-Sensordaten."
+        },
+        "confirm_all": {
+          "name": "Ja, den Kanal für ALLE Zuschauer beenden"
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "invalid_auth": {
+      "message": "Der API-Key wurde abgewiesen. Einen gültigen Dispatcharr-API-Key eingeben."
+    },
+    "insufficient_permissions": {
+      "message": "Dispatcharr verlangt für Zuschauerstatus und Steuerung einen aktiven Administrator-API-Key (Benutzerstufe 10)."
+    },
+    "control_disabled": {
+      "message": "Steuerung ist ausgeschaltet. In den Integrationsoptionen aktivieren."
+    },
+    "confirmation_required": {
+      "message": "Das Beenden des gesamten Kanals muss ausdrücklich bestätigt werden."
+    },
+    "session_expired": {
+      "message": "Diese Session ist bereits abgelaufen. Es wurde keine Stoppaktion gesendet."
+    },
+    "stop_not_confirmed": {
+      "message": "Die Stoppanforderung wurde gesendet, die Session ist aber noch sichtbar. Es wurde kein Kanal als Ersatz beendet."
+    },
+    "instance_unavailable": {
+      "message": "Die ausgewählte Dispatcharr-Instanz ist nicht geladen."
+    },
+    "action_failed": {
+      "message": "Die Aktion konnte nicht sicher bestätigt werden. Verbindung und aktuellen Status prüfen."
+    }
+  }
+}

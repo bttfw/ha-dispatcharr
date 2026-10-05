@@ -1,0 +1,30 @@
+stop_session:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: dispatcharr
+    channel_uuid:
+      required: true
+      selector:
+        text:
+    client_id:
+      required: true
+      selector:
+        text:
+stop_channel:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: dispatcharr
+    channel_uuid:
+      required: true
+      selector:
+        text:
+    confirm_all:
+      required: true
+      selector:
+        boolean:

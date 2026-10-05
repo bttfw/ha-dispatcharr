@@ -1,0 +1,165 @@
+{
+  "title": "Dispatcharr",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect Dispatcharr",
+        "description": "Enter the URL and API key of a Dispatcharr administrator. The key stays in the HA backend.",
+        "data": {
+          "url": "Dispatcharr URL",
+          "api_key": "API-Key"
+        }
+      },
+      "reconfigure": {
+        "title": "Change connection",
+        "description": "Enter the URL and API key of a Dispatcharr administrator. The key stays in the HA backend.",
+        "data": {
+          "url": "Dispatcharr URL",
+          "api_key": "API-Key"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Update API key",
+        "description": "Enter the URL and API key of a Dispatcharr administrator. The key stays in the HA backend.",
+        "data": {
+          "url": "Dispatcharr URL",
+          "api_key": "API-Key"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Enter an HTTP(S) server URL without credentials, query parameters or fragments.",
+      "invalid_auth": "The API key was rejected. Enter a valid Dispatcharr API key.",
+      "insufficient_permissions": "Dispatcharr requires an active administrator API key (user level 10) for viewer status and controls.",
+      "cannot_connect": "Cannot reach Dispatcharr. Check the URL, network and TLS certificate.",
+      "unsupported_api": "This server does not provide the required Dispatcharr API. Verified with Dispatcharr 0.31.0."
+    },
+    "abort": {
+      "already_configured": "This URL is already configured.",
+      "reauth_successful": "API key updated.",
+      "reconfigure_successful": "Connection updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configure Dispatcharr",
+        "menu_options": {
+          "control": "Controls",
+          "aliases": "Device aliases",
+          "advanced": "Advanced"
+        }
+      },
+      "control": {
+        "title": "Controls",
+        "description": "Allow stop actions. Only HA administrators can stop sessions or channels. Disabled by default.",
+        "data": {
+          "enable_control": "Enable controls"
+        }
+      },
+      "advanced": {
+        "title": "Advanced",
+        "data": {
+          "poll_interval": "Status interval (seconds)",
+          "metadata_interval": "Metadata cache (seconds)",
+          "epg_interval": "Current programmes interval (seconds)"
+        }
+      },
+      "aliases": {
+        "title": "Edit device alias",
+        "description": "Choose an observed device and enter an alias. Leave the alias empty to remove it. Based on IP + User-Agent; devices behind a proxy may appear identical.",
+        "data": {
+          "device": "Observed device",
+          "alias": "Alias (empty = remove)"
+        }
+      }
+    },
+    "abort": {
+      "no_devices": "No devices observed yet. Wait for an existing playback session and reopen this screen."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "active_channels": {
+        "name": "Active channels"
+      },
+      "viewer_count": {
+        "name": "Viewers"
+      },
+      "last_success": {
+        "name": "Last successful update"
+      }
+    },
+    "binary_sensor": {
+      "connectivity": {
+        "name": "Connectivity"
+      }
+    },
+    "switch": {
+      "enable_control": {
+        "name": "Enable controls"
+      }
+    }
+  },
+  "services": {
+    "stop_session": {
+      "name": "End one session",
+      "description": "Stop only the supplied client ID. Never falls back to stopping the channel.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Dispatcharr instance"
+        },
+        "channel_uuid": {
+          "name": "Channel UUID",
+          "description": "The actual Dispatcharr channel UUID from the viewer sensor data."
+        },
+        "client_id": {
+          "name": "Client ID",
+          "description": "The actual client_id from Dispatcharr, not a username."
+        }
+      }
+    },
+    "stop_channel": {
+      "name": "Stop channel for all viewers",
+      "description": "Stops the whole channel including every viewer. Explicit confirmation required.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Dispatcharr instance"
+        },
+        "channel_uuid": {
+          "name": "Channel UUID",
+          "description": "The actual Dispatcharr channel UUID from the viewer sensor data."
+        },
+        "confirm_all": {
+          "name": "Yes, stop this channel for ALL viewers"
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "invalid_auth": {
+      "message": "The API key was rejected. Enter a valid Dispatcharr API key."
+    },
+    "insufficient_permissions": {
+      "message": "Dispatcharr requires an active administrator API key (user level 10) for viewer status and controls."
+    },
+    "control_disabled": {
+      "message": "Controls are disabled. Enable them in the integration options."
+    },
+    "confirmation_required": {
+      "message": "Stopping the entire channel requires explicit confirmation."
+    },
+    "session_expired": {
+      "message": "This session has already expired. No stop action was sent."
+    },
+    "stop_not_confirmed": {
+      "message": "The stop request was sent, but the session is still visible. No replacement channel stop was performed."
+    },
+    "instance_unavailable": {
+      "message": "The selected Dispatcharr instance is not loaded."
+    },
+    "action_failed": {
+      "message": "The action could not be safely confirmed. Check connectivity and current status."
+    }
+  }
+}
