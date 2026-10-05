@@ -20,7 +20,8 @@ Unabhängiges Community-Projekt.
 **KI-gestützte Entwicklung:** Diese Integration wurde mit OpenAI Codex entwickelt.
 Die eigenständige Implementierung basiert auf offiziellen Dokumentationen und
 der verifizierten Dispatcharr-API. Automatische Tests und Browserprüfungen sind
-dokumentiert; keine echte IPTV-Session wurde beendet.
+dokumentiert. Der Repository-Inhaber hat zusätzlich einen manuellen
+Live-Abbruchtest bestätigt; automatisierte Stopptests verwenden synthetische Daten.
 Details stehen im [Transparenzhinweis](../AI_TRANSPARENCY.md).
 
 ![Dispatcharr auf dem Smartphone mit synthetischen Testdaten](screenshots/mobile.png)
@@ -61,8 +62,14 @@ dieser Anleitung; HACS bietet keine eigene Sprachauswahl für die README.
 6. Dispatcharr-URL und API-Key eingeben. Benutzername und Passwort werden nicht
    verlangt. Für eine zweite Instanz „Dienst hinzufügen“ verwenden.
 
-Als benutzerdefiniertes HACS-Repository installierbar; nicht im HACS-Standardkatalog
-beantragt. Die Karte wird von der Integration mitgeladen, ohne zweites Repository.
+Als benutzerdefiniertes HACS-Repository installierbar. Der
+[Aufnahmeantrag für den Standardkatalog](https://github.com/hacs/default/pull/11610)
+steht in der Prüfwarteschlange und ist noch nicht angenommen.
+Die Karte wird von der Integration mitgeladen, ohne zweites Repository.
+
+Künftige Updates brauchen keinen neuen Aufnahmeantrag. Neue GitHub-Releases
+erscheinen als HACS-Update. Update in HA installieren, HA neu starten und den
+Browser neu laden.
 
 Manuell: Das Release-ZIP so entpacken, dass
 `config/custom_components/dispatcharr/manifest.json` existiert; anschließend
@@ -193,12 +200,8 @@ Keine API-Keys, Rohantworten der Benutzer-API oder Stream-URLs veröffentlichen.
 - [Changelog](../CHANGELOG.md)
 - [GitHub-Prüfungen](https://github.com/bttfw/ha-dispatcharr/actions)
 
-Automatische Tests verwenden synthetische API-Daten. Echte Abbruchtests erfolgen
-nur mit ausdrücklich freigegebenen Testsession-IDs. Ein solcher Live-Abbruchtest
-wurde für die Erstversion nicht durchgeführt.
-
-English: Independent Dispatcharr integration with GUI setup, API-key-only
-authentication, multiple instances, a bundled visual-editor dashboard card and
-exact client-session controls. English UI included. Install through HACS as a
-custom Integration repository, restart HA, then add Dispatcharr in Devices &
-services. Tested with HA 2026.9.4 / Dispatcharr 0.31.0. Controls default off.
+Automatische Tests verwenden synthetische API-Daten. Der Repository-Inhaber
+hat am 6. Oktober 2026 das erfolgreiche Beenden einer einzelnen echten IPTV-Session bestätigt.
+Das ist eine Funktionsprüfung durch den Inhaber; eine unabhängige menschliche
+Codeprüfung wird damit nicht behauptet. Den genauen Testumfang dokumentiert
+der Prüfbericht.

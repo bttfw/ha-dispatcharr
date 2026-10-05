@@ -49,12 +49,16 @@ tests performed and remaining validation limits.
 6. Enter the Dispatcharr URL and API key. No username or password is required.
    Use **Add service** to configure another instance.
 
-Available as a HACS custom repository; not submitted to the default HACS catalog.
+Available as a HACS custom repository. The [default-catalog submission](https://github.com/hacs/default/pull/11610)
+is in the review queue and has not been accepted yet.
 The integration includes the card, so a second repository is unnecessary.
 
 For manual installation, extract the release ZIP so that
 `config/custom_components/dispatcharr/manifest.json` exists. Restart HA and
 continue from step 5. No YAML configuration is required.
+
+Future updates do not need another catalog submission. Published GitHub releases
+appear as HACS updates; install the update in HA, restart HA and refresh the browser.
 
 ## API key and permissions
 
@@ -195,8 +199,9 @@ checks. Browser tests cover synthetic multi-viewer scenarios, exact-client and
 whole-channel stops, outages, missing data, aliases and visual configuration.
 Production installation through HACS, empty and active live dashboards, actual
 user-ID mapping and reported programme/source fields were also verified.
-No real IPTV session was terminated: that acceptance test requires an
-explicitly authorized test session.
+The repository owner also confirmed successfully ending one real IPTV client session.
+Automated stop tests use synthetic sessions. See the validation report for the
+scope and source of each check; no independent human code review is claimed.
 
 The bundled logo is an original community-integration mark, not an official
 Dispatcharr or Home Assistant endorsement. See [HACS catalog submission](docs/hacs-submission.md)

@@ -21,6 +21,19 @@ The original SVG source is in `docs/brand/icon.svg`; `scripts/build_brand.py`
 renders the PNGs. The mark is covered by this project's MIT license and identifies
 the independent community integration.
 
-Submission status: preparation in progress. No catalog acceptance is claimed.
-The submission PR must be in English, disclose AI development, and link the
-successful validation runs and release. Only the HACS maintainers can accept it.
+Submission status: [PR #11610](https://github.com/hacs/default/pull/11610) was
+submitted on 6 October 2026. The HACS bot confirmed that it is in the review queue.
+No catalog acceptance is claimed. The English PR discloses AI development and
+links the successful validation runs and release. Only HACS maintainers can accept it.
+
+Follow the PR's **Conversation** and **Checks** tabs, or use **Subscribe** for
+GitHub notifications. `Open` means pending; `Merged` means accepted. Inclusion
+then follows a scheduled HACS scan. Review timing is outside this project's control.
+The bot asks submitters to wait for reviewer feedback rather than posting status
+requests or duplicate submissions.
+
+Future integration releases do not require new catalog submissions. Publish a
+GitHub release after validation; HACS detects it as an update. Detecting an update
+does not install it automatically: users normally initiate installation through
+HA's update entity, followed by a restart for this integration. This also works
+while the repository is installed as a custom repository.
