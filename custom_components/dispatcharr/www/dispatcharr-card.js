@@ -167,8 +167,9 @@ class DispatcharrCard extends HTMLElement {
   async _logo(node, entry, id) {
     const key = `${entry}/${id}`;
     let cached = this._logos.get(key);
+    if (cached && !cached.url && Date.now() - cached.created > 60000) cached = null;
     if (!cached) {
-      cached = {}; this._logos.set(key, cached);
+      cached = { created: Date.now() }; this._logos.set(key, cached);
       cached.promise = (async () => {
         try {
           const response = await this._hass.fetchWithAuth(`/api/dispatcharr/logo/${encodeURIComponent(entry)}/${id}`);

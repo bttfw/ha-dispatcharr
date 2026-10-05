@@ -21,6 +21,9 @@ class SnapshotLoader:
         self._channel_times = {}
         self._epg_times = {}
         self._directory_time = float("-inf")
+        self._directory_failed = False
+        self._metadata_failed = set()
+        self._epg_failed = set()
         self._lock = asyncio.Lock()
 
     async def directories(self):
@@ -45,7 +48,7 @@ class SnapshotLoader:
                 "profile": self.api.text(p.get("name")),
             }
             for a in accounts
-            for p in a.get("profiles", [])
+            for p in (a.get("profiles") or [])
             if isinstance(p, dict) and identity(p.get("id"))
         }
 
@@ -54,16 +57,20 @@ class SnapshotLoader:
             raw = await self.api.status()
             now = self.clock()
             active = {c["channel_id"] for c in raw}
-            warnings = []
             if now - self._directory_time >= self.metadata_interval:
+                self._directory_failed = False
                 try:
                     await self.directories()
                 except InvalidAuth:
                     raise
                 except DispatcharrError:
                     self.users, self.providers, self.profiles = {}, {}, {}
-                    warnings.append("directory_unavailable")
-                self._directory_time = now
+                    self._directory_failed = True
+                self._directory_time = (
+                    now - self.metadata_interval + 60 if self._directory_failed else now
+                )
+            self._metadata_failed.intersection_update(active)
+            self._epg_failed.intersection_update(active)
             # Keep only active metadata. No growing history of client/channel IDs.
             for cache in (self.channels, self.programmes, self._channel_times, self._epg_times):
                 for key in cache.keys() - active:
@@ -74,6 +81,7 @@ class SnapshotLoader:
                 if now - self._channel_times.get(uuid, float("-inf")) >= self.metadata_interval
             )
             if needed:
+                failed = False
                 try:
                     rows = await self.api.channels(needed)
                     for uuid in needed:
@@ -93,14 +101,21 @@ class SnapshotLoader:
                 except DispatcharrError:
                     for uuid in needed:
                         self.channels.pop(uuid, None)
-                    warnings.append("metadata_unavailable")
-                self._channel_times.update(dict.fromkeys(needed, now))
+                    failed = True
+                if failed:
+                    self._metadata_failed.update(needed)
+                else:
+                    self._metadata_failed.difference_update(needed)
+                self._channel_times.update(
+                    dict.fromkeys(needed, now - self.metadata_interval + 60 if failed else now)
+                )
             needed = sorted(
                 uuid
                 for uuid in active
                 if now - self._epg_times.get(uuid, float("-inf")) >= self.epg_interval
             )
             if needed:
+                failed = False
                 try:
                     rows = await self.api.epg(needed)
                     for uuid in needed:
@@ -118,7 +133,11 @@ class SnapshotLoader:
                 except DispatcharrError:
                     for uuid in needed:
                         self.programmes.pop(uuid, None)
-                    warnings.append("epg_unavailable")
+                    failed = True
+                if failed:
+                    self._epg_failed.update(needed)
+                else:
+                    self._epg_failed.difference_update(needed)
                 self._epg_times.update(dict.fromkeys(needed, now))
             normalized = viewers(
                 raw,
@@ -134,7 +153,15 @@ class SnapshotLoader:
                 "active_channels": len(raw),
                 "viewer_count": len(normalized),
                 "viewers": normalized,
-                "warnings": warnings,
+                "warnings": [
+                    name
+                    for name, present in (
+                        ("directory_unavailable", self._directory_failed),
+                        ("metadata_unavailable", self._metadata_failed),
+                        ("epg_unavailable", self._epg_failed),
+                    )
+                    if present
+                ],
             }
 
 

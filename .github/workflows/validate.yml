@@ -1,0 +1,32 @@
+name: Validate
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test against the verified Home Assistant version
+        run: >-
+          docker run --rm --entrypoint /bin/sh
+          -v "$PWD:/work" -w /work
+          ghcr.io/home-assistant/home-assistant:2026.9.4
+          -c 'pip install -q -r requirements-test.txt && python -m pytest -q && ruff check custom_components tests && ruff format --check custom_components tests'
+      - name: Check bundled JavaScript
+        run: node --check custom_components/dispatcharr/www/dispatcharr-card.js
+  hassfest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: home-assistant/actions/hassfest@master
+  hacs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hacs/action@main
+        with:
+          category: integration
+          ignore: brands

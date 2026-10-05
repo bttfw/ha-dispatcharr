@@ -45,7 +45,7 @@ def normalize_url(value: str) -> str:
     try:
         parts = urlsplit(value.strip())
         port = parts.port
-    except ValueError, AttributeError:
+    except (ValueError, AttributeError):
         raise ValueError("invalid_url") from None
     if (
         parts.scheme not in ("http", "https")
@@ -71,7 +71,7 @@ def normalize_url(value: str) -> str:
 def channel_id(value: str) -> str:
     try:
         return str(UUID(str(value)))
-    except ValueError, TypeError, AttributeError:
+    except (ValueError, TypeError, AttributeError):
         raise InvalidResponse("invalid_channel_id") from None
 
 
@@ -143,9 +143,9 @@ class DispatcharrClient:
                     return bytes(chunks), mime
                 try:
                     return json.loads(chunks)
-                except ValueError, UnicodeError:
+                except (ValueError, UnicodeError):
                     raise InvalidResponse("invalid_json") from None
-        except aiohttp.ClientError, TimeoutError, OSError:
+        except (aiohttp.ClientError, TimeoutError, OSError):
             raise CannotConnect("cannot_connect") from None
 
     async def collection(self, path: str) -> list[dict]:
@@ -183,7 +183,7 @@ class DispatcharrClient:
             raise InvalidResponse("invalid_account")
         try:
             admin = int(me.get("user_level", 0)) >= 10
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             admin = False
         if not admin:
             raise Forbidden("insufficient_permissions")
@@ -204,6 +204,12 @@ class DispatcharrClient:
         value = await self.request("GET", f"/proxy/ts/status/{channel_id(uuid)}")
         if not isinstance(value, dict) or channel_id(value.get("channel_id")) != channel_id(uuid):
             raise InvalidResponse("invalid_channel_detail")
+        clients = records(value.get("clients"))
+        if value.get("client_count") != len(clients):
+            raise InvalidResponse("incomplete_clients")
+        ids = [client_id(c.get("client_id")) for c in clients]
+        if len(set(ids)) != len(ids):
+            raise InvalidResponse("duplicate_client")
         return value
 
     async def status(self) -> list[dict]:

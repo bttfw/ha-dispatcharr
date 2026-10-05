@@ -14,7 +14,7 @@ def number(value):
             if math.isfinite(parsed) and parsed >= 0 and not isinstance(value, bool)
             else None
         )
-    except ValueError, TypeError:
+    except (ValueError, TypeError):
         return None
 
 

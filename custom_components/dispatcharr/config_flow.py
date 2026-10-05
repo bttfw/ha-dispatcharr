@@ -63,7 +63,7 @@ class DispatcharrConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "insufficient_permissions"
             except CannotConnect:
                 errors["base"] = "cannot_connect"
-            except InvalidResponse, NotFound:
+            except (InvalidResponse, NotFound):
                 errors["base"] = "unsupported_api"
         schema = vol.Schema(
             {
@@ -135,7 +135,7 @@ class DispatcharrOptionsFlow(config_entries.OptionsFlowWithReload):
             for row in coordinator.data["viewers"]:
                 if key := row["device_key"]:
                     devices[key] = (
-                        f"{row['username'] or '?'} · {row['device_description'] or '?'} ({key[-6:]})"
+                        f"{row['username'] or '?'} Â· {row['device_description'] or '?'} ({key[-6:]})"
                     )
         if not devices:
             return self.async_abort(reason="no_devices")
