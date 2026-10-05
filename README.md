@@ -8,6 +8,11 @@ Vollständig neu implementiert, ohne Code aus anderen Dispatcharr-Integrationen
 für Home Assistant. Grundlage sind die offiziellen APIs und Entwicklerdokumentationen.
 Unabhängiges Community-Projekt.
 
+**AI development disclosure:** This integration was developed with OpenAI Codex
+(AI). Its implementation is independent and based on official Home Assistant
+documentation and the verified Dispatcharr API. Automated and browser tests are
+documented below; no real IPTV session was terminated during development.
+
 ![Dispatcharr auf dem Smartphone mit synthetischen Testdaten](docs/screenshots/mobile.png)
 
 ## Funktionen
