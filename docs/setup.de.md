@@ -7,7 +7,7 @@ die Karte ins Dashboard setzen.** Die Keys für Jellyfin, Emby und Plex kommen
 nach der ersten Dispatcharr-Einrichtung in die Integrationsoptionen. Alle Schritte
 funktionieren über die Oberfläche.
 
-Die Bilder zeigen Ausschnitte aus Home Assistant **2026.9.4** mit Integration
+Die Bilder der Einrichtungsdialoge zeigen Home Assistant **2026.9.4** mit Integration
 **0.2.0** in einer vorübergehenden Testinstanz. Serveradresse und Wiedergabedaten
 sind Beispiele; alle Schlüsselfelder sind leer. Deine eigenen Server-URLs verwenden.
 Je nach HA-Version, Sprache und Theme können Beschriftung und Anordnung abweichen.
@@ -113,6 +113,35 @@ Die Karte übernimmt die in Schritt 3 hinzugefügten Medienserver automatisch. E
 zweite Karteninstallation, zusätzliche JavaScript-Ressource oder YAML ist nicht
 nötig. Ohne aktive Sessions erscheint **Niemand schaut gerade**. Die Integration
 startet für die Vorschau keine Wiedergabe.
+
+### Gruppierte Sender (nächstes Release)
+
+Diese Ansicht ist auf `main` für das nächste Release enthalten. Das veröffentlichte
+Release **0.2.0** zeigt weiterhin einzelne Client-Karten. In der neuen Ansicht
+erscheint jeder Dispatcharr-Sender einmal mit Logo, Sendung und
+Quellqualität. Darunter stehen alle **Verbindungen** mit Name beziehungsweise
+Alias und eigener Verbindungsdauer. Zwei Clients auf demselben Sender bedeuten
+also **1 aktiver Kanal, 2 Dispatcharr-Clients**, auch mit einem DVR-Client.
+Die Zähler erfassen Verbindungen und keine eindeutigen Personen.
+
+Unter **Verbindungsdetails** bleiben die ursprüngliche Gerätebeschreibung,
+Benutzer-/Client-ID, der gemeldete Wiedergabestatus und das jeweilige Ausgabeprofil
+mit Format sichtbar. **Session beenden** betrifft weiterhin nur diese Verbindung.
+**Kanal für alle beenden** steht getrennt unter **Senderdetails** und verlangt eine
+Bestätigung, die ausdrücklich auch auf DVR-Aufnahmen hinweist.
+
+Die DVR-Kennzeichnung erkennt Dispatcharrs gemeldeten Client-Marker
+`Dispatcharr-DVR/recording-<id>`. Sie bestätigt keine Aufnahmedatei und leitet daraus
+keine menschliche Identität ab. Gruppiert wird über die Kanal-UUID innerhalb der
+gewählten Instanz. Gleiche Namen führen weder Sender noch Nutzer oder Sessions
+von Jellyfin, Emby und Plex zusammen.
+
+<details>
+<summary>Ein Sender mit Zuschauer und DVR-Verbindung (frei erfundene Beispieldaten)</summary>
+
+![Gruppierte Sendervorschau im echten HA-Frontend](screenshots/grouped-channel-de.png)
+
+</details>
 
 <details>
 <summary>Vorschau mit allen vier Quellen (frei erfundene Beispieldaten)</summary>

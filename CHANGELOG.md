@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Refresh English/German desktop and mobile dashboard screenshots for grouped
+  channels, including viewer/DVR connections and empty, offline and missing-data
+  states. Label this unreleased layout separately from the published 0.2.0 release.
+- Group Dispatcharr connections by channel UUID in the dashboard: show the logo,
+  current programme and source quality once, with individual client rows below.
+- Identify reported Dispatcharr DVR clients, retain separate connection durations,
+  output profiles and exact-client actions, and warn that channel stops include DVR.
+- Preserve expanded connection details across status updates. Keep separate
+  channels with identical names and unrelated media-server sessions distinct.
 - Update test tooling to pytest 9.1.1, pytest-asyncio 1.4.0,
   pytest-aiohttp 1.1.1 and Ruff 0.16.10, and use actions/checkout v7 in CI.
 - Address GHSA-6w46-j5rx-g56g (CVE-2025-71176) in the pytest development

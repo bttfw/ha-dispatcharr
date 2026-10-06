@@ -12,6 +12,9 @@ use `beta`. The project name, domain and existing entity IDs remain unchanged.
 
 ![Concurrent sources using synthetic demo data](screenshots/desktop-en.png)
 
+This preview uses the next release's grouped-channel layout on `main`.
+The published 0.2.0 release shows separate Dispatcharr client cards.
+
 ## Install and configure without YAML
 
 1. Add this repository to HACS as described in the main README.

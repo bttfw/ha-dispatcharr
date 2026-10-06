@@ -14,6 +14,34 @@ the successful exact Jellyfin stop, and Emby/Plex control limitations.
 
 ## Production verification
 
+### Grouped-channel preview and owner acceptance
+
+On 6 October 2026, the new card was loaded through a response override in a
+separate browser context against the real HA 2026.9.4 frontend and the existing
+Dispatcharr 0.31.0 integration. The existing one-channel/two-client case, including
+one reported DVR client, rendered as one channel block with two individual rows.
+Desktop and mobile checks passed. Installed files, dashboards and playback were
+not changed; no real session was stopped.
+
+After that read-only preview, the owner requested installation of the same card.
+Only the JavaScript file and its existing Lovelace resource version URL were
+updated, with a private backup of the original file and dashboard configuration.
+The installed file's hash matched the tested commit. A fresh browser confirmed
+the served module and layout on desktop and mobile without a response override
+or JavaScript errors. Dashboard configuration, Dispatcharr and Jellyfin settings,
+controls and playback were preserved; HA did not need a restart. The owner then
+approved promotion to `main`. This is layout acceptance, not a new live stop test
+or independent source-code review. No new release was published for this preview.
+
+The isolated Chromium suite covers two and fifteen clients sharing a UUID,
+distinct UUIDs with identical channel names, identical client IDs across different
+channels, reported DVR identity, per-client output fields, exact-client versus
+whole-channel controls, preservation of expanded details after polling, missing
+IDs/metadata, administrator gating and concurrent independent media sources.
+The public `grouped-channel-en.png` and `grouped-channel-de.png` screenshots use
+fictional fixture data in the native HA frontend; the read-only live evidence is
+kept private. Light and dark themes were checked.
+
 ### 0.1.3 resource loading fix
 
 The owner's existing Brave session showed `Custom element doesn't exist:
@@ -144,10 +172,14 @@ all full-stack stop and outage scenarios listed above.
 
 All public screenshots contain synthetic users, programmes, logos and source
 measurements. They are not real customer or provider data.
-Version 0.2.0 previews show all four source types in the shipped card, rendered
-inside the actual HA frontend with synthetic fixture state and stubbed image and
-service calls. Desktop and mobile layouts are supplied in English and German.
-The source data and an offline preview renderer are in `scripts/render_screenshots.py`.
+The current previews show the next release's grouped-channel card on `main`,
+rendered inside the actual HA frontend with synthetic fixture state and stubbed
+image and service calls. Desktop and mobile layouts in English and German show
+a viewer and a reported DVR connection on one channel, alongside all three media
+server types. The empty, offline and missing-data previews are refreshed too.
+Release 0.2.0 still has the previous client-card layout. Setup-form screenshots
+remain accurate for 0.2.0; these forms did not change. The shared source data,
+capture checks and offline renderer are in `scripts/render_screenshots.py`.
 
 ![English desktop card](screenshots/desktop-en.png)
 ![No active playback](screenshots/empty.png)
