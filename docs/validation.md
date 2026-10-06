@@ -14,6 +14,24 @@ the successful exact Jellyfin stop, and Emby/Plex control limitations.
 
 ## Production verification
 
+### Grouped-channel beta preview
+
+On 6 October 2026, the new card was loaded through a response override in a
+separate browser context against the real HA 2026.9.4 frontend and the existing
+Dispatcharr 0.31.0 integration. The existing one-channel/two-client case, including
+one reported DVR client, rendered as one channel block with two individual rows.
+Desktop and mobile checks passed. Installed files, dashboards and playback were
+not changed; no real session was stopped.
+
+The isolated Chromium suite covers two and fifteen clients sharing a UUID,
+distinct UUIDs with identical channel names, identical client IDs across different
+channels, reported DVR identity, per-client output fields, exact-client versus
+whole-channel controls, preservation of expanded details after polling, missing
+IDs/metadata, administrator gating and concurrent independent media sources.
+The public `grouped-channel-en.png` and `grouped-channel-de.png` screenshots use
+fictional fixture data in the native HA frontend; the read-only live evidence is
+kept private. Light and dark themes were checked.
+
 ### 0.1.3 resource loading fix
 
 The owner's existing Brave session showed `Custom element doesn't exist:

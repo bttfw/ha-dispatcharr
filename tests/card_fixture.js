@@ -8,7 +8,7 @@ window.installDispatcharrFixture = () => {
     connected_at: now - 1234, source_resolution: "1920x1080", source_fps: 50,
     video_codec: "h264", audio_codec: "aac", average_bitrate_kbps: 6500,
     provider: "Demo provider", provider_profile: "Primary", stream_profile: "ffmpeg",
-    output_profile: "Default", output_format: "ts", proxy_state: "active", playback_status: null,
+    output_profile: "Default", output_format: "ts", proxy_state: "active", connection_status: "connected", playback_status: null,
     programme: { title: "Nature discoveries", start: now - 900, end: now + 1800 },
   };
   const attributes = { entry_id: "synthetic-only", active_channels: 1, control_enabled: true,
@@ -25,14 +25,17 @@ window.installDispatcharrFixture = () => {
     Object.assign(fixture.attributes, patch); Object.assign(fixture.config, config);
     card.setConfig(fixture.config);
     card.hass = {
-      ...appHass, language: fixture.language, user: { is_admin: true },
+      ...appHass, language: fixture.language, user: { is_admin: fixture.admin !== false },
       states: { [entity]: { entity_id: entity, state: fixture.offline ? "unavailable" : String(fixture.attributes.viewers.length), attributes: { ...fixture.attributes } }, ...(fixture.media ? {"sensor.demo_media": {entity_id:"sensor.demo_media", state:String(fixture.media.sessions.length), attributes:{entry_id:attributes.entry_id,viewer_entity_id:entity,...fixture.media}}} : {}) },
       // These stubs cannot send a stop or logo request to a real server.
       fetchWithAuth: async (path) => new Response(await (fixture.images?.[path.split('/').at(-1)] || logo), { headers: { "Content-Type": "image/png" } }),
       callService: async (domain, service, data) => {
         fixture.calls.push({ domain, service, data });
         if (service === "stop_media_session") { fixture.media.sessions = fixture.media.sessions.filter(r => r.source_id !== data.source_id || r.session_id !== data.session_id); fixture.update(); }
-        else fixture.update({ viewers: service === "stop_session" ? fixture.attributes.viewers.filter(r => r.client_id !== data.client_id) : [] });
+        else {
+          const viewers = fixture.attributes.viewers.filter(r => r.channel_uuid !== data.channel_uuid || (service === "stop_session" && r.client_id !== data.client_id));
+          fixture.update({ viewers, active_channels: new Set(viewers.map(r => r.channel_uuid)).size });
+        }
       },
     };
   };

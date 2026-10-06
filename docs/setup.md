@@ -109,6 +109,31 @@ The card automatically includes media servers configured in step 3. No second
 card installation, extra JavaScript resource or YAML is needed. With no active
 sessions it shows **Nobody is watching**; it does not start playback for a preview.
 
+### Grouped channels (beta development)
+
+On the `beta` branch, each Dispatcharr channel appears once, with its logo,
+programme and source quality. Its **Connections** list retains every client,
+name or alias and individual connection duration. Two clients on the same channel
+therefore mean **1 active channel, 2 Dispatcharr clients**, including a DVR client.
+These counts describe connections, not unique people.
+
+**Connection details** show the original device description, user/client IDs,
+reported playback state and client-specific output profile/format. **End session**
+still targets only that connection. The separate **Stop channel for everyone**
+action is in **Channel details** and requires confirmation, including a DVR warning.
+
+The DVR badge recognizes Dispatcharr's reported `Dispatcharr-DVR/recording-<id>`
+client marker; it does not verify a recording file or infer a human viewer.
+Grouping uses channel UUIDs within the selected instance. Matching names alone
+never combine channels, users or sessions from Jellyfin, Emby and Plex.
+
+<details>
+<summary>One channel with a viewer and DVR connection (fictional demo data)</summary>
+
+![Grouped channel preview in the real HA frontend](screenshots/grouped-channel-en.png)
+
+</details>
+
 <details>
 <summary>Preview with all four sources (fictional demo data)</summary>
 

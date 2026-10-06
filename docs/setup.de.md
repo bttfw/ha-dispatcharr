@@ -114,6 +114,33 @@ zweite Karteninstallation, zusätzliche JavaScript-Ressource oder YAML ist nicht
 nötig. Ohne aktive Sessions erscheint **Niemand schaut gerade**. Die Integration
 startet für die Vorschau keine Wiedergabe.
 
+### Gruppierte Sender (Beta-Entwicklung)
+
+Im Branch `beta` erscheint jeder Dispatcharr-Sender einmal mit Logo, Sendung und
+Quellqualität. Darunter stehen alle **Verbindungen** mit Name beziehungsweise
+Alias und eigener Verbindungsdauer. Zwei Clients auf demselben Sender bedeuten
+also **1 aktiver Kanal, 2 Dispatcharr-Clients**, auch mit einem DVR-Client.
+Die Zähler erfassen Verbindungen und keine eindeutigen Personen.
+
+Unter **Verbindungsdetails** bleiben die ursprüngliche Gerätebeschreibung,
+Benutzer-/Client-ID, der gemeldete Wiedergabestatus und das jeweilige Ausgabeprofil
+mit Format sichtbar. **Session beenden** betrifft weiterhin nur diese Verbindung.
+**Kanal für alle beenden** steht getrennt unter **Senderdetails** und verlangt eine
+Bestätigung, die ausdrücklich auch auf DVR-Aufnahmen hinweist.
+
+Die DVR-Kennzeichnung erkennt Dispatcharrs gemeldeten Client-Marker
+`Dispatcharr-DVR/recording-<id>`. Sie bestätigt keine Aufnahmedatei und leitet daraus
+keine menschliche Identität ab. Gruppiert wird über die Kanal-UUID innerhalb der
+gewählten Instanz. Gleiche Namen führen weder Sender noch Nutzer oder Sessions
+von Jellyfin, Emby und Plex zusammen.
+
+<details>
+<summary>Ein Sender mit Zuschauer und DVR-Verbindung (frei erfundene Beispieldaten)</summary>
+
+![Gruppierte Sendervorschau im echten HA-Frontend](screenshots/grouped-channel-de.png)
+
+</details>
+
 <details>
 <summary>Vorschau mit allen vier Quellen (frei erfundene Beispieldaten)</summary>
 
