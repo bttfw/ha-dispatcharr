@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Update test tooling to pytest 9.1.1, pytest-asyncio 1.4.0,
+  pytest-aiohttp 1.1.1 and Ruff 0.16.10, and use actions/checkout v7 in CI.
+- Address GHSA-6w46-j5rx-g56g (CVE-2025-71176) in the pytest development
+  dependency. These test packages are not installed by the integration in HA.
+- Add weekly Dependabot version-update PRs targeting `beta`, plus security alerts
+  and security-update PRs targeting `main`. Updates still require review and checks.
 - Add English and German setup walkthroughs with native Home Assistant screenshots:
   initial Dispatcharr connection, optional media-server credentials and dashboard card.
 - Explain the Configure gear, the card picker's By card tab, frontend reloads after
