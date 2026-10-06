@@ -88,7 +88,10 @@ hinein. Die [bebilderte Anleitung](setup.de.md#2-konfigurieren-öffnen) zeigt de
 
 Als benutzerdefiniertes HACS-Repository installierbar. Der
 [Aufnahmeantrag für den Standardkatalog](https://github.com/hacs/default/pull/11610)
-wurde vorerst zurückgezogen, während weitere Verbesserungen entwickelt werden.
+wurde am 6. Oktober 2026 für v0.2.0 wieder geöffnet und wartet auf die HACS-Prüfung.
+Die Aufnahme ist noch nicht bestätigt; bis dahin die obigen Schritte für ein
+benutzerdefiniertes Repository verwenden. Status und Rückfragen stehen im verlinkten
+Pull Request.
 Die Karte wird von der Integration mitgeladen, ohne zweites Repository.
 
 Künftige Updates brauchen keinen neuen Aufnahmeantrag. Neue GitHub-Releases

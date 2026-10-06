@@ -51,7 +51,10 @@ instructions when they change the scope or priorities.
 - `main` is the stable release branch. Use focused fix branches for stable defects.
   Use `beta` and feature branches targeting it for new features. Publish beta
   builds as GitHub prereleases; stable promotion requires the owner's request.
-- Keep the HACS catalog application withdrawn until the owner requests resubmission.
+- Follow the owner's current decision on HACS catalog submission. The existing
+  application is hacs/default#11610, reopened at the owner's request on 2026-10-06.
+  Reuse that application; do not submit duplicates, request reviews or claim
+  acceptance before HACS maintainers merge it.
 - Add meaningful regression tests for bugs and behavioral changes. Cover shared
   channels, exact-session targeting, missing data, authentication failures,
   disconnections, recovery and concurrent sources where relevant.
