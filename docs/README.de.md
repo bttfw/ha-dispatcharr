@@ -32,7 +32,11 @@ dokumentiert. Der Repository-Inhaber hat zusätzlich einen manuellen
 Live-Abbruchtest bestätigt; automatisierte Stopptests verwenden synthetische Daten.
 Details stehen im [Transparenzhinweis](../AI_TRANSPARENCY.md).
 
-![Dispatcharr, Jellyfin, Emby und Plex gemeinsam — synthetische Beispieldaten](screenshots/desktop-de.png)
+**Vorschau auf das nächste Release:** Die folgenden Bilder zeigen die gruppierte
+Karte auf `main`. Jeder Sender erscheint einmal mit einzelnen Zuschauer-/DVR-
+Verbindungen. Das veröffentlichte Release **0.2.0** zeigt noch einzelne Client-Karten.
+
+![Gruppierter Dispatcharr-Sender neben Jellyfin, Emby und Plex — synthetische Beispieldaten](screenshots/desktop-de.png)
 
 Namen, Bilder, Sendungen und Qualitätswerte dieser Vorschau sind frei erfundene
 Beispieldaten. Sie veranschaulichen die Karte und zeigen keinen echten Server.

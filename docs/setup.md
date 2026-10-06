@@ -6,7 +6,7 @@
 your dashboard.** Jellyfin, Emby and Plex keys go in the integration's options
 after the initial Dispatcharr setup. Everything below works through the GUI.
 
-These are cropped screenshots of Home Assistant **2026.9.4** running integration
+The setup-form screenshots show Home Assistant **2026.9.4** running integration
 **0.2.0** in a disposable test instance. The example server address and playback
 data are synthetic; all credential fields are empty. Use your own server URLs.
 Menu wording and layout can differ with your HA version, language and theme.
@@ -109,9 +109,11 @@ The card automatically includes media servers configured in step 3. No second
 card installation, extra JavaScript resource or YAML is needed. With no active
 sessions it shows **Nobody is watching**; it does not start playback for a preview.
 
-### Grouped channels (beta development)
+### Grouped channels (next release)
 
-On the `beta` branch, each Dispatcharr channel appears once, with its logo,
+This view is included on `main` for the next release; the published **0.2.0**
+release still shows separate client cards. In the new view, each Dispatcharr
+channel appears once, with its logo,
 programme and source quality. Its **Connections** list retains every client,
 name or alias and individual connection duration. Two clients on the same channel
 therefore mean **1 active channel, 2 Dispatcharr clients**, including a DVR client.

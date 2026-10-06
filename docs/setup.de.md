@@ -7,7 +7,7 @@ die Karte ins Dashboard setzen.** Die Keys für Jellyfin, Emby und Plex kommen
 nach der ersten Dispatcharr-Einrichtung in die Integrationsoptionen. Alle Schritte
 funktionieren über die Oberfläche.
 
-Die Bilder zeigen Ausschnitte aus Home Assistant **2026.9.4** mit Integration
+Die Bilder der Einrichtungsdialoge zeigen Home Assistant **2026.9.4** mit Integration
 **0.2.0** in einer vorübergehenden Testinstanz. Serveradresse und Wiedergabedaten
 sind Beispiele; alle Schlüsselfelder sind leer. Deine eigenen Server-URLs verwenden.
 Je nach HA-Version, Sprache und Theme können Beschriftung und Anordnung abweichen.
@@ -114,9 +114,11 @@ zweite Karteninstallation, zusätzliche JavaScript-Ressource oder YAML ist nicht
 nötig. Ohne aktive Sessions erscheint **Niemand schaut gerade**. Die Integration
 startet für die Vorschau keine Wiedergabe.
 
-### Gruppierte Sender (Beta-Entwicklung)
+### Gruppierte Sender (nächstes Release)
 
-Im Branch `beta` erscheint jeder Dispatcharr-Sender einmal mit Logo, Sendung und
+Diese Ansicht ist auf `main` für das nächste Release enthalten. Das veröffentlichte
+Release **0.2.0** zeigt weiterhin einzelne Client-Karten. In der neuen Ansicht
+erscheint jeder Dispatcharr-Sender einmal mit Logo, Sendung und
 Quellqualität. Darunter stehen alle **Verbindungen** mit Name beziehungsweise
 Alias und eigener Verbindungsdauer. Zwei Clients auf demselben Sender bedeuten
 also **1 aktiver Kanal, 2 Dispatcharr-Clients**, auch mit einem DVR-Client.

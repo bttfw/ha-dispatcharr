@@ -12,6 +12,9 @@ auf `beta`. Name, Integrations-Domain und bestehende Entitäts-IDs bleiben erhal
 
 ![Gemeinsame Quellen mit synthetischen Beispieldaten](screenshots/desktop-de.png)
 
+Diese Vorschau zeigt die gruppierte Senderansicht auf `main` für das nächste Release.
+Das veröffentlichte Release 0.2.0 zeigt einzelne Dispatcharr-Client-Karten.
+
 ## Einrichtung über die Oberfläche
 
 1. Das Repository wie in der Hauptanleitung als HACS-Repository hinzufügen.

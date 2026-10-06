@@ -32,7 +32,11 @@ Read the [media-server setup and control limits](docs/media-servers.md).
 (AI). Read the [AI transparency notice](AI_TRANSPARENCY.md) for its contribution,
 tests performed and remaining validation limits.
 
-![Dispatcharr, Jellyfin, Emby and Plex together — synthetic demo data](docs/screenshots/desktop-en.png)
+**Preview of the next release:** the screenshots below show the grouped-channel
+card on `main`. Each channel appears once, with separate viewer/DVR connections.
+The published **0.2.0** release still uses separate client cards.
+
+![Grouped Dispatcharr channel alongside Jellyfin, Emby and Plex — synthetic demo data](docs/screenshots/desktop-en.png)
 
 All names, artwork, programmes and quality values in these previews are fictional
 demo data. They illustrate the card, not a claim about a live server.
