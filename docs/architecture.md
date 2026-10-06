@@ -1,7 +1,10 @@
 # Architecture and verified API contract
 
 Design presented before implementation on 2026-10-05. Independent repository,
-implementation, and architecture. Only Dispatcharr is integrated.
+implementation, and architecture. The original 0.1.x scope was Dispatcharr.
+Version 0.2.0 adds optional concurrent Jellyfin, Emby and Plex sources; see the
+[media-server API and architecture](media-servers.md#api-and-implementation).
+The Dispatcharr contracts below remain unchanged.
 
 ## Evidence
 

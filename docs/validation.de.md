@@ -2,11 +2,11 @@
 
 # Prüfbericht zur Erstversion
 
-Die [englischen Beta-Testnachweise](beta-validation.md) dokumentieren zusätzlich
+Die [englischen Medienserver-Testnachweise](beta-validation.md) dokumentieren zusätzlich
 84 Backendtests, die echte HA-Oberfläche, parallele Medienserver-Testwiedergaben,
 Ausfall/Wiederverbindung und einen bestätigten Einzelstopp bei zwei
 Jellyfin-Browsern. Grenzen der Emby-/Plex-Steuerung stehen in der
-[Beta-Anleitung](beta.de.md).
+[Medienserver-Anleitung](media-servers.de.md).
 
 Stand: 6. Oktober 2026. Geprüft mit **Home Assistant 2026.9.4** und
 **Dispatcharr 0.31.0**. Andere Versionen sind damit nicht automatisch verifiziert.
@@ -43,7 +43,7 @@ Der Erhalt eines zweiten Zuschauers desselben Kanals und der separate Kanalstopp
 für alle sind synthetisch geprüft; eine Live-Bestätigung dafür liegt nicht vor.
 Eine unabhängige menschliche Codeprüfung wird nicht behauptet.
 
-## Automatische Tests
+## Automatische Tests der ersten Version 0.1.0
 
 **60 Tests bestanden** gegen die tatsächlichen Klassen aus dem offiziellen
 HA-Container `ghcr.io/home-assistant/home-assistant:2026.9.4`.
@@ -68,8 +68,8 @@ Die API-Gegenstelle ist vollständig synthetisch.
 
 Ruff, Python-Formatierung und JavaScript-Syntaxprüfung bestehen ebenfalls.
 GitHub Actions führt zusätzlich **hassfest** und die **HACS-Validierung** aus.
-Die HACS-Prüfung überspringt ausschließlich `brands`, da keine Aufnahme in das
-offizielle HA-Markenverzeichnis behauptet wird.
+Seit 0.1.2 werden eigene Markendateien mitgeliefert; die HACS-Prüfung
+überspringt keine Prüfungen.
 
 Aus dem Repository auf Linux/macOS, beziehungsweise mit einem passenden
 absoluten Bind-Mount unter Docker Desktop:

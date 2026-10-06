@@ -5,16 +5,17 @@
 
 # Dispatcharr für Home Assistant
 
-**Optionale Medienserver-Beta:** Jellyfin, Emby und Plex lassen sich gemeinsam
-mit Dispatcharr anzeigen. Entwicklung auf `beta`, stabile Versionen auf `main`.
-Siehe [Beta-Einrichtung und bekannte Grenzen](beta.de.md).
+**Neu in 0.2.0:** Jellyfin, Emby und Plex lassen sich gemeinsam mit Dispatcharr
+anzeigen, auch bei unabhängigen Wiedergaben und mehreren Servern desselben Typs.
+Siehe [Medienserver-Einrichtung und bekannte Grenzen](media-servers.de.md).
 
 [English](../README.md) | **Deutsch**
 
 <img src="../custom_components/dispatcharr/brand/icon.png" width="96" alt="Dispatcharr-Projektlogo">
 
-Wer schaut gerade welchen Sender? Eine eigenständige Dispatcharr-Integration
-mit GUI-Einrichtung und einer mitgelieferten Dashboard-Karte.
+Wer schaut gerade welchen Sender, Film oder welche Folge? Eine eigenständige
+Dispatcharr-Integration mit optionalen Jellyfin-, Emby- und Plex-Verbindungen,
+GUI-Einrichtung und einer gemeinsamen Dashboard-Karte.
 
 **Geprüfte Basis:** Home Assistant 2026.9.4, Dispatcharr 0.31.0.
 Vollständig neu implementiert, ohne Code aus anderen Dispatcharr-Integrationen
@@ -28,11 +29,23 @@ dokumentiert. Der Repository-Inhaber hat zusätzlich einen manuellen
 Live-Abbruchtest bestätigt; automatisierte Stopptests verwenden synthetische Daten.
 Details stehen im [Transparenzhinweis](../AI_TRANSPARENCY.md).
 
-![Dispatcharr auf dem Smartphone mit synthetischen Testdaten](screenshots/mobile.png)
+![Dispatcharr, Jellyfin, Emby und Plex gemeinsam — synthetische Beispieldaten](screenshots/desktop-de.png)
+
+Namen, Bilder, Sendungen und Qualitätswerte dieser Vorschau sind frei erfundene
+Beispieldaten. Sie veranschaulichen die Karte und zeigen keinen echten Server.
+
+<details>
+<summary>Smartphone-Vorschau</summary>
+
+![Smartphone-Ansicht mit synthetischen Beispieldaten](screenshots/mobile.png)
+
+</details>
 
 ## Funktionen
 
 - Erreichbarkeit, letzte erfolgreiche Aktualisierung, aktive Kanäle und Zuschauer.
+- Optionale Jellyfin-, Emby- und Plex-Server mit getrenntem Status, tatsächlichen
+  Benutzern/Geräten, Wiedergabefortschritt, Bildern und Quell-/Ausgabequalität.
 - Eine automatisch aktualisierte Zeile je tatsächlicher Client-Session: Benutzer,
   optionaler Geräte-Alias, Senderlogo, Verbindungsdauer und aktuelles EPG.
 - Sendungsfortschritt, gemeldete Quellauflösung, Bildrate, mittlere Datenrate,
@@ -51,7 +64,7 @@ wird Englisch verwendet. Unter **Dashboard bearbeiten → Karte bearbeiten →
 Kartensprache** lassen sich **Home-Assistant-Sprache**, **English** oder **Deutsch**
 auswählen. Die Auswahl gilt nur für diese Karte, einschließlich Bestätigungen und
 Datums-/Zahlenformaten. YAML ist nicht erforderlich. Benutzer-, Sender- und
-Sendungsnamen werden unverändert von Dispatcharr übernommen.
+Sendungsnamen werden unverändert vom jeweiligen Server übernommen.
 
 Die Hauptbeschreibung in HACS ist Englisch. Über **Deutsch** gelangt man zu
 dieser Anleitung; HACS bietet keine eigene Sprachauswahl für die README.
@@ -119,6 +132,7 @@ Konfigurationsschalter lassen sich zusätzlich über HA-Standardkarten wie
 | --- | --- |
 | Steuerung | „Steuerung aktivieren“, standardmäßig aus |
 | Geräte-Aliase | Beobachtetes Gerät auswählen und Alias eingeben; leer entfernt ihn |
+| Medienserver | Optionale Jellyfin-, Emby- und Plex-Verbindungen hinzufügen, ändern oder entfernen |
 | Erweitert | Statusintervall, Metadaten-Cache und EPG-Intervall in Sekunden |
 
 Zusätzlich gibt es auf der Geräteseite die Schalter-Entität **Steuerung aktivieren**.
@@ -126,10 +140,15 @@ Für URL-/Key-Wechsel das **⋮-Menü der Instanz → Neu konfigurieren** verwen
 Bei einem abgewiesenen Key bietet HA die erneute Authentifizierung an.
 
 Die Alias-Auswahl umfasst aktuell beobachtete Geräte und bereits gespeicherte
-Aliase. Ein Alias basiert auf der Kombination aus gemeldeter IP und User-Agent.
+Aliase. Bei Dispatcharr basiert ein Alias auf gemeldeter IP und User-Agent.
 Das ist keine sichere Hardware-ID: Bei gemeinsamem Proxy oder geänderter IP
 kann die Zuordnung uneindeutig werden. Die eigentliche Benutzerzuordnung nutzt
 ausschließlich Dispatcharrs `user_id`, niemals Namen oder Listenpositionen.
+
+Bei Medienservern verwenden Aliase die konfigurierte Quelle und deren tatsächliche
+Geräte-ID. Benutzer bleiben dem jeweiligen Server zugeordnet; Namen und IPs
+führen nicht zu einer Zusammenlegung. Details stehen in der
+[Medienserver-Anleitung](media-servers.de.md).
 
 Bei aktiver Steuerung erscheint **Session beenden** an der betreffenden Zeile.
 Der Dialog nennt die konkrete Client-ID. Die Aktion betrifft nur diese Session.
@@ -156,17 +175,24 @@ verbinden sich selbstständig erneut; das ist dann eine neue Client-Session.
   Kanal-Datenrate, umgerechnet in Mbit/s. „4K“ im Namen ist kein Messwert.
 - Fehlende EPG-Daten und Logos werden ausdrücklich angezeigt. Abgelaufene
   Sendungen verschwinden. Keine Sendungen oder Identitäten werden erfunden.
-- Live-TV-Sessions der TS-Proxy-API werden unterstützt. VOD, DVR und Wiedergaben,
-  die Dispatcharrs Proxy umgehen, sind nicht Teil dieser Version.
+- Die Dispatcharr-Quelle unterstützt Live-TV-Sessions der TS-Proxy-API. Sie meldet
+  kein Dispatcharr-VOD/DVR und keine Wiedergaben, die diesen Proxy umgehen.
+  Optionale Medienserver melden ihre eigenen aktiven Wiedergaben einschließlich
+  Filmen und Folgen; ihr Session-Zähler bleibt getrennt von Dispatcharr-Clients.
 
 ## Abfragen und Datenschutz
 
-Pro Instanz ein gemeinsamer asynchroner Coordinator. Standardmäßig Status alle
+Für Dispatcharr gibt es pro Instanz einen gemeinsamen asynchronen Coordinator.
+Standardmäßig Status alle
 10 Sekunden, Benutzer/Provider/Profile und Kanalmetadaten alle 15 Minuten;
 neue aktive Kanäle werden gezielt ergänzt. Aktuelle Sendungen werden alle
 60 Sekunden ausschließlich für aktive Kanal-UUIDs geladen. Bei null aktiven
 Kanälen gibt es keine laufenden EPG-Abfragen. Fehlgeschlagene Zusatzabfragen
 werden nach 60 Sekunden erneut versucht.
+
+Optionale Medienserver nutzen einen weiteren gemeinsamen Coordinator mit
+gleichzeitigen Abfragen und getrennten Fehlerzuständen. Bilder werden bei Bedarf
+geladen und separat gecacht.
 
 Dispatcharr kürzt die Übersicht auf zehn Clients pro Kanal. Bei Abweichungen
 zu `client_count` werden vollständige Details abgefragt. Eine weiterhin

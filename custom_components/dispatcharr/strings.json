@@ -48,7 +48,7 @@
           "control": "Controls",
           "aliases": "Device aliases",
           "advanced": "Advanced",
-          "media": "Media servers (beta)"
+          "media": "Media servers"
         }
       },
       "control": {
