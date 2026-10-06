@@ -20,6 +20,10 @@ Built from scratch using official documentation and the verified Dispatcharr API
 No code was copied from existing Dispatcharr integrations for Home Assistant.
 Independent community project.
 
+**Optional multi-server beta:** Jellyfin, Emby and Plex can appear alongside
+Dispatcharr in the same card. Development stays on `beta`; stable releases stay
+on `main`. Read the [beta setup and current limits](docs/beta.md) before opting in.
+
 **AI-assisted development:** This integration was developed with OpenAI Codex
 (AI). Read the [AI transparency notice](AI_TRANSPARENCY.md) for its contribution,
 tests performed and remaining validation limits.

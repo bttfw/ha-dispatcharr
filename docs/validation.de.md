@@ -2,6 +2,12 @@
 
 # Prüfbericht zur Erstversion
 
+Die [englischen Beta-Testnachweise](beta-validation.md) dokumentieren zusätzlich
+84 Backendtests, die echte HA-Oberfläche, parallele Medienserver-Testwiedergaben,
+Ausfall/Wiederverbindung und einen bestätigten Einzelstopp bei zwei
+Jellyfin-Browsern. Grenzen der Emby-/Plex-Steuerung stehen in der
+[Beta-Anleitung](beta.de.md).
+
 Stand: 6. Oktober 2026. Geprüft mit **Home Assistant 2026.9.4** und
 **Dispatcharr 0.31.0**. Andere Versionen sind damit nicht automatisch verifiziert.
 

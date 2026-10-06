@@ -9,7 +9,12 @@ from aiohttp import ClientSession, web
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from custom_components.dispatcharr.api import DispatcharrError, InvalidAuth, InvalidResponse
+from custom_components.dispatcharr.api import (
+    DispatcharrError,
+    Forbidden,
+    InvalidAuth,
+    InvalidResponse,
+)
 from custom_components.dispatcharr.config_flow import DispatcharrOptionsFlow
 from custom_components.dispatcharr.coordinator import DispatcharrCoordinator
 from custom_components.dispatcharr.media_api import MediaClient
@@ -148,6 +153,8 @@ async def media_servers(aiohttp_server):
                         result["totalSize"] = state.total
                     return web.json_response({"MediaContainer": result})
                 if request.method == "POST":
+                    if getattr(state, "stop_failure", 0):
+                        return web.json_response({"secret": KEY}, status=state.stop_failure)
                     identity = (
                         request.query["sessionId"]
                         if state.kind == "plex"
@@ -263,6 +270,51 @@ async def test_plex_duplicate_termination_ids_keep_both_rows_without_unsafe_stop
         await coordinator.stop("plex", "plex-session-one", "10")
     assert not any(c[0] == "POST" for c in state.calls)
     await coordinator.async_shutdown()
+
+
+async def test_plex_stop_feature_denial_is_not_reported_as_a_bad_key(media_servers):
+    state = media_servers.servers["plex"]
+    assert await state.client.validate()
+    state.stop_failure = 401
+    with pytest.raises(Forbidden, match="insufficient_permissions"):
+        await state.client.stop("plex-session-one")
+
+
+async def test_device_aliases_are_scoped_to_server_and_actual_device_id(
+    media_hass, media_entry, media_servers
+):
+    jellyfin = (await media_servers.servers["jellyfin"].client.sessions())[0]
+    emby = (await media_servers.servers["emby"].client.sessions())[0]
+    assert jellyfin["device_id"] == emby["device_id"]
+    assert jellyfin["device_key"] != emby["device_key"]
+    options = dict(media_entry.options) | {
+        "device_aliases": {jellyfin["device_key"]: "Living room"}
+    }
+    alias_entry = ConfigEntry(
+        version=1,
+        minor_version=1,
+        domain="dispatcharr",
+        title="Alias test",
+        data=dict(media_entry.data),
+        source="user",
+        unique_id=None,
+        discovery_keys={},
+        subentries_data=[],
+        options=options,
+    )
+    coordinator = MediaCoordinator(media_hass, alias_entry, media_servers.session)
+    await coordinator.async_refresh()
+    rows = {r["source_id"]: r for r in coordinator.data["sessions"]}
+    assert rows["jellyfin"]["device_alias"] == "Living room"
+    assert rows["emby"]["device_alias"] is None
+    await coordinator.async_shutdown()
+
+
+async def test_media_redirect_is_rejected(media_servers):
+    state = media_servers.servers["jellyfin"]
+    state.failure = 302
+    with pytest.raises(InvalidResponse, match="unexpected_http_status"):
+        await state.client.sessions()
 
 
 async def test_missing_metadata_unknown_and_no_logged_in_users_counted(media_servers):

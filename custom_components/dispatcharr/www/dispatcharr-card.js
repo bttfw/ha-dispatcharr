@@ -173,7 +173,15 @@ class DispatcharrCard extends HTMLElement {
     if (sources.length) footer.append(el("div", this._t("incomplete")));
     if (!data.control_enabled) footer.append(el("div", this._t("disabled")));
     else if (!this._hass.user?.is_admin) footer.append(el("div", this._t("admin")));
-    footer.append(el("div", `${this._t("last")}: ${data.last_success ? new Date(data.last_success).toLocaleTimeString(this._locale()) : this._t("unknown")}`)); body.append(footer);
+    const lastSuccess = data.last_success || this._lastSuccess();
+    footer.append(el("div", `${this._t("last")}: ${lastSuccess ? new Date(lastSuccess).toLocaleTimeString(this._locale()) : this._t("unknown")}`));
+    if (sources.length) {
+      const details = el("details"); details.open = this._details.has("sources"); details.ontoggle = () => details.open ? this._details.add("sources") : this._details.delete("sources"); details.append(el("summary", this._t("source")));
+      const dl = el("dl");
+      for (const source of sources) dl.append(el("dt", source.name), el("dd", `${this._t(source.connected ? "online" : source.error || "offline")} · ${this._t("last")}: ${source.last_success ? new Date(source.last_success).toLocaleString(this._locale()) : this._t("unknown")}`));
+      details.append(dl); footer.append(details);
+    }
+    body.append(footer);
     const needed = new Set(rows.filter(r => r.logo_id).map(r => `${data.entry_id}/${r.logo_id}`));
     for (const row of sessions) if (row.image_key) needed.add(`${media.entry_id}/media/${row.source_id}/${row.image_key}`);
     for (const [key, value] of this._logos) if (!needed.has(key)) { if (value.url) URL.revokeObjectURL(value.url); this._logos.delete(key); }
@@ -237,12 +245,18 @@ class DispatcharrCard extends HTMLElement {
     who.append(el("div", `${this._value(row.device_name)} · ${row.playback_status ? this._t(row.playback_status) : this._t("unknown")}`, "time"));
     identity.append(poster, who); node.append(identity);
     const programme = el("div", null, "programme"); programme.append(el("span", this._t("position"), "eyebrow"));
-    if (Number.isFinite(row.position_seconds) && Number.isFinite(row.duration_seconds) && row.duration_seconds > 0) {
+    if (row.programme && row.programme.end > Date.now() / 1000) {
+      programme.firstElementChild.textContent = this._t("now");
+      programme.append(el("div", this._value(row.programme.title), "programme-title"));
+      const line = el("div", null, "programme-line"), fmt = stamp => new Date(stamp * 1000).toLocaleTimeString(this._locale(), {hour:"2-digit",minute:"2-digit"});
+      line.append(el("span", `${fmt(row.programme.start)} – ${fmt(row.programme.end)}`), el("span"));
+      const progress = el("progress"); progress.max = 100; progress.dataset.start = row.programme.start; progress.dataset.end = row.programme.end; progress.setAttribute("aria-label", this._value(row.programme.title));
+      programme.append(line, progress);
+    } else if (Number.isFinite(row.position_seconds) && Number.isFinite(row.duration_seconds) && row.duration_seconds > 0) {
       const line = el("div", null, "programme-line"); line.append(el("span"), el("span"));
       const progress = el("progress"); progress.max = 100; progress.dataset.position = row.position_seconds; progress.dataset.duration = row.duration_seconds; progress.dataset.observed = row.observed_at; progress.dataset.playing = row.playback_status === "playing" ? "1" : "0";
       progress.setAttribute("aria-label", this._t("position")); programme.append(line, progress);
     } else programme.append(el("span", this._t("unknown"), "muted"));
-    if (row.programme?.title) programme.append(el("div", row.programme.title, "programme-title"));
     node.append(programme);
     const quality = el("div", null, "quality"); quality.append(el("span", this._t("quality"), "eyebrow"));
     const chips = el("div", null, "chips");
@@ -250,7 +264,7 @@ class DispatcharrCard extends HTMLElement {
     quality.append(chips, el("div", `${this._t("nominalBitrate")}: ${row.source_bitrate_kbps != null ? `${(row.source_bitrate_kbps / 1000).toLocaleString(this._locale())} Mbit/s` : this._t("unknown")}`, "bitrate")); node.append(quality);
     const details = el("details"), key = `${row.source_id}/${row.session_key || row.session_id}`; details.open = this._details.has(key); details.ontoggle = () => details.open ? this._details.add(key) : this._details.delete(key); details.append(el("summary", this._t("details")));
     const dl = el("dl");
-    for (const [label, value] of [["source", row.source_name], ["sourceUserId", row.user_id], ["sessionId", row.session_id], ["itemId", row.item_id], ["device", row.device_id], ["method", row.play_method], ["output", [row.output_resolution, row.output_video_codec, row.output_audio_codec].filter(Boolean).join(" · ")]]) dl.append(el("dt", this._t(label)), el("dd", this._value(value)));
+    for (const [label, value] of [["source", row.source_name], ["sourceUserId", row.user_id], ["sessionId", row.session_id], ["itemId", row.item_id], ["device", row.device_id], ["method", row.play_method], ["output", [row.output_resolution, row.output_fps != null ? `${row.output_fps} fps` : null, row.output_video_codec, row.output_audio_codec, row.output_bitrate_kbps != null ? `${(row.output_bitrate_kbps / 1000).toLocaleString(this._locale())} Mbit/s` : null].filter(Boolean).join(" · ")]]) dl.append(el("dt", this._t(label)), el("dd", this._value(value)));
     details.append(dl); node.append(details);
     const source = data.media_sources?.find(s => s.id === row.source_id);
     if (this._config.show_controls && source?.control_enabled && row.can_stop && this._hass.user?.is_admin) {

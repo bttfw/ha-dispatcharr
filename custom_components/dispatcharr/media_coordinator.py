@@ -8,7 +8,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 
 from .api import CannotConnect, DispatcharrError, Forbidden, InvalidAuth, NotFound
-from .const import CONF_CONTROL, CONF_POLL, DEFAULTS, DOMAIN
+from .const import CONF_ALIASES, CONF_CONTROL, CONF_POLL, DEFAULTS, DOMAIN
 from .media_api import MediaClient, media_id
 
 CONF_MEDIA = "media_servers"
@@ -60,6 +60,9 @@ class MediaCoordinator(DataUpdateCoordinator):
         else:
             status["connected"] = True
             self.last_success[client.source_id] = dt_util.utcnow().isoformat()
+            aliases = self.entry.options.get(CONF_ALIASES, {})
+            for row in rows:
+                row["device_alias"] = client.text(aliases.get(row["device_key"]))
         status["last_success"] = self.last_success.get(client.source_id)
         status["session_count"] = len(rows) if status["connected"] else None
         return status, rows

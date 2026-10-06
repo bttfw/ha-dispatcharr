@@ -124,7 +124,7 @@ class MediaOptionsMixin:
                             "mode": "dropdown",
                         }
                     ),
-                    vol.Required("name", default=existing.get("name", "")): selector.TextSelector(),
+                vol.Optional("name", default=existing.get("name", "")): selector.TextSelector(),
                     vol.Required("url", default=existing.get("url", "")): selector.TextSelector(
                         {"type": "url"}
                     ),

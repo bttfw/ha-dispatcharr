@@ -5,6 +5,10 @@
 
 # Dispatcharr für Home Assistant
 
+**Optionale Medienserver-Beta:** Jellyfin, Emby und Plex lassen sich gemeinsam
+mit Dispatcharr anzeigen. Entwicklung auf `beta`, stabile Versionen auf `main`.
+Siehe [Beta-Einrichtung und bekannte Grenzen](beta.de.md).
+
 [English](../README.md) | **Deutsch**
 
 <img src="../custom_components/dispatcharr/brand/icon.png" width="96" alt="Dispatcharr-Projektlogo">

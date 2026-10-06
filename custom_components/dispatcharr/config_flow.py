@@ -140,6 +140,13 @@ class DispatcharrOptionsFlow(MediaOptionsMixin, config_entries.OptionsFlowWithRe
                     devices[key] = (
                         f"{row['username'] or '?'} · {row['device_description'] or '?'} ({key[-6:]})"
                     )
+        media = getattr(coordinator, "media_coordinator", None)
+        if media and media.data:
+            for row in media.data["sessions"]:
+                if key := row["device_key"]:
+                    devices[key] = (
+                        f"{row['source_name']} · {row['username'] or '?'} · {row['device_name'] or '?'} ({key[-6:]})"
+                    )
         if not devices:
             return self.async_abort(reason="no_devices")
         if user_input is not None:

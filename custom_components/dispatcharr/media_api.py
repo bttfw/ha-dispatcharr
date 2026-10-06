@@ -78,6 +78,14 @@ class MediaClient:
                 ) as response,
             ):
                 if response.status == 401:
+                    if (
+                        self.kind == "plex"
+                        and method == "POST"
+                        and path == "/status/sessions/terminate"
+                    ):
+                        # PMS also uses 401 when the termination feature is not
+                        # enabled, even with an otherwise valid owner token.
+                        raise Forbidden("insufficient_permissions")
                     raise InvalidAuth("invalid_auth")
                 if response.status == 403:
                     raise Forbidden("insufficient_permissions")
@@ -169,6 +177,14 @@ class MediaClient:
                 raise InvalidResponse("duplicate_session_id")
             seen.add(row_id)
             row.update(source_id=self.source_id, source_type=self.kind, source_name=self.name)
+            row["device_key"] = (
+                "media_"
+                + hashlib.sha256(
+                    json.dumps([self.source_id, row["device_id"]]).encode()
+                ).hexdigest()[:24]
+                if row["device_id"]
+                else None
+            )
             row["image_key"] = None
             if poster:
                 image_key = hashlib.sha256(json.dumps(poster, sort_keys=True).encode()).hexdigest()[

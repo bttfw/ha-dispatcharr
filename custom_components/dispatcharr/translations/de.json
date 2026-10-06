@@ -68,7 +68,7 @@
       },
       "aliases": {
         "title": "Geräte-Alias bearbeiten",
-        "description": "Ein beobachtetes Gerät auswählen und einen Alias eingeben. Ein leeres Alias-Feld entfernt die Zuordnung. Grundlage ist IP + User-Agent; hinter einem Proxy können Geräte gleich erscheinen.",
+        "description": "Ein beobachtetes Gerät auswählen und einen Alias eingeben. Ein leeres Feld entfernt die Zuordnung. Dispatcharr nutzt IP + User-Agent; hinter einem Proxy können Geräte gleich erscheinen. Medienserver nutzen Quelle und tatsächliche Geräte-ID.",
         "data": {
           "device": "Beobachtetes Gerät",
           "alias": "Alias (leer = entfernen)"
@@ -244,7 +244,7 @@
       "message": "Der Medienserver hat die Aktion verweigert. Token-Berechtigungen und Serverfunktionen prüfen."
     },
     "media_control_unavailable": {
-      "message": "Dieser Client meldet keine Unterstützung für Fernsteuerungsbefehle zum Beenden."
+      "message": "Diese Session ist nicht eindeutig zuordenbar oder der Client unterstützt keine Fernsteuerungsbefehle zum Beenden."
     }
   },
   "selector": {

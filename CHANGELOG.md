@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.2.0b1 — 2026-10-06 (prerelease)
+
+- Add optional Jellyfin, Emby and Plex connections through bilingual GUI options.
+  All sources run concurrently, including independent movie/episode playback.
+- Keep per-source failures and last-success times separate, including when
+  Dispatcharr is unavailable during startup. Preserve existing entities and cards.
+- Display actual media users/devices, playback progress, available artwork and
+  source/output quality, with device aliases scoped to server and device IDs.
+- Add administrator-only native media-session controls with independent opt-in,
+  current-item checks, status verification and no replacement stop actions.
+- Preserve separate Plex playback rows when termination IDs overlap; disable
+  ambiguous actions. Handle Plex termination-feature denial with a valid token.
+- Test concurrent sources, metadata gaps, invalid keys, outages, recovery, exact
+  targeting, duplicate Plex IDs, aliases and the real HA configuration interface.
+- Document successful isolated Jellyfin stop tests and current Emby/Plex control
+  limitations. Publish only as an opt-in beta, keeping stable 0.1.3 unchanged.
+
 ## 0.1.3 — 2026-10-06
 
 - Fixed the dashboard's "Custom element doesn't exist: dispatcharr-card" error

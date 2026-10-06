@@ -68,7 +68,7 @@
       },
       "aliases": {
         "title": "Edit device alias",
-        "description": "Choose an observed device and enter an alias. Leave the alias empty to remove it. Based on IP + User-Agent; devices behind a proxy may appear identical.",
+        "description": "Choose an observed device and enter an alias. Leave it empty to remove it. Dispatcharr uses IP + User-Agent; devices behind a proxy may appear identical. Media servers use the source and actual device ID.",
         "data": {
           "device": "Observed device",
           "alias": "Alias (empty = remove)"
@@ -244,7 +244,7 @@
       "message": "The media server denied this action. Check the token permissions and server features."
     },
     "media_control_unavailable": {
-      "message": "This client does not report support for remote stop commands."
+      "message": "This session cannot be targeted unambiguously, or the client does not report support for remote stop commands."
     }
   },
   "selector": {
