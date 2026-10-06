@@ -9,9 +9,9 @@ instructions when they change the scope or priorities.
   Dispatcharr Home Assistant integration.
 - Use official Home Assistant developer documentation and documented or
   source-verified server APIs. Verify the installed versions before live testing.
-- The stable integration currently monitors Dispatcharr. Develop the optional
-  Jellyfin, Plex and Emby support on `beta`; all configured sources must work
-  concurrently. Keep the current project name and logo until a separate decision.
+- From 0.2.0, stable supports Dispatcharr with optional Jellyfin, Plex and Emby
+  servers; all configured sources must work concurrently. Keep the current
+  project name and logo until a separate decision.
 - Identify users, sessions, channels and servers by their actual IDs. Never merge
   sessions or assign users merely because names, titles or IP addresses match.
 - Missing values remain unknown. Distinguish source quality from transcoded output,
@@ -49,8 +49,8 @@ instructions when they change the scope or priorities.
 ## Branches, validation and contribution workflow
 
 - `main` is the stable release branch. Use focused fix branches for stable defects.
-  Use `beta` and feature branches targeting it for the multi-server work. Publish
-  beta builds as GitHub prereleases; do not promote them to stable automatically.
+  Use `beta` and feature branches targeting it for new features. Publish beta
+  builds as GitHub prereleases; stable promotion requires the owner's request.
 - Keep the HACS catalog application withdrawn until the owner requests resubmission.
 - Add meaningful regression tests for bugs and behavioral changes. Cover shared
   channels, exact-session targeting, missing data, authentication failures,

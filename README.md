@@ -12,27 +12,40 @@
 
 **English** | [Deutsch](docs/README.de.md)
 
-See who is watching which channel. An independent Dispatcharr integration with
-GUI setup and a bundled dashboard card.
+See who is watching which channel, movie or episode. An independent Dispatcharr
+integration with optional Jellyfin, Emby and Plex servers, GUI setup and one
+bundled dashboard card.
 
 **Verified with:** Home Assistant 2026.9.4 and Dispatcharr 0.31.0.
 Built from scratch using official documentation and the verified Dispatcharr API.
 No code was copied from existing Dispatcharr integrations for Home Assistant.
 Independent community project.
 
-**Optional multi-server beta:** Jellyfin, Emby and Plex can appear alongside
-Dispatcharr in the same card. Development stays on `beta`; stable releases stay
-on `main`. Read the [beta setup and current limits](docs/beta.md) before opting in.
+**New in 0.2.0:** Jellyfin, Emby and Plex can appear alongside Dispatcharr in the
+same card. Multiple instances work concurrently, including independent playback.
+Read the [media-server setup and control limits](docs/media-servers.md).
 
 **AI-assisted development:** This integration was developed with OpenAI Codex
 (AI). Read the [AI transparency notice](AI_TRANSPARENCY.md) for its contribution,
 tests performed and remaining validation limits.
 
+![Dispatcharr, Jellyfin, Emby and Plex together — synthetic demo data](docs/screenshots/desktop-en.png)
+
+All names, artwork, programmes and quality values in these previews are fictional
+demo data. They illustrate the card, not a claim about a live server.
+
+<details>
+<summary>Mobile preview</summary>
+
 ![Mobile dashboard with synthetic demo data](docs/screenshots/mobile-en.png)
+
+</details>
 
 ## Features
 
 - Connection status, last successful update, active channels and connected viewers.
+- Optional Jellyfin, Emby and Plex connections with independent status, actual
+  users/devices, playback progress, artwork and reported source/output quality.
 - One automatically updated row per actual client session: user, optional device
   alias, channel logo, connection duration and current EPG programme.
 - Programme progress, reported source resolution, frame rate, average bitrate,
@@ -101,7 +114,7 @@ The card also follows it by default, with English as the fallback for languages
 other than German. In **Edit dashboard > Edit card > Card language**, choose
 **Home Assistant language**, **English** or **Deutsch**. This affects only that
 card, including its confirmations and date/number formatting, and requires no YAML.
-Usernames, channel names and programme titles are displayed as reported by Dispatcharr.
+Usernames, channel names and titles are displayed as reported by each server.
 
 The main HACS description is English. Use **Deutsch** above for the German guide;
 HACS does not provide a separate README language selector.
@@ -114,6 +127,7 @@ Open **Settings > Devices & services > Dispatcharr > instance > Configure**:
 | --- | --- |
 | Controls | Enable controls; off by default |
 | Device aliases | Select an observed device and enter an alias; leave empty to remove it |
+| Media servers | Add, edit or remove optional Jellyfin, Emby and Plex connections |
 | Advanced | Status interval, metadata cache and current-EPG interval, in seconds |
 
 The device page also exposes an **Enable controls** switch. To change the URL
@@ -121,10 +135,14 @@ or key, use the instance's **menu > Reconfigure** action. HA offers a
 reauthentication flow when a key is rejected.
 
 Aliases can be assigned to currently observed devices or previously saved
-aliases. Their identifier combines the reported IP and User-Agent; it is not a
+aliases. Dispatcharr's device identifier combines the reported IP and User-Agent; it is not a
 hardware identity and can be ambiguous behind a shared proxy or after an IP
 change. User accounts are matched only by Dispatcharr's actual `user_id`, never
 by name or list position.
+
+Media-server aliases use the configured source and its actual device ID. Their
+user identities stay scoped to that server; names/IP addresses do not cause
+cross-server merging. See the [media-server guide](docs/media-servers.md).
 
 With controls enabled, **End session** appears on the corresponding viewer row.
 Its confirmation dialog identifies the exact client ID. **Details > Stop channel
@@ -150,17 +168,22 @@ to stopping the whole channel. Some players automatically reconnect as a new ses
   containing "4K" is not a quality measurement.
 - Missing logos and EPG are shown explicitly. Expired programmes disappear.
   Identities, programmes and quality values are not invented.
-- Live TV through the TS proxy is supported. VOD, DVR and playback that bypasses
-  Dispatcharr's proxy are outside this version's scope.
+- Dispatcharr monitoring covers live TV through its TS proxy. Dispatcharr VOD,
+  DVR and playback bypassing that proxy are not reported by this source.
+  Optional media servers independently report their active playback, including
+  movies and episodes; their session count is separate from Dispatcharr clients.
 
 ## Polling and privacy
 
-Each instance uses one shared asynchronous coordinator. Defaults are 10 seconds
+Dispatcharr uses one shared asynchronous coordinator per instance. Defaults are 10 seconds
 for status and 15 minutes for user/provider/profile directories and channel
 metadata. Newly active channels trigger targeted metadata requests. Current
 programmes are loaded every 60 seconds, only for active channel UUIDs. There are
 no recurring EPG calls with no active channels. Failed auxiliary requests retry
 after 60 seconds.
+
+Optional media sources use a separate shared coordinator with concurrent session
+requests and isolated failures. Artwork is fetched lazily and cached separately.
 
 Dispatcharr truncates the overview to ten clients per channel. If the list differs
 from `client_count`, full channel details are requested. A response that remains
@@ -200,13 +223,16 @@ Do not publish API keys, raw account API responses or stream URLs.
 - [Changelog](CHANGELOG.md)
 - [GitHub checks](https://github.com/bttfw/ha-dispatcharr/actions)
 
-60 automated tests passed against HA 2026.9.4, along with hassfest, HACS and code
+84 automated tests passed against HA 2026.9.4, along with hassfest, HACS and code
 checks. Browser tests cover synthetic multi-viewer scenarios, exact-client and
 whole-channel stops, outages, missing data, aliases and visual configuration.
 Production installation through HACS, empty and active live dashboards, actual
 user-ID mapping and reported programme/source fields were also verified.
 The repository owner also confirmed successfully ending one real IPTV client session.
-Automated stop tests use synthetic sessions. See the validation report for the
+Automated stop tests use synthetic sessions. Isolated media-server tests also
+used owned video material and confirmed exact Jellyfin targeting. The tested
+Emby client ignored its stop command; Plex termination was denied and ambiguous
+native IDs disable the action. See the validation report for the
 scope and source of each check; no independent human code review is claimed.
 
 The bundled logo is an original community-integration mark, not an official

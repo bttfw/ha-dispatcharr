@@ -1,4 +1,8 @@
-# Beta validation record — 6 October 2026
+# Media-server validation record — 6 October 2026
+
+These checks were performed on 0.2.0b1. Release 0.2.0 promotes the same runtime
+behavior, updates the version and GUI menu label, and publishes current guides.
+The release workflow runs the same 84 backend tests and card checks again.
 
 Verified versions: Home Assistant **2026.9.4**, Dispatcharr **0.31.0**,
 Jellyfin **12.1.0**, Emby **4.10.1.0**, Plex **1.43.4.10903-e5521bd8c**.
@@ -46,5 +50,5 @@ Jellyfin container used the exact image of the existing installation.
 - Desktop and 390-pixel mobile views rendered the sources without JavaScript
   errors or horizontal overflow.
 
-The [beta guide](beta.md) describes the remaining control limits. No independent
+The [media-server guide](media-servers.md) describes the remaining control limits. No independent
 security audit or agent-performed termination of real IPTV playback is claimed.

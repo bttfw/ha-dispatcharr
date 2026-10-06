@@ -13,8 +13,8 @@ developer documentation and Dispatcharr's documented API and official source.
 No implementation was copied from an existing Dispatcharr integration for
 Home Assistant. The verified contract and source links are in
 [architecture.md](docs/architecture.md).
-The optional media-server beta also uses verified Jellyfin, Emby and Plex APIs;
-see the [beta architecture and limits](docs/beta.md).
+Optional media-server support also uses verified Jellyfin, Emby and Plex APIs;
+see the [media-server architecture and limits](docs/media-servers.md).
 
 ## Verification and limits
 
@@ -35,7 +35,7 @@ them; unsupported or missing information is not invented.
 These checks do not constitute an independent security audit or guarantee that
 the implementation is error-free. No independent human code review is claimed.
 See the [validation report](docs/validation.md) for the tested scope.
-The beta additionally uses isolated media-server containers and owned generated
+The media-server validation additionally used isolated containers and owned generated
 test clips. An exact Jellyfin client stop was verified with two real browser
 players; Emby and Plex control limits are documented separately.
 
