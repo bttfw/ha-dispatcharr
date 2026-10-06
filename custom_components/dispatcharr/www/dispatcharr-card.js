@@ -5,6 +5,7 @@ await customElements.whenDefined("home-assistant");
 
 const messages = {
   de: {
+    mediaSessions: "Medien-Sessions", proxyClients: "Dispatcharr-Clients", partial: "Teilweise verbunden", source: "Server", sourceUserId: "Server-Benutzer-ID", sessionId: "Session-ID", itemId: "Medien-ID", device: "Gerät", method: "Wiedergabeart", output: "Transkodierte Ausgabe", nominalBitrate: "Gemeldete Bitrate", position: "Wiedergabefortschritt", playing: "Wiedergabe", paused: "Pausiert", buffering: "Puffert", noPoster: "Kein Bild", incomplete: "Die Liste enthält nur erreichbare Quellen. Verbindungen werden getrennt gezählt, nicht als eindeutige Personen.", invalid_auth: "Schlüssel abgewiesen", insufficient_permissions: "Berechtigung fehlt", cannot_connect: "Nicht erreichbar", unsupported_api: "API-Antwort unvollständig", mediaConfirm: "Diese Wiedergabe auf diesem Server beenden?",
     title: "Dispatcharr", viewers: "Zuschauer", channels: "Aktive Kanäle", online: "Verbunden", offline: "Verbindung unterbrochen",
     empty: "Niemand schaut gerade", emptyHint: "Neue Verbindungen erscheinen automatisch.", unknown: "Unbekannt", noEpg: "Keine aktuellen EPG-Daten",
     noLogo: "Kein Logo", last: "Zuletzt aktualisiert", details: "Details", provider: "Provider", providerProfile: "Provider-Profil",
@@ -20,6 +21,7 @@ const messages = {
     resolution: "Auflösung", fps: "Bildrate", video: "Video", audio: "Audio", overview: "Zuschauer im Überblick",
   },
   en: {
+    mediaSessions: "Media sessions", proxyClients: "Dispatcharr clients", partial: "Partly connected", source: "Server", sourceUserId: "Server user ID", sessionId: "Session ID", itemId: "Media item ID", device: "Device", method: "Play method", output: "Transcoded output", nominalBitrate: "Reported bitrate", position: "Playback progress", playing: "Playing", paused: "Paused", buffering: "Buffering", noPoster: "No artwork", incomplete: "Only reachable sources are listed. Connections are counted separately, not as unique people.", invalid_auth: "Key rejected", insufficient_permissions: "Permission denied", cannot_connect: "Unreachable", unsupported_api: "Incomplete API response", mediaConfirm: "End this playback on this server?",
     title: "Dispatcharr", viewers: "Viewers", channels: "Active channels", online: "Connected", offline: "Connection lost",
     empty: "Nobody is watching", emptyHint: "New connections appear automatically.", unknown: "Unknown", noEpg: "No current EPG data",
     noLogo: "No logo", last: "Last updated", details: "Details", provider: "Provider", providerProfile: "Provider profile",
@@ -69,6 +71,7 @@ class DispatcharrCard extends HTMLElement {
       details{margin-top:10px;font-size:12px;border-top:1px solid var(--divider-color)}summary{cursor:pointer;color:var(--secondary-text-color);min-height:44px;line-height:44px}dl{display:grid;grid-template-columns:minmax(90px,1fr) minmax(0,1.5fr);gap:9px;margin:0 0 12px}dt{color:var(--secondary-text-color)}dd{margin:0;overflow-wrap:anywhere}
       .empty{grid-column:1/-1;text-align:center;padding:34px 12px;border:1px dashed var(--divider-color);border-radius:16px}.empty ha-icon{--mdc-icon-size:38px;color:var(--primary-color);margin-bottom:14px}.empty strong{display:block;font-weight:550;margin-bottom:8px}.footer{margin-top:16px;font-size:11px;color:var(--secondary-text-color);line-height:1.8}.notice{padding:0 20px 16px;font-size:14px;overflow-wrap:anywhere}.notice:empty{display:none}.notice.error{color:var(--error-color,#db4437)}
       dialog{border:1px solid var(--divider-color);border-radius:16px;color:var(--primary-text-color);background:var(--card-background-color,#fff);padding:24px;max-width:min(440px,calc(100vw - 64px));box-shadow:0 8px 36px #0004}dialog::backdrop{background:#0007}dialog h3{margin-top:0;font-size:18px}dialog p{overflow-wrap:anywhere;line-height:1.5}.dialog-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:20px}
+      .sources{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}.sources .status{border:1px solid var(--divider-color)}.source-label{font-size:10px;letter-spacing:.5px;margin-bottom:8px;color:var(--primary-color);text-transform:uppercase}.poster img{width:100%;height:100%;object-fit:contain}.media-viewer .time{overflow-wrap:anywhere}.stats.multi{grid-template-columns:repeat(3,minmax(0,1fr))}.stats.multi .stat ha-icon{display:none}
       .compact .viewer{padding:12px}.compact .quality{display:none}.compact .programme{margin-top:10px;padding:10px}
       @container(min-width:680px){.list{grid-template-columns:repeat(2,minmax(0,1fr))}}
       @container(max-width:420px){.body{padding:16px}.heading>ha-icon{display:none}.heading h2{font-size:19px}.heading .muted{font-size:11px}.status{font-size:11px;padding:5px 8px}.stat{padding:12px}.viewer{padding:13px}.logo{width:56px;height:56px;flex-basis:56px}.logo img{width:46px;height:46px}}
@@ -93,9 +96,9 @@ class DispatcharrCard extends HTMLElement {
     const previous = this._hass;
     this._hass = hass;
     const id = this._config?.entity;
-    if (!previous || previous.states[id] !== hass.states[id] || previous.language !== hass.language || previous.user !== hass.user) this._render();
+    if (!previous || previous.states[id] !== hass.states[id] || this._mediaState(previous) !== this._mediaState(hass) || previous.language !== hass.language || previous.user !== hass.user) this._render();
   }
-  getCardSize() { return 3 + Math.min(this._state()?.attributes.viewers?.length || 0, 10) * 3; }
+  getCardSize() { return 3 + Math.min((this._state()?.attributes.viewers?.length || 0) + (this._mediaState()?.attributes.sessions?.length || 0), 10) * 3; }
   getGridOptions() { return { columns: 12, min_columns: 6, rows: "auto" }; }
   connectedCallback() { this._timer = window.setInterval(() => this._tick(), 1000); this._render(); }
   disconnectedCallback() {
@@ -104,8 +107,9 @@ class DispatcharrCard extends HTMLElement {
     this._logos.clear();
   }
   _state() { return this._hass?.states[this._config?.entity]; }
+  _mediaState(hass = this._hass) { return Object.values(hass?.states || {}).find(s => s.attributes.viewer_entity_id === this._config?.entity && Array.isArray(s.attributes.media_sources)); }
   _lastSuccess() {
-    const stamp = Object.values(this._hass?.states || {}).find(s => s.attributes.viewer_entity_id === this._config?.entity);
+    const stamp = Object.values(this._hass?.states || {}).find(s => s.attributes.viewer_entity_id === this._config?.entity && !Array.isArray(s.attributes.media_sources));
     return stamp && !["unknown", "unavailable"].includes(stamp.state) ? stamp.state : null;
   }
   _locale() { return language(this._hass, this._config?.language); }
@@ -123,41 +127,69 @@ class DispatcharrCard extends HTMLElement {
     const state = this._state();
     const live = state && !["unavailable", "unknown"].includes(state.state);
     const data = state?.attributes || {};
+    const media = this._mediaState()?.attributes || {};
+    const sources = media.media_sources || [];
+    const sessions = media.sessions || [];
+    const allLive = live && sources.every(s => s.connected);
+    const anyLive = live || sources.some(s => s.connected);
     body.lang = this._locale();
     const header = el("header"), heading = el("div", null, "heading"), headingText = el("div");
     headingText.append(el("h2", this._config.title || this._t("title")), el("span", this._t("overview"), "muted"));
     heading.append(icon("television-play"), headingText); header.append(heading);
-    const status = el("span", null, live ? "status" : "status offline"); status.append(el("i", null, "dot"), el("span", this._t(live ? "online" : "offline"))); header.append(status); body.append(header);
-    if (!state || !live) {
+    const status = el("span", null, allLive ? "status" : "status offline"); status.append(el("i", null, "dot"), el("span", this._t(allLive ? "online" : anyLive ? "partial" : "offline"))); header.append(status); body.append(header);
+    if (sources.length) {
+      const strip = el("div", null, "sources");
+      for (const s of [{ name: "Dispatcharr", connected: live, session_count: live ? state.state : null, last_success: data.last_success || this._lastSuccess() }, ...sources]) {
+        const badge = el("span", null, s.connected ? "status" : "status offline");
+        badge.append(el("i", null, "dot"), el("span", `${s.name}: ${s.connected ? this._value(s.session_count) : this._t(s.error || "offline")}`));
+        badge.title = `${this._t("last")}: ${s.last_success ? new Date(s.last_success).toLocaleString(this._locale()) : this._t("unknown")}`; strip.append(badge);
+      }
+      body.append(strip);
+    }
+    if ((!state || !live) && !sources.length) {
       body.append(el("p", this._t(!this._config.entity ? "configure" : !state ? "gone" : "offline"), "empty"));
       const lastSuccess = data.last_success || this._lastSuccess();
       if (lastSuccess) body.append(el("div", `${this._t("last")}: ${new Date(lastSuccess).toLocaleString(this._locale())}`, "footer"));
       return;
     }
-    const stats = el("div", null, "stats");
-    for (const [key, value] of [["channels", data.active_channels], ["viewers", state.state]]) {
+    const stats = el("div", null, sources.length ? "stats multi" : "stats");
+    const counts = [["channels", live ? data.active_channels : null], [sources.length ? "proxyClients" : "viewers", live ? state.state : null]];
+    if (sources.length) counts.push(["mediaSessions", sources.some(s => s.connected) ? sessions.length : null]);
+    for (const [key, value] of counts) {
       const stat = el("div", null, "stat"); stat.append(icon(key === "channels" ? "television" : "account-multiple-outline"), el("strong", this._value(value)), el("span", this._t(key))); stats.append(stat);
     }
     body.append(stats);
-    const rows = data.viewers || [];
+    const rows = live ? data.viewers || [] : [];
     const list = el("div", null, "list");
-    if (!rows.length) {
+    if (!rows.length && !sessions.length) {
       const empty = el("div", null, "empty"), icon = el("ha-icon"); icon.setAttribute("icon", "mdi:television-off");
-      empty.append(icon, el("strong", this._t("empty")), el("span", this._t("emptyHint"), "muted")); list.append(empty);
+      empty.append(icon, el("strong", this._t(allLive ? "empty" : "offline")), el("span", this._t(allLive ? "emptyHint" : "incomplete"), "muted")); list.append(empty);
     }
     for (const row of rows) list.append(this._viewer(row, data));
+    for (const row of sessions) list.append(this._mediaViewer(row, media));
     body.append(list);
     const footer = el("div", null, "footer");
     if (data.warnings?.length) footer.append(el("div", this._t("metadata")));
+    if (sources.length) footer.append(el("div", this._t("incomplete")));
     if (!data.control_enabled) footer.append(el("div", this._t("disabled")));
     else if (!this._hass.user?.is_admin) footer.append(el("div", this._t("admin")));
-    footer.append(el("div", `${this._t("last")}: ${data.last_success ? new Date(data.last_success).toLocaleTimeString(this._locale()) : this._t("unknown")}`)); body.append(footer);
+    const lastSuccess = data.last_success || this._lastSuccess();
+    footer.append(el("div", `${this._t("last")}: ${lastSuccess ? new Date(lastSuccess).toLocaleTimeString(this._locale()) : this._t("unknown")}`));
+    if (sources.length) {
+      const details = el("details"); details.open = this._details.has("sources"); details.ontoggle = () => details.open ? this._details.add("sources") : this._details.delete("sources"); details.append(el("summary", this._t("source")));
+      const dl = el("dl");
+      for (const source of sources) dl.append(el("dt", source.name), el("dd", `${this._t(source.connected ? "online" : source.error || "offline")} · ${this._t("last")}: ${source.last_success ? new Date(source.last_success).toLocaleString(this._locale()) : this._t("unknown")}`));
+      details.append(dl); footer.append(details);
+    }
+    body.append(footer);
     const needed = new Set(rows.filter(r => r.logo_id).map(r => `${data.entry_id}/${r.logo_id}`));
+    for (const row of sessions) if (row.image_key) needed.add(`${media.entry_id}/media/${row.source_id}/${row.image_key}`);
     for (const [key, value] of this._logos) if (!needed.has(key)) { if (value.url) URL.revokeObjectURL(value.url); this._logos.delete(key); }
     this._tick();
   }
   _viewer(row, data) {
     const node = el("article", null, "viewer");
+    if (this._mediaState()?.attributes.media_sources?.length) node.append(el("div", "Dispatcharr", "source-label"));
     const identity = el("div", null, "identity");
     const logo = el("div", this._t("noLogo"), "logo");
     if (Number.isInteger(row.logo_id) && row.logo_id > 0) this._logo(logo, data.entry_id, row.logo_id);
@@ -202,15 +234,54 @@ class DispatcharrCard extends HTMLElement {
     }
     return node;
   }
-  async _logo(node, entry, id) {
-    const key = `${entry}/${id}`;
+  _mediaViewer(row, data) {
+    const node = el("article", null, "viewer media-viewer");
+    node.append(el("div", `${this._value(row.source_name)} · ${this._value(row.source_type)}`, "source-label"));
+    const identity = el("div", null, "identity"), poster = el("div", this._t("noPoster"), "logo poster"), who = el("div", null, "who");
+    if (row.image_key) this._logo(poster, data.entry_id, row.image_key, row.source_id);
+    const name = el("strong", null, "name"); name.append(icon("account-outline"), el("span", this._value(row.device_alias || row.username || row.device_name)));
+    who.append(name, el("span", this._value(row.title), "channel"));
+    if (row.series_title) who.append(el("div", `${row.series_title}${row.season != null && row.episode != null ? ` · S${row.season} E${row.episode}` : ""}`, "muted"));
+    who.append(el("div", `${this._value(row.device_name)} · ${row.playback_status ? this._t(row.playback_status) : this._t("unknown")}`, "time"));
+    identity.append(poster, who); node.append(identity);
+    const programme = el("div", null, "programme"); programme.append(el("span", this._t("position"), "eyebrow"));
+    if (row.programme && row.programme.end > Date.now() / 1000) {
+      programme.firstElementChild.textContent = this._t("now");
+      programme.append(el("div", this._value(row.programme.title), "programme-title"));
+      const line = el("div", null, "programme-line"), fmt = stamp => new Date(stamp * 1000).toLocaleTimeString(this._locale(), {hour:"2-digit",minute:"2-digit"});
+      line.append(el("span", `${fmt(row.programme.start)} – ${fmt(row.programme.end)}`), el("span"));
+      const progress = el("progress"); progress.max = 100; progress.dataset.start = row.programme.start; progress.dataset.end = row.programme.end; progress.setAttribute("aria-label", this._value(row.programme.title));
+      programme.append(line, progress);
+    } else if (Number.isFinite(row.position_seconds) && Number.isFinite(row.duration_seconds) && row.duration_seconds > 0) {
+      const line = el("div", null, "programme-line"); line.append(el("span"), el("span"));
+      const progress = el("progress"); progress.max = 100; progress.dataset.position = row.position_seconds; progress.dataset.duration = row.duration_seconds; progress.dataset.observed = row.observed_at; progress.dataset.playing = row.playback_status === "playing" ? "1" : "0";
+      progress.setAttribute("aria-label", this._t("position")); programme.append(line, progress);
+    } else programme.append(el("span", this._t("unknown"), "muted"));
+    node.append(programme);
+    const quality = el("div", null, "quality"); quality.append(el("span", this._t("quality"), "eyebrow"));
+    const chips = el("div", null, "chips");
+    for (const value of [row.source_resolution, row.source_fps != null ? `${row.source_fps} fps` : null, row.video_codec, row.audio_codec]) chips.append(el("span", this._value(value), "chip"));
+    quality.append(chips, el("div", `${this._t("nominalBitrate")}: ${row.source_bitrate_kbps != null ? `${(row.source_bitrate_kbps / 1000).toLocaleString(this._locale())} Mbit/s` : this._t("unknown")}`, "bitrate")); node.append(quality);
+    const details = el("details"), key = `${row.source_id}/${row.session_key || row.session_id}`; details.open = this._details.has(key); details.ontoggle = () => details.open ? this._details.add(key) : this._details.delete(key); details.append(el("summary", this._t("details")));
+    const dl = el("dl");
+    for (const [label, value] of [["source", row.source_name], ["sourceUserId", row.user_id], ["sessionId", row.session_id], ["itemId", row.item_id], ["device", row.device_id], ["method", row.play_method], ["output", [row.output_resolution, row.output_fps != null ? `${row.output_fps} fps` : null, row.output_video_codec, row.output_audio_codec, row.output_bitrate_kbps != null ? `${(row.output_bitrate_kbps / 1000).toLocaleString(this._locale())} Mbit/s` : null].filter(Boolean).join(" · ")]]) dl.append(el("dt", this._t(label)), el("dd", this._value(value)));
+    details.append(dl); node.append(details);
+    const source = data.media_sources?.find(s => s.id === row.source_id);
+    if (this._config.show_controls && source?.control_enabled && row.can_stop && this._hass.user?.is_admin) {
+      const actions = el("div", null, "actions"), stop = el("button", this._t("stop"), "session-stop"); stop.disabled = Boolean(this._busy); stop.onclick = () => this._ask(row, data.entry_id, false); actions.append(stop); node.append(actions);
+    }
+    return node;
+  }
+  async _logo(node, entry, id, source) {
+    const key = source ? `${entry}/media/${source}/${id}` : `${entry}/${id}`;
     let cached = this._logos.get(key);
     if (cached && !cached.url && Date.now() - cached.created > 60000) cached = null;
     if (!cached) {
       cached = { created: Date.now() }; this._logos.set(key, cached);
       cached.promise = (async () => {
         try {
-          const response = await this._hass.fetchWithAuth(`/api/dispatcharr/logo/${encodeURIComponent(entry)}/${id}`);
+          const path = source ? `/api/dispatcharr/media_image/${encodeURIComponent(entry)}/${encodeURIComponent(source)}/${encodeURIComponent(id)}` : `/api/dispatcharr/logo/${encodeURIComponent(entry)}/${id}`;
+          const response = await this._hass.fetchWithAuth(path);
           if (!response.ok) return;
           const blob = await response.blob();
           if (!this.isConnected || this._logos.get(key) !== cached) return;
@@ -225,6 +296,13 @@ class DispatcharrCard extends HTMLElement {
     const now = Date.now() / 1000;
     for (const node of this.shadowRoot.querySelectorAll("[data-since]")) node.textContent = duration(now - Number(node.dataset.since));
     for (const progress of this.shadowRoot.querySelectorAll("progress")) {
+      if (progress.dataset.position !== undefined) {
+        const length = Number(progress.dataset.duration), elapsed = progress.dataset.playing === "1" ? Math.max(0, now - Number(progress.dataset.observed)) : 0;
+        const position = Math.min(length, Number(progress.dataset.position) + elapsed);
+        progress.value = position / length * 100;
+        progress.previousElementSibling.firstElementChild.textContent = `${duration(position)} / ${duration(length)}`;
+        progress.previousElementSibling.lastElementChild.textContent = `${Math.floor(progress.value)} %`; continue;
+      }
       const start = Number(progress.dataset.start), end = Number(progress.dataset.end);
       if (now >= end) { progress.closest(".programme").replaceChildren(el("span", this._t("noEpg"), "muted")); continue; }
       progress.value = Math.min(100, Math.max(0, (now - start) / (end - start) * 100));
@@ -234,9 +312,13 @@ class DispatcharrCard extends HTMLElement {
   _ask(row, entry, all) {
     this._pending = { row, entry, all };
     const dialog = this.shadowRoot.querySelector("dialog");
-    dialog.querySelector("h3").textContent = this._t(all ? "allConfirm" : "singleConfirm");
+    dialog.querySelector("h3").textContent = this._t(row.source_id ? "mediaConfirm" : all ? "allConfirm" : "singleConfirm");
     dialog.querySelector(".target").textContent = `${this._value(row.channel_name)} · ${all ? this._t("viewers") : this._value(row.device_alias || row.username || row.device_description)}`;
     dialog.querySelector(".warning").textContent = all ? this._t("allWarning") : `${this._t("clientId")}: ${row.client_id}`;
+    if (row.source_id) {
+      dialog.querySelector(".target").textContent = `${row.source_name} · ${this._value(row.username || row.device_name)} · ${this._value(row.title)}`;
+      dialog.querySelector(".warning").textContent = `${this._t("sessionId")}: ${row.session_id}`;
+    }
     dialog.querySelector(".cancel").textContent = this._t("cancel"); dialog.querySelector(".confirm").textContent = this._t("confirm"); dialog.showModal();
   }
   async _execute() {
@@ -245,9 +327,13 @@ class DispatcharrCard extends HTMLElement {
     this._pending = null; this.shadowRoot.querySelector("dialog").close(); this._busy = true;
     this._notice(this._t("stopping")); this._render();
     try {
-      const data = { config_entry_id: pending.entry, channel_uuid: pending.row.channel_uuid };
-      if (pending.all) data.confirm_all = true; else data.client_id = pending.row.client_id;
-      await this._hass.callService("dispatcharr", pending.all ? "stop_channel" : "stop_session", data);
+      if (pending.row.source_id) {
+        await this._hass.callService("dispatcharr", "stop_media_session", {config_entry_id: pending.entry, source_id: pending.row.source_id, session_id: pending.row.session_id, item_id: pending.row.item_id});
+      } else {
+        const data = { config_entry_id: pending.entry, channel_uuid: pending.row.channel_uuid };
+        if (pending.all) data.confirm_all = true; else data.client_id = pending.row.client_id;
+        await this._hass.callService("dispatcharr", pending.all ? "stop_channel" : "stop_session", data);
+      }
       this._notice(this._t("stopped"));
     } catch (error) { this._notice(error?.message || String(error), true); }
     finally { this._busy = false; this._render(); }

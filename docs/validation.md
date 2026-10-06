@@ -5,6 +5,13 @@
 Verified on 6 October 2026 with **Home Assistant 2026.9.4** and
 **Dispatcharr 0.31.0**. This does not imply compatibility with untested versions.
 
+## 0.2.0 media-server release
+
+**84 backend tests** passed in the official HA 2026.9.4 image on Unraid, plus Ruff
+and the expanded Chromium card suite. See the detailed [media-server validation
+record](beta-validation.md) for real media-server versions, concurrent playback,
+the successful exact Jellyfin stop, and Emby/Plex control limitations.
+
 ## Production verification
 
 ### 0.1.3 resource loading fix
@@ -49,7 +56,7 @@ file hashes, the local brand-image endpoint, English HACS README, German guide
 link and both language choices in the installed visual editor. The existing
 control-switch setting was preserved. No JavaScript errors occurred.
 
-## Automated backend checks
+## Initial 0.1.0 backend checks
 
 **60 tests passed** using actual HA classes from the official
 `ghcr.io/home-assistant/home-assistant:2026.9.4` container with a synthetic API.
@@ -137,8 +144,13 @@ all full-stack stop and outage scenarios listed above.
 
 All public screenshots contain synthetic users, programmes, logos and source
 measurements. They are not real customer or provider data.
+Version 0.2.0 previews show all four source types in the shipped card, rendered
+inside the actual HA frontend with synthetic fixture state and stubbed image and
+service calls. Desktop and mobile layouts are supplied in English and German.
+The source data and an offline preview renderer are in `scripts/render_screenshots.py`.
 
-![English mobile card](screenshots/mobile-en.png)
+![English desktop card](screenshots/desktop-en.png)
+![No active playback](screenshots/empty.png)
 ![Missing metadata](screenshots/missing.png)
 ![Connection loss](screenshots/offline.png)
 

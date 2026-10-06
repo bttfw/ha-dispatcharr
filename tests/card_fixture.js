@@ -26,12 +26,13 @@ window.installDispatcharrFixture = () => {
     card.setConfig(fixture.config);
     card.hass = {
       ...appHass, language: fixture.language, user: { is_admin: true },
-      states: { [entity]: { entity_id: entity, state: fixture.offline ? "unavailable" : String(fixture.attributes.viewers.length), attributes: { ...fixture.attributes } } },
+      states: { [entity]: { entity_id: entity, state: fixture.offline ? "unavailable" : String(fixture.attributes.viewers.length), attributes: { ...fixture.attributes } }, ...(fixture.media ? {"sensor.demo_media": {entity_id:"sensor.demo_media", state:String(fixture.media.sessions.length), attributes:{entry_id:attributes.entry_id,viewer_entity_id:entity,...fixture.media}}} : {}) },
       // These stubs cannot send a stop or logo request to a real server.
-      fetchWithAuth: async () => new Response(await logo, { headers: { "Content-Type": "image/png" } }),
+      fetchWithAuth: async (path) => new Response(await (fixture.images?.[path.split('/').at(-1)] || logo), { headers: { "Content-Type": "image/png" } }),
       callService: async (domain, service, data) => {
         fixture.calls.push({ domain, service, data });
-        fixture.update({ viewers: service === "stop_session" ? fixture.attributes.viewers.filter(r => r.client_id !== data.client_id) : [] });
+        if (service === "stop_media_session") { fixture.media.sessions = fixture.media.sessions.filter(r => r.source_id !== data.source_id || r.session_id !== data.session_id); fixture.update(); }
+        else fixture.update({ viewers: service === "stop_session" ? fixture.attributes.viewers.filter(r => r.client_id !== data.client_id) : [] });
       },
     };
   };

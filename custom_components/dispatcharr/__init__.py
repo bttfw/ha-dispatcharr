@@ -7,6 +7,7 @@ from .api import DispatcharrClient
 from .const import PLATFORMS
 from .coordinator import DispatcharrCoordinator
 from .frontend import async_setup_frontend
+from .media_coordinator import CONF_MEDIA, MediaCoordinator
 from .services import async_setup_services
 
 
@@ -18,7 +19,12 @@ async def async_setup_entry(hass, entry):
         async_get_clientsession(hass), entry.data[CONF_URL], entry.data[CONF_API_KEY]
     )
     coordinator = DispatcharrCoordinator(hass, entry, api)
-    await coordinator.async_config_entry_first_refresh()
+    if entry.options.get(CONF_MEDIA):
+        await coordinator.async_refresh()
+    else:
+        await coordinator.async_config_entry_first_refresh()
+    coordinator.media_coordinator = MediaCoordinator(hass, entry, async_get_clientsession(hass))
+    await coordinator.media_coordinator.async_refresh()
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True

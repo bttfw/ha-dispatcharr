@@ -84,6 +84,43 @@ def main():
             "es => es.map(e => ({x:e.offsetLeft,y:e.offsetTop}))"
         )
         assert boxes[0]["x"] != boxes[1]["x"] and boxes[0]["y"] == boxes[1]["y"]
+        page.evaluate("""() => {
+          cardFixture.media = {
+            media_sources: ['jellyfin','emby','plex'].map(id => ({id,type:id,name:id,connected:true,session_count:1,control_enabled:true})),
+            sessions: ['jellyfin','emby','plex'].map(id => ({source_id:id,source_type:id,source_name:id,session_id:'same-session-id',item_id:'item-one',username:'Same name',title:'Test film',playback_status:'paused',position_seconds:120,duration_seconds:3600,observed_at:Date.now()/1000,can_stop:true,image_key:'demo'}))
+          }; cardFixture.update({}, {language:'en'});
+        }""")
+        expect(card.locator("article.viewer")).to_have_count(5)
+        expect(card.locator(".sources .status")).to_have_count(4)
+        expect(card.get_by_text("Same name", exact=True)).to_have_count(3)
+        expect(card.get_by_text("Media sessions", exact=True)).to_be_visible()
+        expect(card.locator(".media-viewer .logo img")).to_have_count(3)
+        paused = card.locator(".media-viewer progress").first.evaluate("e => e.value")
+        page.evaluate("cardFixture.card._tick()")
+        assert card.locator(".media-viewer progress").first.evaluate("e => e.value") == paused
+        page.evaluate(
+            "cardFixture.offline=true;cardFixture.media.media_sources[1].connected=false;cardFixture.media.media_sources[1].error='invalid_auth';cardFixture.media.sessions=cardFixture.media.sessions.filter(r=>r.source_id!=='emby');cardFixture.update()"
+        )
+        expect(card.locator("article.viewer")).to_have_count(2)
+        expect(card.get_by_text("Partly connected", exact=True)).to_be_visible()
+        expect(card.get_by_text("emby: Key rejected", exact=True)).to_be_visible()
+        card.locator(".media-viewer").first.get_by_role(
+            "button", name="End session", exact=True
+        ).click()
+        expect(card.get_by_role("dialog")).to_contain_text("Session ID: same-session-id")
+        card.get_by_role("button", name="Stop", exact=True).click()
+        expect(card.locator(".media-viewer")).to_have_count(1)
+        call = page.evaluate("cardFixture.calls.at(-1)")
+        assert call["service"] == "stop_media_session"
+        assert call["data"] == {
+            "config_entry_id": "synthetic-only",
+            "source_id": "jellyfin",
+            "session_id": "same-session-id",
+            "item_id": "item-one",
+        }
+        assert "plex" in card.locator(".media-viewer").inner_text().lower()
+        page.set_viewport_size({"width": 390, "height": 1000})
+        assert card.evaluate("e => e.scrollWidth <= e.clientWidth")
         assert not errors, errors
         browser.close()
         print(
