@@ -109,11 +109,10 @@ The card automatically includes media servers configured in step 3. No second
 card installation, extra JavaScript resource or YAML is needed. With no active
 sessions it shows **Nobody is watching**; it does not start playback for a preview.
 
-### Grouped channels (next release)
+### Grouped channels (0.2.1 and later)
 
-This view is included on `main` for the next release; the published **0.2.0**
-release still shows separate client cards. In the new view, each Dispatcharr
-channel appears once, with its logo,
+Update to **0.2.1** in HACS, restart Home Assistant and reload the dashboard.
+Each Dispatcharr channel appears once, with its logo,
 programme and source quality. Its **Connections** list retains every client,
 name or alias and individual connection duration. Two clients on the same channel
 therefore mean **1 active channel, 2 Dispatcharr clients**, including a DVR client.

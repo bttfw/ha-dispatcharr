@@ -32,9 +32,9 @@ Read the [media-server setup and control limits](docs/media-servers.md).
 (AI). Read the [AI transparency notice](AI_TRANSPARENCY.md) for its contribution,
 tests performed and remaining validation limits.
 
-**Preview of the next release:** the screenshots below show the grouped-channel
-card on `main`. Each channel appears once, with separate viewer/DVR connections.
-The published **0.2.0** release still uses separate client cards.
+**New in 0.2.1:** each Dispatcharr channel appears once, with separate viewer/DVR
+connections, individual durations and session controls. The screenshots below
+show this grouped-channel layout.
 
 ![Grouped Dispatcharr channel alongside Jellyfin, Emby and Plex — synthetic demo data](docs/screenshots/desktop-en.png)
 

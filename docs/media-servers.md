@@ -12,15 +12,14 @@ use `beta`. The project name, domain and existing entity IDs remain unchanged.
 
 ![Concurrent sources using synthetic demo data](screenshots/desktop-en.png)
 
-This preview uses the next release's grouped-channel layout on `main`.
-The published 0.2.0 release shows separate Dispatcharr client cards.
+This preview shows the grouped-channel layout included in **0.2.1**.
 
 ## Install and configure without YAML
 
 1. Add this repository to HACS as described in the main README.
-2. Install or update **Dispatcharr** to **v0.2.0** in HACS. When upgrading from
+2. Install or update **Dispatcharr** to **v0.2.1** in HACS. When upgrading from
    0.2.0b1, choose **menu → Redownload → Need a different version? → Release →
-   v0.2.0** if HACS still has the prerelease selected.
+   v0.2.1** if HACS still has the prerelease selected.
 3. Restart Home Assistant and reload the dashboard once.
    For a new installation, first finish **Settings → Devices & services → Add
    integration → Dispatcharr** using the Dispatcharr URL and key.

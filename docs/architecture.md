@@ -97,8 +97,8 @@ does not expose trustworthy device pause/play state. Video fields describe the
 source channel, not guaranteed output quality after per-client transcoding.
 Missing identities, EPG, logos and quality measurements remain unknown.
 
-The card on `main` (not yet released) groups Dispatcharr client rows by the actual
-channel UUID within the selected configuration entry. Channel metadata is rendered once and each
+From 0.2.1, the card groups Dispatcharr client rows by the actual channel UUID
+within the selected configuration entry. Channel metadata is rendered once and each
 client keeps its own identity, duration, output fields and stop action. Missing
 or malformed UUIDs are never grouped together. Media-server sessions remain
 separate; names and titles are not cross-server identity keys. This is a frontend
