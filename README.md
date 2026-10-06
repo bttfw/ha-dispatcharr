@@ -235,6 +235,13 @@ Do not publish API keys, raw account API responses or stream URLs.
 - [Changelog](CHANGELOG.md)
 - [GitHub checks](https://github.com/bttfw/ha-dispatcharr/actions)
 
+Dependabot checks Python test dependencies and versioned GitHub Actions every
+Monday morning (Europe/Berlin), opening update PRs against `beta`. Minor and patch
+Python updates are grouped; major updates remain separate. Security alerts and
+security update PRs are enabled; GitHub directs security fixes to `main`.
+All updates require review and passing checks, with no automatic merge or release.
+See the [configuration](.github/dependabot.yml) for scope and schedule.
+
 84 automated tests passed against HA 2026.9.4, along with hassfest, HACS and code
 checks. Browser tests cover synthetic multi-viewer scenarios, exact-client and
 whole-channel stops, outages, missing data, aliases and visual configuration.
