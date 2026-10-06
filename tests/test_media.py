@@ -249,6 +249,22 @@ async def test_partial_plex_response_and_unclaimed_server_rejected(media_servers
         await state.client.validate()
 
 
+async def test_plex_duplicate_termination_ids_keep_both_rows_without_unsafe_stop(
+    media_hass, media_entry, media_servers
+):
+    state = media_servers.servers["plex"]
+    second = copy.deepcopy(state.rows[0])
+    second["sessionKey"] = "another-playback"
+    state.rows.append(second)
+    rows = await state.client.sessions()
+    assert len(rows) == 2 and all(not row["can_stop"] for row in rows)
+    coordinator = MediaCoordinator(media_hass, media_entry, media_servers.session)
+    with pytest.raises(DispatcharrError, match="media_control_unavailable"):
+        await coordinator.stop("plex", "plex-session-one", "10")
+    assert not any(c[0] == "POST" for c in state.calls)
+    await coordinator.async_shutdown()
+
+
 async def test_missing_metadata_unknown_and_no_logged_in_users_counted(media_servers):
     state = media_servers.servers["jellyfin"]
     state.rows = [
@@ -309,6 +325,7 @@ async def test_stop_exact_one_of_two_sessions_and_refresh(
     second = copy.deepcopy(state.rows[0])
     if kind == "plex":
         second["Session"]["id"] = "session-two"
+        second["sessionKey"] = "second-session-key"
     else:
         second["Id"] = "session-two"
     state.rows.append(second)

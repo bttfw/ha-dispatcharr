@@ -51,7 +51,7 @@ class MediaClient:
             raise InvalidResponse("invalid_session_id")
         return result
 
-    async def request(self, method, path, *, params=None, binary=False):
+    async def request(self, method, path, *, params=None, json_body=None, binary=False):
         if not path.startswith("/") or path.startswith("//") or ".." in path or "?" in path:
             raise InvalidResponse("invalid_path")
         if self.kind == "plex":
@@ -72,6 +72,7 @@ class MediaClient:
                     self.url + path,
                     headers=headers,
                     params=params,
+                    json=json_body,
                     allow_redirects=False,
                     timeout=aiohttp.ClientTimeout(total=10),
                 ) as response,
@@ -163,9 +164,10 @@ class MediaClient:
                 continue
             normalize = normalize_plex_session if self.kind == "plex" else normalize_emby_session
             row, poster = normalize(raw, self.text, self.safe_id)
-            if row["session_id"] in seen:
+            row_id = row.get("session_key", row["session_id"])
+            if row_id in seen:
                 raise InvalidResponse("duplicate_session_id")
-            seen.add(row["session_id"])
+            seen.add(row_id)
             row.update(source_id=self.source_id, source_type=self.kind, source_name=self.name)
             row["image_key"] = None
             if poster:
@@ -175,8 +177,17 @@ class MediaClient:
                 images[image_key] = poster
                 row["image_key"] = image_key
             rows.append(row)
+        if self.kind == "plex":
+            # A live PMS can report different sessionKeys with the same
+            # Session.id. Keep both rows, but never send an ambiguous stop.
+            counts = {}
+            for row in rows:
+                counts[row["session_id"]] = counts.get(row["session_id"], 0) + 1
+            for row in rows:
+                if counts[row["session_id"]] != 1:
+                    row["can_stop"] = False
         self.images = images
-        return sorted(rows, key=lambda row: row["session_id"])
+        return sorted(rows, key=lambda row: row.get("session_key", row["session_id"]))
 
     async def image(self, key):
         if key not in self.images:
@@ -192,4 +203,8 @@ class MediaClient:
                 "/status/sessions/terminate",
                 params={"sessionId": session_id, "reason": "Stopped from Home Assistant"},
             )
-        return await self.request("POST", f"/Sessions/{session_id}/Playing/Stop")
+        return await self.request(
+            "POST",
+            f"/Sessions/{session_id}/Playing/Stop",
+            json_body={"Command": "Stop"} if self.kind == "emby" else None,
+        )

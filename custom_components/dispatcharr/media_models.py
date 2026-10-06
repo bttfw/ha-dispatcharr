@@ -56,7 +56,13 @@ def normalize_emby_session(raw, text, validate):
         if source_id is None and len(sources) == 1
         else {}
     )
-    streams = objects(source.get("MediaStreams") if source else item.get("MediaStreams"))
+    streams = objects(
+        source.get("MediaStreams")
+        if source
+        else []
+        if source_id is not None and sources
+        else item.get("MediaStreams")
+    )
     videos = [s for s in streams if s.get("Type") == "Video"]
     audios = [s for s in streams if s.get("Type") == "Audio"]
     video = videos[0] if len(videos) == 1 else {}
@@ -140,7 +146,8 @@ def normalize_plex_session(raw, text, validate):
     transcode = obj(raw.get("TranscodeSession"))
     row = {
         # The termination API requires Session.id, not sessionKey or Player.id.
-        "session_id": validate(session.get("id")),
+        "session_id": optional_id(session.get("id"), validate),
+        "session_key": validate(raw.get("sessionKey")),
         "item_id": optional_id(raw.get("ratingKey"), validate),
         "user_id": optional_id(user.get("id"), validate),
         "username": text(user.get("title")),
@@ -170,7 +177,7 @@ def normalize_plex_session(raw, text, validate):
         "output_bitrate_kbps": None,
         "output_video_codec": text(transcode.get("videoCodec")),
         "output_audio_codec": text(transcode.get("audioCodec")),
-        "can_stop": bool(raw.get("ratingKey")),
+        "can_stop": bool(raw.get("ratingKey") and session.get("id")),
         "programme": None,
     }
     thumb = raw.get("thumb")

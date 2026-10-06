@@ -248,7 +248,7 @@ class DispatcharrCard extends HTMLElement {
     const chips = el("div", null, "chips");
     for (const value of [row.source_resolution, row.source_fps != null ? `${row.source_fps} fps` : null, row.video_codec, row.audio_codec]) chips.append(el("span", this._value(value), "chip"));
     quality.append(chips, el("div", `${this._t("nominalBitrate")}: ${row.source_bitrate_kbps != null ? `${(row.source_bitrate_kbps / 1000).toLocaleString(this._locale())} Mbit/s` : this._t("unknown")}`, "bitrate")); node.append(quality);
-    const details = el("details"), key = `${row.source_id}/${row.session_id}`; details.open = this._details.has(key); details.ontoggle = () => details.open ? this._details.add(key) : this._details.delete(key); details.append(el("summary", this._t("details")));
+    const details = el("details"), key = `${row.source_id}/${row.session_key || row.session_id}`; details.open = this._details.has(key); details.ontoggle = () => details.open ? this._details.add(key) : this._details.delete(key); details.append(el("summary", this._t("details")));
     const dl = el("dl");
     for (const [label, value] of [["source", row.source_name], ["sourceUserId", row.user_id], ["sessionId", row.session_id], ["itemId", row.item_id], ["device", row.device_id], ["method", row.play_method], ["output", [row.output_resolution, row.output_video_codec, row.output_audio_codec].filter(Boolean).join(" · ")]]) dl.append(el("dt", this._t(label)), el("dd", this._value(value)));
     details.append(dl); node.append(details);

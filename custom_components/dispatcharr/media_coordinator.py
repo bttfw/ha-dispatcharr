@@ -80,9 +80,10 @@ class MediaCoordinator(DataUpdateCoordinator):
             if not self.enabled(source_id):
                 raise DispatcharrError("control_disabled")
             client = self.clients[source_id]
-            current = next(
-                (r for r in await client.sessions() if r["session_id"] == session_id), None
-            )
+            matching = [r for r in await client.sessions() if r["session_id"] == session_id]
+            if len(matching) > 1:
+                raise DispatcharrError("media_control_unavailable")
+            current = matching[0] if matching else None
             # Jellyfin/Emby session IDs can outlive a film. Never stop a new item
             # that appeared after the user opened the confirmation dialog.
             if not current or current["item_id"] != item_id:
