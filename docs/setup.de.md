@@ -104,10 +104,15 @@ Die Installation stellt die Karte bereit; du wählst aus, wo sie erscheinen soll
 5. Im visuellen Editor unter **Zuschauer-Sensor** den Sensor **Zuschauer** deiner
    Dispatcharr-Instanz auswählen (bei englischer Ersteinrichtung gegebenenfalls
    **Viewers**, wie im Bild). Eine bereits passende Vorauswahl beibehalten.
-6. Optional Titel, Kartensprache, kompakte Ansicht und sichtbare Aktionsschaltflächen einstellen.
+6. Unter **Ansicht** Raster, Kompakte Liste oder Logo-Kacheln auswählen. Bei Bedarf
+   Spaltenzahl, Abstände, Qualität/Fortschritt, Titel, Sprache und Aktionsschaltflächen einstellen.
 7. **Speichern** und anschließend **Fertig** wählen.
 
 ![Visueller Karteneditor mit Zuschauer-Sensor und Anzeigeoptionen](screenshots/setup/07-card-editor-de.png)
+
+Das Editor-Bild wurde für **0.3.0** im echten HA-Frontend mit synthetischem Zustand
+erneuert. Die unveränderten Verbindungsformulare zeigen weiterhin 0.2.0.
+Die [Ansichtsanleitung](card-layouts.de.md) zeigt alle drei Layouts auf Desktop und Smartphone.
 
 Die Karte übernimmt die in Schritt 3 hinzugefügten Medienserver automatisch. Eine
 zweite Karteninstallation, zusätzliche JavaScript-Ressource oder YAML ist nicht
@@ -116,7 +121,7 @@ startet für die Vorschau keine Wiedergabe.
 
 ### Gruppierte Sender (ab 0.2.1)
 
-In HACS auf **0.2.1** aktualisieren, Home Assistant neu starten und das Dashboard
+In HACS auf die neueste Version aktualisieren, Home Assistant neu starten und das Dashboard
 neu laden. Jeder Dispatcharr-Sender erscheint einmal mit Logo, Sendung und
 Quellqualität. Darunter stehen alle **Verbindungen** mit Name beziehungsweise
 Alias und eigener Verbindungsdauer. Zwei Clients auf demselben Sender bedeuten

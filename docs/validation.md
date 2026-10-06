@@ -168,17 +168,35 @@ It requires a private test login and a dashboard with two synthetic viewers.
 Never commit the storage-state file. This small smoke test alone does not cover
 all full-stack stop and outage scenarios listed above.
 
+### Selectable layouts (0.3.0)
+
+`tests/card_layouts.py`, called by the Chromium suite, verifies every layout with
+multiple channel UUIDs, duplicate names/IDs across sources, DVR, 15 clients,
+missing metadata, partial outages and exact-client/whole-channel/media actions.
+It checks automatic and explicit column limits at 390, 860 and 1320 pixels,
+overflow, visibility switches, detail persistence, translations and legacy
+configuration compatibility. Service calls remain local synthetic stubs.
+
+The candidate module was also loaded in an isolated browser context against the
+real HA 2026.9.4 frontend. Actual native select menus and switches changed the
+layout, columns, spacing, quality and progress settings successfully; serialized
+configuration restored those selections. This check used synthetic state and
+stubbed actions, made no dashboard/server configuration writes and sent no live
+stop requests. No additional containers were created for this feature.
+
 ## Screenshots
 
 All public screenshots contain synthetic users, programmes, logos and source
 measurements. They are not real customer or provider data.
-The current previews show the grouped-channel card included in 0.2.1,
+The current previews show the selectable card layouts included in 0.3.0,
 rendered inside the actual HA frontend with synthetic fixture state and stubbed
 image and service calls. Desktop and mobile layouts in English and German show
 a viewer and a reported DVR connection on one channel, alongside all three media
 server types. The empty, offline and missing-data previews are refreshed too.
-Setup-form screenshots were captured on 0.2.0 and remain accurate for 0.2.1;
-these forms did not change. The shared source data,
+Setup-form screenshots were captured on 0.2.0; those forms did not change.
+The English/German card-editor screenshots were refreshed for 0.3.0 using native
+HA controls and synthetic entity state. The [layout guide](card-layouts.md) includes
+all three layouts at desktop and phone sizes. The shared source data,
 capture checks and offline renderer are in `scripts/render_screenshots.py`.
 
 ![English desktop card](screenshots/desktop-en.png)

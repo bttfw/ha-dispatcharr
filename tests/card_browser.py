@@ -5,6 +5,7 @@ Requires Playwright + Chromium. No Home Assistant login or server is required.
 
 from pathlib import Path
 
+from card_layouts import check_layouts
 from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -187,10 +188,11 @@ def main():
         assert "plex" in card.locator(".media-viewer").inner_text().lower()
         page.set_viewport_size({"width": 390, "height": 1000})
         assert card.evaluate("e => e.scrollWidth <= e.clientWidth")
+        check_layouts(page, card)
         assert not errors, errors
         browser.close()
         print(
-            "Card browser checks passed: channel UUID grouping, DVR, 15 clients, exact stops, EN/DE, missing data, isolated sources, outage/recovery, mobile and wide layout"
+            "Card browser checks passed: grid/list/tiles, responsive columns, editor persistence, legacy options, channel grouping, DVR, 15 clients, exact stops, EN/DE, missing data, isolated sources and outage/recovery"
         )
 
 

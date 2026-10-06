@@ -5,6 +5,7 @@ await customElements.whenDefined("home-assistant");
 
 const messages = {
   de: {
+    layout: "Ansicht", grid: "Raster", list: "Kompakte Liste", tiles: "Logo-Kacheln", columns: "Maximale Spaltenzahl", automatic: "Automatisch", spacing: "Kompakte Abstände", showQuality: "Quellqualität anzeigen", showProgress: "EPG / Wiedergabefortschritt anzeigen", connectionsDetails: "Verbindungen & Details", layoutHint: "Auf schmalen Karten werden automatisch weniger Spalten angezeigt. Die Liste bleibt einspaltig. Die Gesamtbreite der Karte wird im HA-Dashboard eingestellt.",
     clients: "Verbindungen", oneClient: "Verbindung", dvr: "DVR-Aufnahme", channelDetails: "Senderdetails", clientDetails: "Verbindungsdetails", dvrWarning: "Diese Verbindung gehört laut Dispatcharr zu einer DVR-Aufnahme. Das Beenden kann die Aufnahme unterbrechen.",
     mediaSessions: "Medien-Sessions", proxyClients: "Dispatcharr-Clients", partial: "Teilweise verbunden", source: "Server", sourceUserId: "Server-Benutzer-ID", sessionId: "Session-ID", itemId: "Medien-ID", device: "Gerät", method: "Wiedergabeart", output: "Transkodierte Ausgabe", nominalBitrate: "Gemeldete Bitrate", position: "Wiedergabefortschritt", playing: "Wiedergabe", paused: "Pausiert", buffering: "Puffert", noPoster: "Kein Bild", incomplete: "Die Liste enthält nur erreichbare Quellen. Verbindungen werden getrennt gezählt, nicht als eindeutige Personen.", invalid_auth: "Schlüssel abgewiesen", insufficient_permissions: "Berechtigung fehlt", cannot_connect: "Nicht erreichbar", unsupported_api: "API-Antwort unvollständig", mediaConfirm: "Diese Wiedergabe auf diesem Server beenden?",
     title: "Dispatcharr", viewers: "Zuschauer", channels: "Aktive Kanäle", online: "Verbunden", offline: "Verbindung unterbrochen",
@@ -22,6 +23,7 @@ const messages = {
     resolution: "Auflösung", fps: "Bildrate", video: "Video", audio: "Audio", overview: "Zuschauer im Überblick",
   },
   en: {
+    layout: "Layout", grid: "Grid", list: "Compact list", tiles: "Logo tiles", columns: "Maximum columns", automatic: "Automatic", spacing: "Compact spacing", showQuality: "Show source quality", showProgress: "Show EPG / playback progress", connectionsDetails: "Connections & details", layoutHint: "Narrow cards automatically use fewer columns. The list always uses one column. Set the overall card width in the HA dashboard.",
     clients: "Connections", oneClient: "Connection", dvr: "DVR recording", channelDetails: "Channel details", clientDetails: "Connection details", dvrWarning: "Dispatcharr identifies this connection as a DVR recording. Ending it may interrupt the recording.",
     mediaSessions: "Media sessions", proxyClients: "Dispatcharr clients", partial: "Partly connected", source: "Server", sourceUserId: "Server user ID", sessionId: "Session ID", itemId: "Media item ID", device: "Device", method: "Play method", output: "Transcoded output", nominalBitrate: "Reported bitrate", position: "Playback progress", playing: "Playing", paused: "Paused", buffering: "Buffering", noPoster: "No artwork", incomplete: "Only reachable sources are listed. Connections are counted separately, not as unique people.", invalid_auth: "Key rejected", insufficient_permissions: "Permission denied", cannot_connect: "Unreachable", unsupported_api: "Incomplete API response", mediaConfirm: "End this playback on this server?",
     title: "Dispatcharr", viewers: "Viewers", channels: "Active channels", online: "Connected", offline: "Connection lost",
@@ -67,6 +69,15 @@ const channelGroups = (rows, entry) => {
 // Official v0.31.0 core/utils.py dispatcharr_dvr_user_agent(). This is a
 // reported client type, not proof of a person or a recording's saved state.
 const isDvr = row => /^Dispatcharr-DVR\/recording-[0-9]+$/.test(row.device_description || "");
+const cardConfig = (config = {}) => ({
+  title: "Dispatcharr", show_controls: true, language: "auto", ...config,
+  layout: ["grid", "list", "tiles"].includes(config.layout) ? config.layout : "grid",
+  columns: ["auto", "1", "2", "3"].includes(String(config.columns)) ? String(config.columns) : "auto",
+  compact: config.compact === true,
+  // Old compact cards hid quality. Preserve that until explicitly changed.
+  show_quality: typeof config.show_quality === "boolean" ? config.show_quality : config.compact !== true,
+  show_progress: config.show_progress !== false,
+});
 
 class DispatcharrCard extends HTMLElement {
   constructor() {
@@ -89,10 +100,22 @@ class DispatcharrCard extends HTMLElement {
       .empty{grid-column:1/-1;text-align:center;padding:34px 12px;border:1px dashed var(--divider-color);border-radius:16px}.empty ha-icon{--mdc-icon-size:38px;color:var(--primary-color);margin-bottom:14px}.empty strong{display:block;font-weight:550;margin-bottom:8px}.footer{margin-top:16px;font-size:11px;color:var(--secondary-text-color);line-height:1.8}.notice{padding:0 20px 16px;font-size:14px;overflow-wrap:anywhere}.notice:empty{display:none}.notice.error{color:var(--error-color,#db4437)}
       dialog{border:1px solid var(--divider-color);border-radius:16px;color:var(--primary-text-color);background:var(--card-background-color,#fff);padding:24px;max-width:min(440px,calc(100vw - 64px));box-shadow:0 8px 36px #0004}dialog::backdrop{background:#0007}dialog h3{margin-top:0;font-size:18px}dialog p{overflow-wrap:anywhere;line-height:1.5}.dialog-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:20px}
       .sources{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}.sources .status{border:1px solid var(--divider-color)}.source-label{font-size:10px;letter-spacing:.5px;margin-bottom:8px;color:var(--primary-color);text-transform:uppercase}.poster img{width:100%;height:100%;object-fit:contain}.media-viewer .time{overflow-wrap:anywhere}.stats.multi{grid-template-columns:repeat(3,minmax(0,1fr))}.stats.multi .stat ha-icon{display:none}
-      .compact .viewer{padding:12px}.compact .quality{display:none}.compact .programme{margin-top:10px;padding:10px}
+      .compact .viewer{padding:12px}.compact .programme{margin-top:10px;padding:10px}.compact .list{gap:8px}.compact .clients{gap:6px}.compact .client{padding:8px 10px}
       .channel-card .channel-title{font-size:19px;overflow-wrap:anywhere}.connection-count{display:flex;align-items:center;gap:5px;margin-top:5px;color:var(--secondary-text-color);font-size:12px}.connection-count ha-icon{--mdc-icon-size:17px}
       .clients{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:9px}.client{padding:11px 12px;border:1px solid var(--divider-color);border-radius:11px;min-width:0}.client .name{font-size:14px;flex-wrap:wrap}.client .name>span:first-of-type{overflow-wrap:anywhere;min-width:0}.client .time{font-size:11px}.client .session-stop{margin-top:4px}.client-details{margin-top:4px;border:0}.client-details summary{font-size:11px}.client-details dl{margin-top:3px}.dvr-badge{border-radius:5px;padding:2px 6px;font-size:10px;font-weight:500;background:var(--dispatcharr-tint);color:var(--primary-color)}
-      @container(min-width:680px){.list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      .logo{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}.logo img{min-width:0;min-height:0}
+      .preview-clients{margin:12px 0 0;display:grid;gap:6px;list-style:none;padding:0}.preview-client{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:12px}.preview-name{min-width:0;overflow-wrap:anywhere}.preview-client .time{flex-shrink:0;font-size:11px;margin:0}.layout-details>.clients{margin-top:0}.layout-details>.channel-details{margin-top:12px}
+      .body[data-layout="list"] .viewer{padding:12px}.body[data-layout="list"] .programme{margin-top:10px;padding:10px}.body[data-layout="list"] .channel-title{font-size:17px}.body[data-layout="list"] .quality{margin-top:8px}.body[data-layout="list"] .preview-clients{margin-top:10px}
+      .body[data-layout="tiles"] .identity{display:block;text-align:center}.body[data-layout="tiles"] .logo{width:84px;height:84px;margin:0 auto 12px}.body[data-layout="tiles"] .logo img{width:72px;height:72px}.body[data-layout="tiles"] .poster{height:112px}.body[data-layout="tiles"] .poster img{width:100%;height:100%}.body[data-layout="tiles"] .connection-count,.body[data-layout="tiles"] .name{justify-content:center}.body[data-layout="tiles"] .preview-clients{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 12px}.body[data-layout="tiles"] .preview-client .time{display:none}.body[data-layout="tiles"] .media-viewer .who{display:flex;flex-direction:column}.body[data-layout="tiles"] .media-viewer .channel{order:-1;font-size:17px;font-weight:650;margin-bottom:5px}.body[data-layout="tiles"] .media-viewer .name{font-size:14px}.body[data-layout="tiles"] .chips{justify-content:center}.body[data-layout="tiles"] .quality{text-align:center}
+      @container(min-width:680px){.body:not([data-columns="1"]) .list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      @container(min-width:1000px){.body:is([data-columns="auto"],[data-columns="3"]) .list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+      .body[data-layout="list"] .list{grid-template-columns:1fr}
+      @container(min-width:760px){
+        .body[data-layout="list"] .viewer{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr);grid-template-areas:"source source source" "identity programme preview" "identity quality preview" "details details details";gap:0 18px;align-items:start}
+        .body[data-layout="list"] .source-label{grid-area:source;margin-bottom:8px}.body[data-layout="list"] .identity{grid-area:identity}.body[data-layout="list"] .programme{grid-area:programme;margin:0}.body[data-layout="list"] .quality{grid-area:quality}.body[data-layout="list"] .preview-clients{grid-area:preview;margin:0}.body[data-layout="list"] .layout-details,.body[data-layout="list"] .media-details{grid-area:details}.body[data-layout="list"] .logo{width:48px;height:48px;flex-basis:48px}.body[data-layout="list"] .logo img{width:40px;height:40px}.body[data-layout="list"] .poster img{width:100%;height:100%}
+        .body[data-layout="list"] .media-viewer .quality{grid-area:preview;margin:0}
+      }
+      .body.hide-quality .quality,.body.hide-progress .programme{display:none}
       .list>.viewer:only-child{grid-column:1/-1}
       @container(max-width:420px){.body{padding:16px}.heading>ha-icon{display:none}.heading h2{font-size:19px}.heading .muted{font-size:11px}.status{font-size:11px;padding:5px 8px}.stat{padding:12px}.viewer{padding:13px}.logo{width:56px;height:56px;flex-basis:56px}.logo img{width:46px;height:46px}}
     </style><ha-card><div class="body"></div><div class="notice" role="status" aria-live="polite"></div></ha-card><dialog aria-labelledby="confirm-title"><h3 id="confirm-title"></h3><p class="target"></p><p class="warning"></p><div class="dialog-actions"><button class="cancel"></button><button class="confirm danger"></button></div></dialog>`;
@@ -111,14 +134,14 @@ class DispatcharrCard extends HTMLElement {
     return document.createElement("dispatcharr-card-editor");
   }
   static getStubConfig(hass) { return { entity: candidates(hass)[0]?.entity_id || "", show_controls: true }; }
-  setConfig(config) { this._config = { title: "Dispatcharr", compact: false, show_controls: true, language: "auto", ...config }; this._render(); }
+  setConfig(config) { this._config = cardConfig(config); this._render(); }
   set hass(hass) {
     const previous = this._hass;
     this._hass = hass;
     const id = this._config?.entity;
     if (!previous || previous.states[id] !== hass.states[id] || this._mediaState(previous) !== this._mediaState(hass) || previous.language !== hass.language || previous.user !== hass.user) this._render();
   }
-  getCardSize() { return 3 + Math.min((this._state()?.attributes.viewers?.length || 0) + (this._mediaState()?.attributes.sessions?.length || 0), 10) * 3; }
+  getCardSize() { const height = this.shadowRoot.querySelector("ha-card")?.offsetHeight; return height ? Math.ceil(height / 50) : 3; }
   getGridOptions() { return { columns: 12, min_columns: 6, rows: "auto" }; }
   connectedCallback() { this._timer = window.setInterval(() => this._tick(), 1000); this._render(); }
   disconnectedCallback() {
@@ -143,6 +166,9 @@ class DispatcharrCard extends HTMLElement {
     if (!this._config || !this._hass) return;
     const body = this.shadowRoot.querySelector(".body");
     body.classList.toggle("compact", Boolean(this._config.compact));
+    body.classList.toggle("hide-quality", !this._config.show_quality);
+    body.classList.toggle("hide-progress", !this._config.show_progress);
+    body.dataset.layout = this._config.layout; body.dataset.columns = this._config.columns;
     // Capture the visible state before replacing nodes: native toggle events
     // can still be queued when a coordinator update arrives immediately.
     for (const details of body.querySelectorAll("details[data-details-key]")) {
@@ -248,7 +274,18 @@ class DispatcharrCard extends HTMLElement {
     node.append(programme);
     const clients = el("ul", null, "clients"); clients.setAttribute("aria-label", this._t("clients"));
     for (const client of group.rows) clients.append(this._client(client, data, group));
-    node.append(clients);
+    if (this._config.layout === "grid") node.append(clients);
+    else {
+      const preview = el("ul", null, "preview-clients"); preview.setAttribute("aria-label", this._t("clients"));
+      for (const client of group.rows) {
+        const item = el("li", null, "preview-client");
+        item.append(el("span", `${this._clientName(client)}${isDvr(client) ? " · DVR" : ""}`, "preview-name"));
+        const elapsed = el("span", this._t("unknown"), "time");
+        if (client.connected_at) elapsed.dataset.since = String(client.connected_at);
+        item.append(elapsed); preview.append(item);
+      }
+      node.append(preview);
+    }
     const quality = el("div", null, "quality"), chips = el("div", null, "chips");
     quality.append(el("span", this._t("quality"), "eyebrow"));
     for (const [label, value] of [["resolution", row.source_resolution], ["fps", row.source_fps != null ? `${row.source_fps} fps` : null], ["video", row.video_codec], ["audio", row.audio_codec]]) {
@@ -259,7 +296,12 @@ class DispatcharrCard extends HTMLElement {
     const details = this._expandable(group.key, "channelDetails", "channel-details");
     const dl = el("dl");
     for (const [key, value] of [["provider", row.provider], ["providerProfile", row.provider_profile], ["streamProfile", row.stream_profile], ["proxy", row.proxy_state]]) dl.append(el("dt", this._t(key)), el("dd", this._value(value)));
-    details.append(dl); node.append(details);
+    details.append(dl);
+    if (this._config.layout === "grid") node.append(details);
+    else {
+      const connections = this._expandable(JSON.stringify(["connections", group.key]), "connectionsDetails", "layout-details");
+      connections.append(clients, details); node.append(connections);
+    }
     if (group.known && this._config.show_controls && data.control_enabled && this._hass.user?.is_admin) {
       const all = el("button", this._t("stopAll"), "danger"); all.disabled = Boolean(this._busy); all.onclick = () => this._ask(row, data.entry_id, true); details.append(all);
     }
@@ -313,13 +355,15 @@ class DispatcharrCard extends HTMLElement {
     const chips = el("div", null, "chips");
     for (const value of [row.source_resolution, row.source_fps != null ? `${row.source_fps} fps` : null, row.video_codec, row.audio_codec]) chips.append(el("span", this._value(value), "chip"));
     quality.append(chips, el("div", `${this._t("nominalBitrate")}: ${row.source_bitrate_kbps != null ? `${(row.source_bitrate_kbps / 1000).toLocaleString(this._locale())} Mbit/s` : this._t("unknown")}`, "bitrate")); node.append(quality);
-    const details = el("details"), key = `${row.source_id}/${row.session_key || row.session_id}`; details.open = this._details.has(key); details.ontoggle = () => details.open ? this._details.add(key) : this._details.delete(key); details.append(el("summary", this._t("details")));
+    const key = JSON.stringify(["media", data.entry_id, row.source_id, row.session_key || row.session_id]);
+    const details = this._expandable(key, "details", "media-details");
     const dl = el("dl");
     for (const [label, value] of [["source", row.source_name], ["sourceUserId", row.user_id], ["sessionId", row.session_id], ["itemId", row.item_id], ["device", row.device_id], ["method", row.play_method], ["output", [row.output_resolution, row.output_fps != null ? `${row.output_fps} fps` : null, row.output_video_codec, row.output_audio_codec, row.output_bitrate_kbps != null ? `${(row.output_bitrate_kbps / 1000).toLocaleString(this._locale())} Mbit/s` : null].filter(Boolean).join(" · ")]]) dl.append(el("dt", this._t(label)), el("dd", this._value(value)));
     details.append(dl); node.append(details);
     const source = data.media_sources?.find(s => s.id === row.source_id);
     if (this._config.show_controls && source?.control_enabled && row.can_stop && this._hass.user?.is_admin) {
-      const actions = el("div", null, "actions"), stop = el("button", this._t("stop"), "session-stop"); stop.disabled = Boolean(this._busy); stop.onclick = () => this._ask(row, data.entry_id, false); actions.append(stop); node.append(actions);
+      const actions = el("div", null, "actions"), stop = el("button", this._t("stop"), "session-stop"); stop.disabled = Boolean(this._busy); stop.onclick = () => this._ask(row, data.entry_id, false); actions.append(stop);
+      (this._config.layout === "grid" ? node : details).append(actions);
     }
     return node;
   }
@@ -393,27 +437,32 @@ class DispatcharrCard extends HTMLElement {
 
 class DispatcharrCardEditor extends HTMLElement {
   constructor() { super(); this.attachShadow({ mode: "open" }); }
-  setConfig(config) { this._config = { ...config }; this._render(); }
+  setConfig(config) { this._config = cardConfig(config); this._render(); }
   set hass(hass) { this._hass = hass; this._render(); }
   _render() {
     if (!this._hass || !this._config) return;
     if (!this._form) {
       this._form = document.createElement("ha-form");
       this._form.addEventListener("value-changed", event => {
-        event.stopPropagation(); this._config = { ...this._config, ...event.detail.value };
+        event.stopPropagation(); this._config = cardConfig({ ...this._config, ...event.detail.value }); this._render();
         this.dispatchEvent(new CustomEvent("config-changed", { detail: { config: this._config }, bubbles: true, composed: true }));
       }); this.shadowRoot.append(this._form);
     }
     const m = messages[language(this._hass)];
-    this._form.hass = this._hass; this._form.data = { language: "auto", ...this._config };
+    this._form.hass = this._hass; this._form.data = this._config;
     this._form.schema = [
       { name: "entity", required: true, selector: { select: { options: candidates(this._hass).map(s => ({ value: s.entity_id, label: s.attributes.friendly_name || s.entity_id })), mode: "dropdown" } } },
       { name: "title", selector: { text: {} } },
       { name: "language", selector: { select: { options: [{ value: "auto", label: m.auto }, { value: "en", label: "English" }, { value: "de", label: "Deutsch" }], mode: "dropdown" } } },
+      { name: "layout", selector: { select: { options: ["grid", "list", "tiles"].map(value => ({ value, label: m[value] })), mode: "dropdown" } } },
+      ...(this._config.layout === "list" ? [] : [{ name: "columns", selector: { select: { options: [{ value: "auto", label: m.automatic }, ...["1", "2", "3"].map(value => ({ value, label: value }))], mode: "dropdown" } } }]),
       { name: "compact", selector: { boolean: {} } },
+      { name: "show_quality", selector: { boolean: {} } },
+      { name: "show_progress", selector: { boolean: {} } },
       { name: "show_controls", selector: { boolean: {} } },
     ];
-    this._form.computeLabel = ({ name }) => ({ entity: m.entity, title: m.cardTitle, language: m.language, compact: m.compact, show_controls: m.controls }[name]);
+    this._form.computeLabel = ({ name }) => ({ entity: m.entity, title: m.cardTitle, language: m.language, layout: m.layout, columns: m.columns, compact: m.spacing, show_quality: m.showQuality, show_progress: m.showProgress, show_controls: m.controls }[name]);
+    this._form.computeHelper = ({ name }) => name === "layout" ? m.layoutHint : undefined;
   }
 }
 if (!customElements.get("dispatcharr-card")) customElements.define("dispatcharr-card", DispatcharrCard);

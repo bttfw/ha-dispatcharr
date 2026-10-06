@@ -127,6 +127,30 @@ def capture_previews(page, card, errors):
     capture("missing.png")
 
 
+def capture_layouts(page, card, errors):
+    """Render every selectable layout with the same fictional four-source data."""
+    page.evaluate(DEMO)
+    page.evaluate("cardFixture.card.style.maxWidth='1240px'")
+    for language in ("en", "de"):
+        for layout in ("grid", "list", "tiles"):
+            page.evaluate(
+                """args => cardFixture.update({}, {...args,
+                columns:args.layout==='tiles'?'3':'2',compact:false,
+                show_quality:true,show_progress:true})""",
+                {"language": language, "layout": layout},
+            )
+            expect(card.locator(".channel-card")).to_have_count(1)
+            expect(card.locator(".client")).to_have_count(2)
+            expect(card.locator(".media-viewer")).to_have_count(3)
+            page.wait_for_function("""[...cardFixture.card.shadowRoot.querySelectorAll('img')]
+                .every(image => image.complete && image.naturalWidth > 0)""")
+            for suffix, width in (("", 1320), ("-mobile", 390)):
+                page.set_viewport_size({"width": width, "height": 1400})
+                assert card.evaluate("e => e.scrollWidth <= e.clientWidth")
+                assert not errors, errors
+                card.screenshot(path=str(OUTPUT / f"layout-{layout}{suffix}-{language}.png"))
+
+
 def main():
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -158,10 +182,15 @@ def main():
         page.evaluate("installDispatcharrFixture()")
         page.evaluate(DEMO)
         card = page.locator("dispatcharr-card")
+        capture_layouts(page, card, errors)
+        page.evaluate(
+            "cardFixture.update({}, {layout:'grid',columns:'auto',language:'en'});cardFixture.card.style.maxWidth='960px'"
+        )
+        page.set_viewport_size({"width": 1000, "height": 1400})
         capture_previews(page, card, errors)
         browser.close()
         print(
-            "Rendered 9 screenshots: EN/DE, desktop/mobile, grouped, empty, offline, missing data."
+            "Rendered 21 screenshots: layouts, EN/DE, desktop/mobile, grouped, empty, offline, missing data."
         )
 
 
