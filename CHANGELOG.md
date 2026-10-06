@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.0 — 2026-10-06
+
+- Add Grid, Compact list and Logo tiles to the English/German visual card editor.
+- Configure responsive maximum columns, compact spacing and independent source
+  quality and EPG/playback progress visibility per card, without YAML.
+- Keep grouped channels and exact-session actions in every layout; list/tile
+  details expand without losing their state during updates. Existing cards retain
+  the grid layout and legacy compact cards retain their hidden quality panel.
+- Fit portrait artwork inside its container without clipping.
+- Add layout regression coverage and native HA editor checks. Refresh desktop,
+  phone and editor screenshots and publish illustrated English/German layout guides.
+
 ## 0.2.1 — 2026-10-06
 
 - Refresh English/German desktop and mobile dashboard screenshots for grouped

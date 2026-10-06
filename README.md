@@ -32,9 +32,11 @@ Read the [media-server setup and control limits](docs/media-servers.md).
 (AI). Read the [AI transparency notice](AI_TRANSPARENCY.md) for its contribution,
 tests performed and remaining validation limits.
 
-**New in 0.2.1:** each Dispatcharr channel appears once, with separate viewer/DVR
-connections, individual durations and session controls. The screenshots below
-show this grouped-channel layout.
+**New in 0.3.0:** choose **Grid**, **Compact list** or **Logo tiles** in the visual
+card editor, with responsive columns, spacing and display options. See the
+[three layouts with desktop/mobile screenshots](docs/card-layouts.md).
+Each Dispatcharr channel appears once, with separate viewer/DVR connections,
+individual durations and session controls.
 
 ![Grouped Dispatcharr channel alongside Jellyfin, Emby and Plex — synthetic demo data](docs/screenshots/desktop-en.png)
 
@@ -110,7 +112,8 @@ browser access alone is insufficient. HTTPS certificates are validated.
 1. Open an editable dashboard and choose **Edit dashboard > Add card**.
 2. Switch to **By card**, search for **Dispatcharr**, and select its community card.
 3. In the visual editor, select the instance's **Viewer sensor**.
-4. Optionally adjust the title, **Card language**, compact mode and action-button visibility.
+4. Choose **Layout**, maximum columns, spacing, progress/quality visibility,
+   title, **Card language** and action-button visibility as needed.
 5. Save. If the card is missing from the card picker immediately after initial
    setup, fully reload the browser page.
 
@@ -160,7 +163,8 @@ user identities stay scoped to that server; names/IP addresses do not cause
 cross-server merging. See the [media-server guide](docs/media-servers.md).
 
 With controls enabled, **End session** appears on the corresponding viewer row.
-Its confirmation dialog identifies the exact client ID. **Details > Stop channel
+In list and tile layouts, open **Connections & details** first. Its confirmation
+dialog identifies the exact client ID. **Channel details > Stop channel
 for everyone** is a separate action with an explicit warning affecting all viewers.
 
 Every action checks current channel details first. Expired IDs produce a clear
