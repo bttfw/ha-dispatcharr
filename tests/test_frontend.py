@@ -41,7 +41,10 @@ async def test_concurrent_instances_and_reload_do_not_duplicate(frontend_hass):
     await async_setup_frontend(frontend_hass)
     assert len(frontend_hass.data[LOVELACE_DATA].resources.async_items()) == 1
     frontend_hass.http.async_register_static_paths.assert_awaited_once()
-    frontend_hass.http.register_view.assert_called_once()
+    assert [call.args[0].name for call in frontend_hass.http.register_view.call_args_list] == [
+        "api:dispatcharr:logo",
+        "api:dispatcharr:media_image",
+    ]
 
 
 async def test_version_upgrade_deduplicates_only_our_local_card(frontend_hass):

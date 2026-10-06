@@ -1,3 +1,22 @@
+stop_media_session:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: dispatcharr
+    source_id:
+      required: true
+      selector:
+        text:
+    session_id:
+      required: true
+      selector:
+        text:
+    item_id:
+      required: true
+      selector:
+        text:
 stop_session:
   fields:
     config_entry_id:

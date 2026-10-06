@@ -10,6 +10,7 @@ from homeassistant.util import dt as dt_util
 from .api import DispatcharrError, InvalidAuth
 from .const import CONF_ALIASES, CONF_CONTROL, CONF_EPG, CONF_METADATA, CONF_POLL, DEFAULTS, DOMAIN
 from .data import SessionController, SnapshotLoader
+from .media_coordinator import CONF_MEDIA
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,6 +42,9 @@ class DispatcharrCoordinator(DataUpdateCoordinator):
         try:
             data = await self.loader.snapshot(self.entry.options.get(CONF_ALIASES, {}))
         except InvalidAuth:
+            if self.entry.options.get(CONF_MEDIA):
+                # A rejected Dispatcharr key must not unload healthy media sources.
+                raise UpdateFailed("invalid_auth") from None
             raise ConfigEntryAuthFailed(
                 translation_domain=DOMAIN, translation_key="invalid_auth"
             ) from None

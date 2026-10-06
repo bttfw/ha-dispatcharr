@@ -5,6 +5,13 @@
 Verified on 6 October 2026 with **Home Assistant 2026.9.4** and
 **Dispatcharr 0.31.0**. This does not imply compatibility with untested versions.
 
+## 0.2.0b1 media-server beta
+
+**84 backend tests** passed in the official HA 2026.9.4 image on Unraid, plus Ruff
+and the expanded Chromium card suite. See the detailed [beta validation
+record](beta-validation.md) for real media-server versions, concurrent playback,
+the successful exact Jellyfin stop, and Emby/Plex control limitations.
+
 ## Production verification
 
 ### 0.1.3 resource loading fix

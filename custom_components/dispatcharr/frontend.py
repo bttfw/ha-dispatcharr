@@ -22,6 +22,7 @@ async def async_setup_frontend(hass):
                 [StaticPathConfig("/dispatcharr_static", str(Path(__file__).parent / "www"), False)]
             )
             hass.http.register_view(DispatcharrLogoView(hass))
+            hass.http.register_view(MediaImageView(hass))
             state["frontend"] = True
         await async_register_card_resource(hass)
 
@@ -91,4 +92,45 @@ class DispatcharrLogoView(HomeAssistantView):
             body=cached[1],
             content_type=cached[2],
             headers={"Cache-Control": "private, max-age=3600", "X-Content-Type-Options": "nosniff"},
+        )
+
+
+class MediaImageView(HomeAssistantView):
+    url = "/api/dispatcharr/media_image/{entry_id}/{source_id}/{image_key}"
+    name = "api:dispatcharr:media_image"
+    requires_auth = True
+
+    def __init__(self, hass):
+        self.hass = hass
+
+    async def get(self, request, entry_id, source_id, image_key):
+        entry = self.hass.config_entries.async_get_entry(entry_id)
+        if not entry or entry.domain != DOMAIN or entry.state.value != "loaded":
+            raise web.HTTPNotFound()
+        coordinator = entry.runtime_data.media_coordinator
+        client = coordinator.clients.get(source_id)
+        if not client or image_key not in client.images:
+            raise web.HTTPNotFound()
+        key = (source_id, image_key)
+        async with coordinator.image_lock:
+            cache = coordinator.image_cache
+            for old in list(cache):
+                if monotonic() - cache[old][0] >= 3600:
+                    del cache[old]
+            if key not in cache:
+                try:
+                    body, mime = await client.image(image_key)
+                except DispatcharrError:
+                    raise web.HTTPNotFound() from None
+                if len(cache) >= 64:
+                    del cache[min(cache, key=lambda k: cache[k][0])]
+                cache[key] = (monotonic(), body, mime)
+            cached = cache[key]
+        return web.Response(
+            body=cached[1],
+            content_type=cached[2],
+            headers={
+                "Cache-Control": "private, max-age=3600",
+                "X-Content-Type-Options": "nosniff",
+            },
         )
