@@ -114,11 +114,10 @@ zweite Karteninstallation, zusätzliche JavaScript-Ressource oder YAML ist nicht
 nötig. Ohne aktive Sessions erscheint **Niemand schaut gerade**. Die Integration
 startet für die Vorschau keine Wiedergabe.
 
-### Gruppierte Sender (nächstes Release)
+### Gruppierte Sender (ab 0.2.1)
 
-Diese Ansicht ist auf `main` für das nächste Release enthalten. Das veröffentlichte
-Release **0.2.0** zeigt weiterhin einzelne Client-Karten. In der neuen Ansicht
-erscheint jeder Dispatcharr-Sender einmal mit Logo, Sendung und
+In HACS auf **0.2.1** aktualisieren, Home Assistant neu starten und das Dashboard
+neu laden. Jeder Dispatcharr-Sender erscheint einmal mit Logo, Sendung und
 Quellqualität. Darunter stehen alle **Verbindungen** mit Name beziehungsweise
 Alias und eigener Verbindungsdauer. Zwei Clients auf demselben Sender bedeuten
 also **1 aktiver Kanal, 2 Dispatcharr-Clients**, auch mit einem DVR-Client.

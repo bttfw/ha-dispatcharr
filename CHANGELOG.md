@@ -1,10 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.2.1 — 2026-10-06
 
 - Refresh English/German desktop and mobile dashboard screenshots for grouped
   channels, including viewer/DVR connections and empty, offline and missing-data
-  states. Label this unreleased layout separately from the published 0.2.0 release.
+  states.
 - Group Dispatcharr connections by channel UUID in the dashboard: show the logo,
   current programme and source quality once, with individual client rows below.
 - Identify reported Dispatcharr DVR clients, retain separate connection durations,

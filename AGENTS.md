@@ -51,6 +51,11 @@ instructions when they change the scope or priorities.
 - `main` is the stable release branch. Use focused fix branches for stable defects.
   Use `beta` and feature branches targeting it for new features. Publish beta
   builds as GitHub prereleases; stable promotion requires the owner's request.
+- An owner-approved promotion of user-visible changes to `main` includes a stable
+  release unless the owner explicitly asks to defer publishing. Finish the version
+  bump, changelog, protected PR checks, release package and GitHub release; a merge
+  alone does not make an update available in HACS. Development-only dependency or
+  documentation maintenance does not require a new integration release.
 - Keep `.github/dependabot.yml` on the default branch. Routine dependency updates
   target `beta`; Dependabot security updates target `main`. Review changes and
   require the existing CI checks before merging; do not enable automatic merging.

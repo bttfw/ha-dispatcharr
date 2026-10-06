@@ -172,13 +172,13 @@ all full-stack stop and outage scenarios listed above.
 
 All public screenshots contain synthetic users, programmes, logos and source
 measurements. They are not real customer or provider data.
-The current previews show the next release's grouped-channel card on `main`,
+The current previews show the grouped-channel card included in 0.2.1,
 rendered inside the actual HA frontend with synthetic fixture state and stubbed
 image and service calls. Desktop and mobile layouts in English and German show
 a viewer and a reported DVR connection on one channel, alongside all three media
 server types. The empty, offline and missing-data previews are refreshed too.
-Release 0.2.0 still has the previous client-card layout. Setup-form screenshots
-remain accurate for 0.2.0; these forms did not change. The shared source data,
+Setup-form screenshots were captured on 0.2.0 and remain accurate for 0.2.1;
+these forms did not change. The shared source data,
 capture checks and offline renderer are in `scripts/render_screenshots.py`.
 
 ![English desktop card](screenshots/desktop-en.png)

@@ -32,9 +32,9 @@ dokumentiert. Der Repository-Inhaber hat zusätzlich einen manuellen
 Live-Abbruchtest bestätigt; automatisierte Stopptests verwenden synthetische Daten.
 Details stehen im [Transparenzhinweis](../AI_TRANSPARENCY.md).
 
-**Vorschau auf das nächste Release:** Die folgenden Bilder zeigen die gruppierte
-Karte auf `main`. Jeder Sender erscheint einmal mit einzelnen Zuschauer-/DVR-
-Verbindungen. Das veröffentlichte Release **0.2.0** zeigt noch einzelne Client-Karten.
+**Neu in 0.2.1:** Jeder Dispatcharr-Sender erscheint einmal mit einzelnen
+Zuschauer-/DVR-Verbindungen, eigener Verbindungsdauer und gezielter Session-Steuerung.
+Die folgenden Bilder zeigen diese gruppierte Senderansicht.
 
 ![Gruppierter Dispatcharr-Sender neben Jellyfin, Emby und Plex — synthetische Beispieldaten](screenshots/desktop-de.png)
 
