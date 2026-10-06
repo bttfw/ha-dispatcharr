@@ -246,6 +246,14 @@ Keine API-Keys, Rohantworten der Benutzer-API oder Stream-URLs veröffentlichen.
 - [Changelog](../CHANGELOG.md)
 - [GitHub-Prüfungen](https://github.com/bttfw/ha-dispatcharr/actions)
 
+Dependabot prüft montagmorgens (Europe/Berlin) die Python-Testabhängigkeiten und
+versionierte GitHub Actions und erstellt Update-PRs für `beta`. Minor- und
+Patch-Updates für Python werden gebündelt, größere Versionssprünge separat
+vorgeschlagen. Sicherheitswarnungen und Sicherheits-PRs sind aktiviert;
+Sicherheitskorrekturen richtet GitHub an `main`. Updates werden erst nach Prüfung
+und erfolgreichen Checks übernommen; Merge und Release erfolgen nicht automatisch.
+Umfang und Zeitplan stehen in der [Konfiguration](../.github/dependabot.yml).
+
 Automatische Tests verwenden synthetische API-Daten. Der Repository-Inhaber
 hat am 6. Oktober 2026 das erfolgreiche Beenden einer einzelnen echten IPTV-Session bestätigt.
 Das ist eine Funktionsprüfung durch den Inhaber; eine unabhängige menschliche
