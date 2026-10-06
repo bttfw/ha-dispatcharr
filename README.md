@@ -74,8 +74,9 @@ Jellyfin, Emby and Plex credentials are entered **after** this first setup:
 See the [illustrated walkthrough](docs/setup.md#2-open-configure).
 
 Available as a HACS custom repository. The [default-catalog submission](https://github.com/hacs/default/pull/11610)
-was withdrawn while further improvements are developed. Custom-repository
-installation remains available.
+was reopened on 6 October 2026 for v0.2.0 and is awaiting HACS review. It has not
+yet been accepted into the default catalog; use the custom-repository steps above
+in the meantime. Follow the linked pull request for its status and maintainer feedback.
 The integration includes the card, so a second repository is unnecessary.
 
 For manual installation, extract the release ZIP so that
