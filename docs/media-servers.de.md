@@ -12,12 +12,14 @@ auf `beta`. Name, Integrations-Domain und bestehende Entitäts-IDs bleiben erhal
 
 ![Gemeinsame Quellen mit synthetischen Beispieldaten](screenshots/desktop-de.png)
 
+Diese Vorschau zeigt die gruppierte Senderansicht aus **0.2.1**.
+
 ## Einrichtung über die Oberfläche
 
 1. Das Repository wie in der Hauptanleitung als HACS-Repository hinzufügen.
-2. Dispatcharr in HACS auf **v0.2.0** installieren oder aktualisieren. Falls beim
+2. Dispatcharr in HACS auf **v0.2.1** installieren oder aktualisieren. Falls beim
    Wechsel von 0.2.0b1 noch die Vorabversion ausgewählt ist: **Menü → Erneut
-   herunterladen → Benötigst du eine andere Version? → Release → v0.2.0**.
+   herunterladen → Benötigst du eine andere Version? → Release → v0.2.1**.
 3. Herunterladen, Home Assistant neu starten und das Dashboard einmal neu laden.
    Bei einer neuen Installation zuerst **Einstellungen → Geräte & Dienste →
    Integration hinzufügen → Dispatcharr** mit Dispatcharr-URL und -Key abschließen.

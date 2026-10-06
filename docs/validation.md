@@ -14,7 +14,7 @@ the successful exact Jellyfin stop, and Emby/Plex control limitations.
 
 ## Production verification
 
-### Grouped-channel beta preview
+### Grouped-channel preview and owner acceptance
 
 On 6 October 2026, the new card was loaded through a response override in a
 separate browser context against the real HA 2026.9.4 frontend and the existing
@@ -22,6 +22,16 @@ Dispatcharr 0.31.0 integration. The existing one-channel/two-client case, includ
 one reported DVR client, rendered as one channel block with two individual rows.
 Desktop and mobile checks passed. Installed files, dashboards and playback were
 not changed; no real session was stopped.
+
+After that read-only preview, the owner requested installation of the same card.
+Only the JavaScript file and its existing Lovelace resource version URL were
+updated, with a private backup of the original file and dashboard configuration.
+The installed file's hash matched the tested commit. A fresh browser confirmed
+the served module and layout on desktop and mobile without a response override
+or JavaScript errors. Dashboard configuration, Dispatcharr and Jellyfin settings,
+controls and playback were preserved; HA did not need a restart. The owner then
+approved promotion to `main`. This is layout acceptance, not a new live stop test
+or independent source-code review. No new release was published for this preview.
 
 The isolated Chromium suite covers two and fifteen clients sharing a UUID,
 distinct UUIDs with identical channel names, identical client IDs across different
@@ -158,14 +168,36 @@ It requires a private test login and a dashboard with two synthetic viewers.
 Never commit the storage-state file. This small smoke test alone does not cover
 all full-stack stop and outage scenarios listed above.
 
+### Selectable layouts (0.3.0)
+
+`tests/card_layouts.py`, called by the Chromium suite, verifies every layout with
+multiple channel UUIDs, duplicate names/IDs across sources, DVR, 15 clients,
+missing metadata, partial outages and exact-client/whole-channel/media actions.
+It checks automatic and explicit column limits at 390, 860 and 1320 pixels,
+overflow, visibility switches, detail persistence, translations and legacy
+configuration compatibility. Service calls remain local synthetic stubs.
+
+The candidate module was also loaded in an isolated browser context against the
+real HA 2026.9.4 frontend. Actual native select menus and switches changed the
+layout, columns, spacing, quality and progress settings successfully; serialized
+configuration restored those selections. This check used synthetic state and
+stubbed actions, made no dashboard/server configuration writes and sent no live
+stop requests. No additional containers were created for this feature.
+
 ## Screenshots
 
 All public screenshots contain synthetic users, programmes, logos and source
 measurements. They are not real customer or provider data.
-Version 0.2.0 previews show all four source types in the shipped card, rendered
-inside the actual HA frontend with synthetic fixture state and stubbed image and
-service calls. Desktop and mobile layouts are supplied in English and German.
-The source data and an offline preview renderer are in `scripts/render_screenshots.py`.
+The current previews show the selectable card layouts included in 0.3.0,
+rendered inside the actual HA frontend with synthetic fixture state and stubbed
+image and service calls. Desktop and mobile layouts in English and German show
+a viewer and a reported DVR connection on one channel, alongside all three media
+server types. The empty, offline and missing-data previews are refreshed too.
+Setup-form screenshots were captured on 0.2.0; those forms did not change.
+The English/German card-editor screenshots were refreshed for 0.3.0 using native
+HA controls and synthetic entity state. The [layout guide](card-layouts.md) includes
+all three layouts at desktop and phone sizes. The shared source data,
+capture checks and offline renderer are in `scripts/render_screenshots.py`.
 
 ![English desktop card](screenshots/desktop-en.png)
 ![No active playback](screenshots/empty.png)

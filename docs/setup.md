@@ -6,10 +6,12 @@
 your dashboard.** Jellyfin, Emby and Plex keys go in the integration's options
 after the initial Dispatcharr setup. Everything below works through the GUI.
 
-These are cropped screenshots of Home Assistant **2026.9.4** running integration
+The setup-form screenshots show Home Assistant **2026.9.4** running integration
 **0.2.0** in a disposable test instance. The example server address and playback
 data are synthetic; all credential fields are empty. Use your own server URLs.
 Menu wording and layout can differ with your HA version, language and theme.
+The card-editor screenshot is updated for **0.3.0** in the real HA frontend with
+synthetic state; the unchanged connection forms retain their original captures.
 
 - [Connect Dispatcharr](#1-connect-dispatcharr)
 - [Find the media-server options](#2-open-configure)
@@ -100,18 +102,22 @@ Installing the integration makes the card available; you choose where to place i
 
 5. In the visual editor, select your Dispatcharr instance's **Viewer sensor**
    (the sensor named **Viewers**). If it is already selected correctly, keep it.
-6. Optionally set the title, card language, compact view and visible action buttons.
+6. Choose **Layout** (Grid, Compact list or Logo tiles), maximum columns, spacing,
+   quality/progress visibility, title, card language and action buttons as needed.
 7. Select **Save**, then **Done** to leave dashboard editing.
 
 ![Visual card editor with the viewer sensor and display options](screenshots/setup/07-card-editor-en.png)
+
+See [all three layouts with desktop and phone screenshots](card-layouts.md).
 
 The card automatically includes media servers configured in step 3. No second
 card installation, extra JavaScript resource or YAML is needed. With no active
 sessions it shows **Nobody is watching**; it does not start playback for a preview.
 
-### Grouped channels (beta development)
+### Grouped channels (0.2.1 and later)
 
-On the `beta` branch, each Dispatcharr channel appears once, with its logo,
+Update to the latest release in HACS, restart Home Assistant and reload the dashboard.
+Each Dispatcharr channel appears once, with its logo,
 programme and source quality. Its **Connections** list retains every client,
 name or alias and individual connection duration. Two clients on the same channel
 therefore mean **1 active channel, 2 Dispatcharr clients**, including a DVR client.

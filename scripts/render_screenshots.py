@@ -3,16 +3,21 @@
 Requires Playwright and its Chromium browser. No server, login or IPTV is used.
 """
 
+from datetime import UTC, datetime
 from pathlib import Path
 
 from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs/screenshots"
+DEMO_TIME = datetime(2026, 10, 6, 16, tzinfo=UTC)
 DEMO = r"""async () => {
   const fixture = cardFixture, now = Date.now()/1000;
-  fixture.attributes.viewers = [fixture.attributes.viewers[0]];
-  fixture.attributes.viewers[0].connected_at = now - 1234;
+  fixture.attributes.viewers[0].connected_at = now - 160;
+  Object.assign(fixture.attributes.viewers[1], {
+    username:null, user_id:null, device_description:'Dispatcharr-DVR/recording-31',
+    connected_at:now - 1800
+  });
   fixture.media = {
     media_sources: ['jellyfin','emby','plex'].map(kind => ({
       id:kind,type:kind,name:{jellyfin:'Jellyfin',emby:'Emby',plex:'Plex'}[kind],
@@ -62,6 +67,90 @@ DEMO = r"""async () => {
 }"""
 
 
+def capture_previews(page, card, errors):
+    """Capture only the synthetic card, including in an authenticated HA frontend."""
+    page.evaluate("""() => {
+      const app = document.querySelector('home-assistant');
+      if (app) app.style.display = 'none';
+      Object.assign(document.querySelector('#dispatcharr-fixture').style,
+        {position:'relative',inset:'auto',overflow:'visible'});
+    }""")
+    expect(card.locator("article.viewer")).to_have_count(4)
+    expect(card.locator(".channel-card")).to_have_count(1)
+    expect(card.locator(".client")).to_have_count(2)
+    expect(card.locator(".dvr-badge")).to_have_count(1)
+    expect(card.locator(".logo img")).to_have_count(4)
+    expect(card.locator(".sources .status")).to_have_count(4)
+
+    def capture(name):
+        page.wait_for_function("""() => [...cardFixture.card.shadowRoot.querySelectorAll('img')]
+          .every(image => image.complete && image.naturalWidth > 0)""")
+        assert card.evaluate("e => e.scrollWidth <= e.clientWidth")
+        assert not errors, errors
+        card.screenshot(path=str(OUTPUT / name))
+
+    capture("desktop-en.png")
+    page.set_viewport_size({"width": 390, "height": 2200})
+    capture("mobile-en.png")
+    page.evaluate("cardFixture.update({}, {language:'de'});")
+    expect(card.get_by_text("Medien-Sessions", exact=True)).to_be_visible()
+    capture("mobile.png")
+    page.set_viewport_size({"width": 1000, "height": 1400})
+    capture("desktop-de.png")
+    page.evaluate("""() => {
+      cardFixture.media.sessions=[];
+      cardFixture.media.media_sources=[{id:'jellyfin',type:'jellyfin',name:'Jellyfin',
+        connected:true,session_count:0}];
+      cardFixture.card.style.maxWidth='560px';
+      cardFixture.update({control_enabled:false});
+    }""")
+    expect(card.locator("article.viewer")).to_have_count(1)
+    capture("grouped-channel-de.png")
+    page.evaluate("cardFixture.update({}, {language:'en'});")
+    capture("grouped-channel-en.png")
+    page.set_viewport_size({"width": 390, "height": 1200})
+    page.evaluate("""() => {
+      cardFixture.attributes.viewers=[];
+      cardFixture.update({active_channels:0});
+    }""")
+    expect(card.get_by_text("Nobody is watching", exact=True)).to_be_visible()
+    capture("empty.png")
+    page.evaluate("""() => {
+      cardFixture.media=null;cardFixture.offline=true;cardFixture.update();
+    }""")
+    capture("offline.png")
+    page.evaluate("""() => {
+      cardFixture.offline=false;
+      cardFixture.update({active_channels:1,viewers:[{client_id:'demo-unknown'}],control_enabled:false});
+    }""")
+    expect(card.get_by_text("No current EPG data", exact=True)).to_be_visible()
+    capture("missing.png")
+
+
+def capture_layouts(page, card, errors):
+    """Render every selectable layout with the same fictional four-source data."""
+    page.evaluate(DEMO)
+    page.evaluate("cardFixture.card.style.maxWidth='1240px'")
+    for language in ("en", "de"):
+        for layout in ("grid", "list", "tiles"):
+            page.evaluate(
+                """args => cardFixture.update({}, {...args,
+                columns:args.layout==='tiles'?'3':'2',compact:false,
+                show_quality:true,show_progress:true})""",
+                {"language": language, "layout": layout},
+            )
+            expect(card.locator(".channel-card")).to_have_count(1)
+            expect(card.locator(".client")).to_have_count(2)
+            expect(card.locator(".media-viewer")).to_have_count(3)
+            page.wait_for_function("""[...cardFixture.card.shadowRoot.querySelectorAll('img')]
+                .every(image => image.complete && image.naturalWidth > 0)""")
+            for suffix, width in (("", 1320), ("-mobile", 390)):
+                page.set_viewport_size({"width": width, "height": 1400})
+                assert card.evaluate("e => e.scrollWidth <= e.clientWidth")
+                assert not errors, errors
+                card.screenshot(path=str(OUTPUT / f"layout-{layout}{suffix}-{language}.png"))
+
+
 def main():
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -73,8 +162,8 @@ def main():
         errors = []
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.route("**/*", lambda route: route.abort())
-        page.clock.install(time=1791280800000)
-        page.clock.pause_at(1791280800000)
+        page.clock.install(time=DEMO_TIME)
+        page.clock.pause_at(DEMO_TIME)
         page.set_content("""<style>
           :root{--primary-color:#03a9f4;--primary-text-color:#e8eaed;
           --secondary-text-color:#a1a9b4;--card-background-color:#1c2028;
@@ -93,44 +182,16 @@ def main():
         page.evaluate("installDispatcharrFixture()")
         page.evaluate(DEMO)
         card = page.locator("dispatcharr-card")
-        expect(card.locator("article.viewer")).to_have_count(4)
-        expect(card.locator(".logo img")).to_have_count(4)
-        expect(card.locator(".sources .status")).to_have_count(4)
-
-        def capture(name):
-            assert card.evaluate("e => e.scrollWidth <= e.clientWidth")
-            assert not errors, errors
-            card.screenshot(path=str(OUTPUT / name))
-
-        capture("desktop-en.png")
-        page.set_viewport_size({"width": 390, "height": 2200})
-        capture("mobile-en.png")
-        page.evaluate("cardFixture.update({}, {language:'de'});")
-        expect(card.get_by_text("Medien-Sessions", exact=True)).to_be_visible()
-        capture("mobile.png")
+        capture_layouts(page, card, errors)
+        page.evaluate(
+            "cardFixture.update({}, {layout:'grid',columns:'auto',language:'en'});cardFixture.card.style.maxWidth='960px'"
+        )
         page.set_viewport_size({"width": 1000, "height": 1400})
-        capture("desktop-de.png")
-        page.set_viewport_size({"width": 390, "height": 1200})
-        page.evaluate("""() => {
-          cardFixture.attributes.viewers=[];
-          cardFixture.media.sessions=[];
-          cardFixture.media.media_sources.forEach(s=>s.session_count=0);
-          cardFixture.update({active_channels:0},{language:'en'});
-        }""")
-        expect(card.get_by_text("Nobody is watching", exact=True)).to_be_visible()
-        capture("empty.png")
-        page.evaluate("""() => {
-          cardFixture.media=null;cardFixture.offline=true;cardFixture.update();
-        }""")
-        capture("offline.png")
-        page.evaluate("""() => {
-          cardFixture.offline=false;
-          cardFixture.update({active_channels:1,viewers:[{client_id:'demo-unknown'}],control_enabled:false});
-        }""")
-        expect(card.get_by_text("No current EPG data", exact=True)).to_be_visible()
-        capture("missing.png")
+        capture_previews(page, card, errors)
         browser.close()
-        print("Rendered 7 screenshots: EN/DE, desktop/mobile, empty, offline, missing data.")
+        print(
+            "Rendered 21 screenshots: layouts, EN/DE, desktop/mobile, grouped, empty, offline, missing data."
+        )
 
 
 if __name__ == "__main__":

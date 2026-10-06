@@ -32,7 +32,13 @@ dokumentiert. Der Repository-Inhaber hat zusätzlich einen manuellen
 Live-Abbruchtest bestätigt; automatisierte Stopptests verwenden synthetische Daten.
 Details stehen im [Transparenzhinweis](../AI_TRANSPARENCY.md).
 
-![Dispatcharr, Jellyfin, Emby und Plex gemeinsam — synthetische Beispieldaten](screenshots/desktop-de.png)
+**Neu in 0.3.0:** **Raster**, **Kompakte Liste** und **Logo-Kacheln** lassen sich im
+visuellen Karteneditor auswählen, mit Spaltenzahl, Abständen und Anzeigeoptionen.
+Die [bebilderte Anleitung](card-layouts.de.md) zeigt alle Ansichten auf Desktop
+und Smartphone. Jeder Dispatcharr-Sender erscheint einmal mit einzelnen
+Zuschauer-/DVR-Verbindungen, eigener Verbindungsdauer und gezielter Session-Steuerung.
+
+![Gruppierter Dispatcharr-Sender neben Jellyfin, Emby und Plex — synthetische Beispieldaten](screenshots/desktop-de.png)
 
 Namen, Bilder, Sendungen und Qualitätswerte dieser Vorschau sind frei erfundene
 Beispieldaten. Sie veranschaulichen die Karte und zeigen keinen echten Server.
@@ -123,7 +129,8 @@ ein Browser-Zugriff allein reicht nicht. HTTPS-Zertifikate werden validiert.
 1. Ein bearbeitbares Dashboard öffnen, **Dashboard bearbeiten → Karte hinzufügen**.
 2. Auf **Nach Karte** wechseln, **Dispatcharr** suchen und die Community-Karte auswählen.
 3. Im visuellen Editor den **Zuschauer-Sensor** der gewünschten Instanz auswählen.
-4. Optional Titel, kompakte Ansicht und sichtbare Aktionsschaltflächen einstellen.
+4. Ansicht, maximale Spaltenzahl, Abstände, Qualität/Fortschritt, Titel und
+   sichtbare Aktionsschaltflächen nach Wunsch einstellen.
 5. Speichern. Falls die Karte nach der erstmaligen Einrichtung noch nicht im
    Kartenkatalog erscheint, die Browserseite vollständig neu laden.
 
@@ -165,7 +172,8 @@ führen nicht zu einer Zusammenlegung. Details stehen in der
 
 Bei aktiver Steuerung erscheint **Session beenden** an der betreffenden Zeile.
 Der Dialog nennt die konkrete Client-ID. Die Aktion betrifft nur diese Session.
-Unter **Details → Kanal für alle beenden** befindet sich die getrennte
+In Liste und Kacheln zuerst **Verbindungen & Details** öffnen.
+Unter **Senderdetails → Kanal für alle beenden** befindet sich die getrennte
 Kanalaktion mit ausdrücklicher Bestätigung für alle Zuschauer.
 
 Vor jeder Aktion wird der aktuelle Kanalstatus geprüft. Abgelaufene IDs erzeugen
