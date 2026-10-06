@@ -47,7 +47,8 @@
         "menu_options": {
           "control": "Controls",
           "aliases": "Device aliases",
-          "advanced": "Advanced"
+          "advanced": "Advanced",
+          "media": "Media servers (beta)"
         }
       },
       "control": {
@@ -72,10 +73,64 @@
           "device": "Observed device",
           "alias": "Alias (empty = remove)"
         }
+      },
+      "media": {
+        "title": "Media servers",
+        "menu_options": {
+          "media_add": "Add server",
+          "media_manage": "Edit or remove server"
+        }
+      },
+      "media_add": {
+        "title": "Connect media server",
+        "description": "Credentials stay in the HA backend. Use an administrator API key for Jellyfin/Emby or the owner token of a claimed Plex server. When editing, leave the key empty to keep it. Stop actions also require the global control switch.",
+        "data": {
+          "kind": "Server type",
+          "name": "Display name",
+          "url": "Server URL",
+          "api_key": "API key / Plex owner token",
+          "enable_control": "Allow stop actions on this server"
+        }
+      },
+      "media_edit": {
+        "title": "Connect media server",
+        "description": "Credentials stay in the HA backend. Use an administrator API key for Jellyfin/Emby or the owner token of a claimed Plex server. When editing, leave the key empty to keep it. Stop actions also require the global control switch.",
+        "data": {
+          "kind": "Server type",
+          "name": "Display name",
+          "url": "Server URL",
+          "api_key": "API key / Plex owner token",
+          "enable_control": "Allow stop actions on this server"
+        }
+      },
+      "media_manage": {
+        "title": "Manage server",
+        "data": {
+          "source": "Server",
+          "action": "Action"
+        }
+      },
+      "media_remove": {
+        "title": "Remove server",
+        "description": "Remove {name} from this integration? This does not stop playback or remove the server itself.",
+        "data": {
+          "confirm": "Remove this connection"
+        }
       }
     },
     "abort": {
-      "no_devices": "No devices observed yet. Wait for an existing playback session and reopen this screen."
+      "no_devices": "No devices observed yet. Wait for an existing playback session and reopen this screen.",
+      "no_media_servers": "No media servers configured yet.",
+      "media_limit": "Up to 16 optional servers can be configured per instance."
+    },
+    "error": {
+      "invalid_url": "Enter an HTTP(S) server URL without credentials, query parameters or fragments.",
+      "media_duplicate": "This server is already configured in this instance.",
+      "media_invalid_auth": "The server rejected this API key or token.",
+      "media_permissions": "This credential cannot read the required server and session data. Use an administrator/owner credential.",
+      "media_cannot_connect": "Cannot reach this server. Check its URL, network and certificate.",
+      "media_unsupported_api": "The server returned an unsupported or incomplete API response. Check the selected server type.",
+      "plex_unclaimed": "Link this Plex server to its owner account before adding it. Unclaimed servers cannot validate your token."
     }
   },
   "entity": {
@@ -88,6 +143,9 @@
       },
       "last_success": {
         "name": "Last successful update"
+      },
+      "media_sessions": {
+        "name": "Media sessions"
       }
     },
     "binary_sensor": {
@@ -134,6 +192,24 @@
           "name": "Yes, stop this channel for ALL viewers"
         }
       }
+    },
+    "stop_media_session": {
+      "name": "End one media session",
+      "description": "Stop the exact session on the selected media server. The current item ID must still match.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Integration instance"
+        },
+        "source_id": {
+          "name": "Configured source ID"
+        },
+        "session_id": {
+          "name": "Actual server session ID"
+        },
+        "item_id": {
+          "name": "Current media item ID"
+        }
+      }
     }
   },
   "exceptions": {
@@ -160,6 +236,23 @@
     },
     "action_failed": {
       "message": "The action could not be safely confirmed. Check connectivity and current status."
+    },
+    "media_invalid_auth": {
+      "message": "The server rejected this API key or token."
+    },
+    "media_insufficient_permissions": {
+      "message": "The media server denied this action. Check the token permissions and server features."
+    },
+    "media_control_unavailable": {
+      "message": "This client does not report support for remote stop commands."
+    }
+  },
+  "selector": {
+    "media_action": {
+      "options": {
+        "edit": "Edit",
+        "remove": "Remove"
+      }
     }
   }
 }

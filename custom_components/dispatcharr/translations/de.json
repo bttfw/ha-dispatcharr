@@ -47,7 +47,8 @@
         "menu_options": {
           "control": "Steuerung",
           "aliases": "Geräte-Aliase",
-          "advanced": "Erweitert"
+          "advanced": "Erweitert",
+          "media": "Medienserver (Beta)"
         }
       },
       "control": {
@@ -72,10 +73,64 @@
           "device": "Beobachtetes Gerät",
           "alias": "Alias (leer = entfernen)"
         }
+      },
+      "media": {
+        "title": "Medienserver",
+        "menu_options": {
+          "media_add": "Server hinzufügen",
+          "media_manage": "Server bearbeiten oder entfernen"
+        }
+      },
+      "media_add": {
+        "title": "Medienserver verbinden",
+        "description": "Zugangsdaten bleiben im HA-Backend. Jellyfin/Emby benötigen einen Administrator-API-Key, Plex den Eigentümer-Token eines verknüpften Servers. Beim Bearbeiten das Schlüsselfeld leer lassen, um den bisherigen Schlüssel zu behalten. Zum Beenden muss zusätzlich der globale Steuerungsschalter eingeschaltet sein.",
+        "data": {
+          "kind": "Servertyp",
+          "name": "Anzeigename",
+          "url": "Server-URL",
+          "api_key": "API-Key / Plex-Eigentümer-Token",
+          "enable_control": "Beenden auf diesem Server erlauben"
+        }
+      },
+      "media_edit": {
+        "title": "Medienserver verbinden",
+        "description": "Zugangsdaten bleiben im HA-Backend. Jellyfin/Emby benötigen einen Administrator-API-Key, Plex den Eigentümer-Token eines verknüpften Servers. Beim Bearbeiten das Schlüsselfeld leer lassen, um den bisherigen Schlüssel zu behalten. Zum Beenden muss zusätzlich der globale Steuerungsschalter eingeschaltet sein.",
+        "data": {
+          "kind": "Servertyp",
+          "name": "Anzeigename",
+          "url": "Server-URL",
+          "api_key": "API-Key / Plex-Eigentümer-Token",
+          "enable_control": "Beenden auf diesem Server erlauben"
+        }
+      },
+      "media_manage": {
+        "title": "Server verwalten",
+        "data": {
+          "source": "Server",
+          "action": "Aktion"
+        }
+      },
+      "media_remove": {
+        "title": "Server entfernen",
+        "description": "{name} aus dieser Integration entfernen? Wiedergaben und der Server selbst bleiben bestehen.",
+        "data": {
+          "confirm": "Diese Verbindung entfernen"
+        }
       }
     },
     "abort": {
-      "no_devices": "Noch keine Geräte beobachtet. Eine vorhandene Wiedergabe abwarten und diese Ansicht erneut öffnen."
+      "no_devices": "Noch keine Geräte beobachtet. Eine vorhandene Wiedergabe abwarten und diese Ansicht erneut öffnen.",
+      "no_media_servers": "Noch keine Medienserver eingerichtet.",
+      "media_limit": "Pro Instanz können bis zu 16 optionale Server eingerichtet werden."
+    },
+    "error": {
+      "invalid_url": "Eine HTTP(S)-Server-URL ohne Zugangsdaten, Abfrageparameter oder Fragment eingeben.",
+      "media_duplicate": "Dieser Server ist in dieser Instanz bereits eingerichtet.",
+      "media_invalid_auth": "Der Server hat diesen API-Key oder Token abgewiesen.",
+      "media_permissions": "Mit diesen Zugangsdaten können Server- und Session-Daten nicht gelesen werden. Administrator-/Eigentümer-Zugangsdaten verwenden.",
+      "media_cannot_connect": "Server nicht erreichbar. URL, Netzwerk und Zertifikat prüfen.",
+      "media_unsupported_api": "Der Server hat eine nicht unterstützte oder unvollständige API-Antwort geliefert. Den gewählten Servertyp prüfen.",
+      "plex_unclaimed": "Diesen Plex-Server zuerst mit seinem Eigentümer-Konto verknüpfen. Nicht verknüpfte Server können den Token nicht prüfen."
     }
   },
   "entity": {
@@ -88,6 +143,9 @@
       },
       "last_success": {
         "name": "Letzte erfolgreiche Aktualisierung"
+      },
+      "media_sessions": {
+        "name": "Medien-Sessions"
       }
     },
     "binary_sensor": {
@@ -134,6 +192,24 @@
           "name": "Ja, den Kanal für ALLE Zuschauer beenden"
         }
       }
+    },
+    "stop_media_session": {
+      "name": "Eine Medien-Session beenden",
+      "description": "Genau diese Session auf dem gewählten Medienserver beenden. Die aktuelle Medien-ID muss weiterhin übereinstimmen.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Integrationsinstanz"
+        },
+        "source_id": {
+          "name": "ID der eingerichteten Quelle"
+        },
+        "session_id": {
+          "name": "Tatsächliche Server-Session-ID"
+        },
+        "item_id": {
+          "name": "ID des aktuellen Mediums"
+        }
+      }
     }
   },
   "exceptions": {
@@ -160,6 +236,23 @@
     },
     "action_failed": {
       "message": "Die Aktion konnte nicht sicher bestätigt werden. Verbindung und aktuellen Status prüfen."
+    },
+    "media_invalid_auth": {
+      "message": "Der Server hat diesen API-Key oder Token abgewiesen."
+    },
+    "media_insufficient_permissions": {
+      "message": "Der Medienserver hat die Aktion verweigert. Token-Berechtigungen und Serverfunktionen prüfen."
+    },
+    "media_control_unavailable": {
+      "message": "Dieser Client meldet keine Unterstützung für Fernsteuerungsbefehle zum Beenden."
+    }
+  },
+  "selector": {
+    "media_action": {
+      "options": {
+        "edit": "Bearbeiten",
+        "remove": "Entfernen"
+      }
     }
   }
 }

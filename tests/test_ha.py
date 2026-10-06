@@ -146,7 +146,7 @@ async def test_options_are_gui_menu_with_bounded_advanced_fields(hass, entry, mo
     flow = DispatcharrOptionsFlow()
     flow.hass = hass
     menu = await flow.async_step_init()
-    assert menu["menu_options"] == ["control", "aliases", "advanced"]
+    assert menu["menu_options"] == ["control", "aliases", "media", "advanced"]
     control = await flow.async_step_control()
     assert control["data_schema"]({}) == {"enable_control": False}
     advanced = await flow.async_step_advanced()

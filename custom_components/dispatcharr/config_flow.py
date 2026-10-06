@@ -19,6 +19,7 @@ from .api import (
     normalize_url,
 )
 from .const import CONF_ALIASES, CONF_CONTROL, CONF_EPG, CONF_METADATA, CONF_POLL, DEFAULTS, DOMAIN
+from .media_config import MediaOptionsMixin
 
 
 class DispatcharrConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -88,9 +89,11 @@ class DispatcharrConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return await self._credentials("reauth_confirm", user_input)
 
 
-class DispatcharrOptionsFlow(config_entries.OptionsFlowWithReload):
+class DispatcharrOptionsFlow(MediaOptionsMixin, config_entries.OptionsFlowWithReload):
     async def async_step_init(self, user_input=None):
-        return self.async_show_menu(step_id="init", menu_options=["control", "aliases", "advanced"])
+        return self.async_show_menu(
+            step_id="init", menu_options=["control", "aliases", "media", "advanced"]
+        )
 
     async def async_step_control(self, user_input=None):
         if user_input is not None:
