@@ -12,6 +12,9 @@
 
 **English** | [Deutsch](docs/README.de.md)
 
+**Getting started:** [Setup with screenshots — English](docs/setup.md) ·
+[Einrichtung mit Bildern — Deutsch](docs/setup.de.md)
+
 See who is watching which channel, movie or episode. An independent Dispatcharr
 integration with optional Jellyfin, Emby and Plex servers, GUI setup and one
 bundled dashboard card.
@@ -66,9 +69,14 @@ demo data. They illustrate the card, not a claim about a live server.
 6. Enter the Dispatcharr URL and API key. No username or password is required.
    Use **Add service** to configure another instance.
 
+Jellyfin, Emby and Plex credentials are entered **after** this first setup:
+**Dispatcharr → Configure (gear icon) → Media servers → Add server**.
+See the [illustrated walkthrough](docs/setup.md#2-open-configure).
+
 Available as a HACS custom repository. The [default-catalog submission](https://github.com/hacs/default/pull/11610)
-was withdrawn while further improvements are developed. Custom-repository
-installation remains available.
+was reopened on 6 October 2026 for v0.2.0 and is awaiting HACS review. It has not
+yet been accepted into the default catalog; use the custom-repository steps above
+in the meantime. Follow the linked pull request for its status and maintainer feedback.
 The integration includes the card, so a second repository is unnecessary.
 
 For manual installation, extract the release ZIP so that
@@ -96,7 +104,7 @@ browser access alone is insufficient. HTTPS certificates are validated.
 ## Dashboard without YAML
 
 1. Open an editable dashboard and choose **Edit dashboard > Add card**.
-2. Select **Dispatcharr**.
+2. Switch to **By card**, search for **Dispatcharr**, and select its community card.
 3. In the visual editor, select the instance's **Viewer sensor**.
 4. Optionally adjust the title, **Card language**, compact mode and action-button visibility.
 5. Save. If the card is missing from the card picker immediately after initial
@@ -106,6 +114,9 @@ The integration registers and updates its dashboard resource automatically. Ther
 is no manual JavaScript resource configuration. After installation or an update,
 reload an already open browser/app view once. Summary sensors and the control switch also
 work with standard HA cards such as Tile and Entities.
+
+The [dashboard walkthrough with screenshots](docs/setup.md#4-add-the-dashboard-card)
+shows the **By card** tab and the visual editor.
 
 ## Choose a language
 
@@ -208,7 +219,8 @@ actions. There is no additional per-viewer visibility policy.
 | Missing permissions | Dispatcharr admin rights and network permissions |
 | Connection lost | Reachability from HA, URL, reverse proxy and TLS |
 | Unknown metadata | Channel mappings in Dispatcharr; auxiliary requests will retry |
-| No logo | Logo configuration and a supported raster format |
+| No channel logo in the card | Logo configuration in Dispatcharr and a supported raster format |
+| HACS shows "icon not available" | [Known HACS 2.0.5 branding issue](docs/setup.md#why-is-the-logo-missing-in-hacs); reinstalling this integration does not fix it |
 | Stop not confirmed | Actual session status; the player may have reconnected |
 
 Download diagnostics from the integration and open an
@@ -222,6 +234,13 @@ Do not publish API keys, raw account API responses or stream URLs.
 - [AI transparency notice](AI_TRANSPARENCY.md)
 - [Changelog](CHANGELOG.md)
 - [GitHub checks](https://github.com/bttfw/ha-dispatcharr/actions)
+
+Dependabot checks Python test dependencies and versioned GitHub Actions every
+Monday morning (Europe/Berlin), opening update PRs against `beta`. Minor and patch
+Python updates are grouped; major updates remain separate. Security alerts and
+security update PRs are enabled; GitHub directs security fixes to `main`.
+All updates require review and passing checks, with no automatic merge or release.
+See the [configuration](.github/dependabot.yml) for scope and schedule.
 
 84 automated tests passed against HA 2026.9.4, along with hassfest, HACS and code
 checks. Browser tests cover synthetic multi-viewer scenarios, exact-client and

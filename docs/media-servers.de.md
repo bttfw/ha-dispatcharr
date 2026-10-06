@@ -2,6 +2,10 @@
 
 [English](media-servers.md) · [Testnachweise](validation.md)
 
+**Wo kommen die API-Keys hin?** Die [Anleitung mit Bildern](setup.de.md) zeigt es.
+Zuerst Dispatcharr verbinden, danach **Konfigurieren (Zahnrad) → Medienserver →
+Server hinzufügen** öffnen. Dort werden Jellyfin-, Emby- und Plex-Keys eingetragen.
+
 **0.2.0** enthält Jellyfin, Emby und Plex als optionale Quellen in der bestehenden
 Dispatcharr-Karte. Reguläre Releases liegen auf `main`, künftige Vorabversionen
 auf `beta`. Name, Integrations-Domain und bestehende Entitäts-IDs bleiben erhalten.
@@ -15,6 +19,8 @@ auf `beta`. Name, Integrations-Domain und bestehende Entitäts-IDs bleiben erhal
    Wechsel von 0.2.0b1 noch die Vorabversion ausgewählt ist: **Menü → Erneut
    herunterladen → Benötigst du eine andere Version? → Release → v0.2.0**.
 3. Herunterladen, Home Assistant neu starten und das Dashboard einmal neu laden.
+   Bei einer neuen Installation zuerst **Einstellungen → Geräte & Dienste →
+   Integration hinzufügen → Dispatcharr** mit Dispatcharr-URL und -Key abschließen.
 4. **Einstellungen → Geräte & Dienste → Dispatcharr → Konfigurieren →
    Medienserver → Server hinzufügen** öffnen.
 5. Servertyp, URL und API-Key/Token angeben. Der Anzeigename ist optional.

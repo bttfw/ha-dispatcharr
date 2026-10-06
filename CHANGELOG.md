@@ -1,5 +1,24 @@
 # Changelog
 
+## Unreleased
+
+- Group Dispatcharr connections by channel UUID in the dashboard: show the logo,
+  current programme and source quality once, with individual client rows below.
+- Identify reported Dispatcharr DVR clients, retain separate connection durations,
+  output profiles and exact-client actions, and warn that channel stops include DVR.
+- Preserve expanded connection details across status updates. Keep separate
+  channels with identical names and unrelated media-server sessions distinct.
+- Update test tooling to pytest 9.1.1, pytest-asyncio 1.4.0,
+  pytest-aiohttp 1.1.1 and Ruff 0.16.10, and use actions/checkout v7 in CI.
+- Address GHSA-6w46-j5rx-g56g (CVE-2025-71176) in the pytest development
+  dependency. These test packages are not installed by the integration in HA.
+- Add weekly Dependabot version-update PRs targeting `beta`, plus security alerts
+  and security-update PRs targeting `main`. Updates still require review and checks.
+- Add English and German setup walkthroughs with native Home Assistant screenshots:
+  initial Dispatcharr connection, optional media-server credentials and dashboard card.
+- Explain the Configure gear, the card picker's By card tab, frontend reloads after
+  initial setup, and the separate HACS 2.0.5 missing-brand-icon issue.
+
 ## 0.2.0 — 2026-10-06
 
 - Release concurrent Dispatcharr, Jellyfin, Emby and Plex monitoring on `main`.

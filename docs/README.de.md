@@ -11,6 +11,9 @@ Siehe [Medienserver-Einrichtung und bekannte Grenzen](media-servers.de.md).
 
 [English](../README.md) | **Deutsch**
 
+**Schritt für Schritt mit Bildern:** [Deutsche Anleitung](setup.de.md) ·
+[English guide](setup.md)
+
 <img src="../custom_components/dispatcharr/brand/icon.png" width="96" alt="Dispatcharr-Projektlogo">
 
 Wer schaut gerade welchen Sender, Film oder welche Folge? Eine eigenständige
@@ -79,9 +82,16 @@ dieser Anleitung; HACS bietet keine eigene Sprachauswahl für die README.
 6. Dispatcharr-URL und API-Key eingeben. Benutzername und Passwort werden nicht
    verlangt. Für eine zweite Instanz „Dienst hinzufügen“ verwenden.
 
+Die Keys für Jellyfin, Emby und Plex kommen **nach** dieser ersten Einrichtung
+unter **Dispatcharr → Konfigurieren (Zahnrad) → Medienserver → Server hinzufügen**
+hinein. Die [bebilderte Anleitung](setup.de.md#2-konfigurieren-öffnen) zeigt den Weg.
+
 Als benutzerdefiniertes HACS-Repository installierbar. Der
 [Aufnahmeantrag für den Standardkatalog](https://github.com/hacs/default/pull/11610)
-wurde vorerst zurückgezogen, während weitere Verbesserungen entwickelt werden.
+wurde am 6. Oktober 2026 für v0.2.0 wieder geöffnet und wartet auf die HACS-Prüfung.
+Die Aufnahme ist noch nicht bestätigt; bis dahin die obigen Schritte für ein
+benutzerdefiniertes Repository verwenden. Status und Rückfragen stehen im verlinkten
+Pull Request.
 Die Karte wird von der Integration mitgeladen, ohne zweites Repository.
 
 Künftige Updates brauchen keinen neuen Aufnahmeantrag. Neue GitHub-Releases
@@ -111,7 +121,7 @@ ein Browser-Zugriff allein reicht nicht. HTTPS-Zertifikate werden validiert.
 ## Dashboard ohne YAML
 
 1. Ein bearbeitbares Dashboard öffnen, **Dashboard bearbeiten → Karte hinzufügen**.
-2. Die Karte **Dispatcharr** auswählen.
+2. Auf **Nach Karte** wechseln, **Dispatcharr** suchen und die Community-Karte auswählen.
 3. Im visuellen Editor den **Zuschauer-Sensor** der gewünschten Instanz auswählen.
 4. Optional Titel, kompakte Ansicht und sichtbare Aktionsschaltflächen einstellen.
 5. Speichern. Falls die Karte nach der erstmaligen Einrichtung noch nicht im
@@ -123,6 +133,9 @@ Nach Installation oder Update eine bereits geöffnete Browser-/App-Ansicht einma
 neu laden. Die normalen Sensoren und der
 Konfigurationsschalter lassen sich zusätzlich über HA-Standardkarten wie
 „Kachel“ oder „Entitäten“ auswählen.
+
+Die [Dashboard-Anleitung mit Bildern](setup.de.md#4-dashboard-karte-hinzufügen)
+zeigt die Registerkarte **Nach Karte** und den visuellen Editor.
 
 ## Konfigurieren und bedienen
 
@@ -218,7 +231,8 @@ Stoppaktionen auslösen. Keine zusätzliche individuelle Sichtbarkeitsverwaltung
 | Fehlende Berechtigungen | Dispatcharr-Admin und Netzwerkfreigaben prüfen |
 | Verbindung unterbrochen | Erreichbarkeit aus HA, URL, Reverse Proxy und TLS prüfen |
 | Unbekannte Metadaten | Dispatcharr-Zuordnung prüfen; Zusatzdaten werden erneut geladen |
-| Kein Logo | Logo in Dispatcharr und unterstütztes Rasterformat prüfen |
+| Kein Senderlogo in der Karte | Logo in Dispatcharr und unterstütztes Rasterformat prüfen |
+| HACS zeigt „icon not available“ | [Bekannter HACS-2.0.5-Anzeigefehler](setup.de.md#warum-fehlt-das-logo-in-hacs); Neuinstallation dieser Integration hilft hier nicht |
 | Stopp nicht bestätigt | Tatsächlichen Status prüfen; der Player kann erneut verbinden |
 
 Bei Problemen über die Integration **Diagnosedaten herunterladen** und ein
@@ -231,6 +245,14 @@ Keine API-Keys, Rohantworten der Benutzer-API oder Stream-URLs veröffentlichen.
 - [Test- und Live-Prüfbericht](validation.md)
 - [Changelog](../CHANGELOG.md)
 - [GitHub-Prüfungen](https://github.com/bttfw/ha-dispatcharr/actions)
+
+Dependabot prüft montagmorgens (Europe/Berlin) die Python-Testabhängigkeiten und
+versionierte GitHub Actions und erstellt Update-PRs für `beta`. Minor- und
+Patch-Updates für Python werden gebündelt, größere Versionssprünge separat
+vorgeschlagen. Sicherheitswarnungen und Sicherheits-PRs sind aktiviert;
+Sicherheitskorrekturen richtet GitHub an `main`. Updates werden erst nach Prüfung
+und erfolgreichen Checks übernommen; Merge und Release erfolgen nicht automatisch.
+Umfang und Zeitplan stehen in der [Konfiguration](../.github/dependabot.yml).
 
 Automatische Tests verwenden synthetische API-Daten. Der Repository-Inhaber
 hat am 6. Oktober 2026 das erfolgreiche Beenden einer einzelnen echten IPTV-Session bestätigt.
