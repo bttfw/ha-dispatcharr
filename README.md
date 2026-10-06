@@ -50,7 +50,8 @@ tests performed and remaining validation limits.
    Use **Add service** to configure another instance.
 
 Available as a HACS custom repository. The [default-catalog submission](https://github.com/hacs/default/pull/11610)
-is in the review queue and has not been accepted yet.
+was withdrawn while further improvements are developed. Custom-repository
+installation remains available.
 The integration includes the card, so a second repository is unnecessary.
 
 For manual installation, extract the release ZIP so that
@@ -84,8 +85,9 @@ browser access alone is insufficient. HTTPS certificates are validated.
 5. Save. If the card is missing from the card picker immediately after initial
    setup, fully reload the browser page.
 
-The integration registers its frontend module automatically. There is no manual
-JavaScript resource configuration. Summary sensors and the control switch also
+The integration registers and updates its dashboard resource automatically. There
+is no manual JavaScript resource configuration. After installation or an update,
+reload an already open browser/app view once. Summary sensors and the control switch also
 work with standard HA cards such as Tile and Entities.
 
 ## Choose a language

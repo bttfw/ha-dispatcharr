@@ -22,9 +22,9 @@ renders the PNGs. The mark is covered by this project's MIT license and identifi
 the independent community integration.
 
 Submission status: [PR #11610](https://github.com/hacs/default/pull/11610) was
-submitted on 6 October 2026. The HACS bot confirmed that it is in the review queue.
-No catalog acceptance is claimed. The English PR discloses AI development and
-links the successful validation runs and release. Only HACS maintainers can accept it.
+closed and withdrawn at the repository owner's request on 6 October 2026, before
+acceptance, while further improvements are developed. It is not currently pending
+review. Installation and updates through the HACS custom repository remain available.
 
 Follow the PR's **Conversation** and **Checks** tabs, or use **Subscribe** for
 GitHub notifications. `Open` means pending; `Merged` means accepted. Inclusion
