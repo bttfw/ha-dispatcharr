@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 — 2026-10-06
 
 - Add Grid, Compact list and Logo tiles to the English/German visual card editor.
 - Configure responsive maximum columns, compact spacing and independent source

@@ -184,6 +184,11 @@ configuration restored those selections. This check used synthetic state and
 stubbed actions, made no dashboard/server configuration writes and sent no live
 stop requests. No additional containers were created for this feature.
 
+Before stable promotion, [beta PR #22](https://github.com/bttfw/ha-dispatcharr/pull/22)
+passed 84 backend tests (one upstream warning), the expanded Chromium suite,
+Ruff, hassfest and HACS validation. Native editor checks were repeated against
+the merged beta card without production writes or live session actions.
+
 ## Screenshots
 
 All public screenshots contain synthetic users, programmes, logos and source
