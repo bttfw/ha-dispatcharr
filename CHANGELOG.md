@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Add English and German setup walkthroughs with native Home Assistant screenshots:
+  initial Dispatcharr connection, optional media-server credentials and dashboard card.
+- Explain the Configure gear, the card picker's By card tab, frontend reloads after
+  initial setup, and the separate HACS 2.0.5 missing-brand-icon issue.
+
 ## 0.2.0 — 2026-10-06
 
 - Release concurrent Dispatcharr, Jellyfin, Emby and Plex monitoring on `main`.
