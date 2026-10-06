@@ -7,6 +7,20 @@ Verified on 6 October 2026 with **Home Assistant 2026.9.4** and
 
 ## Production verification
 
+### 0.1.3 resource loading fix
+
+The owner's existing Brave session showed `Custom element doesn't exist:
+dispatcharr-card`, with no card registration or resource request. Fresh Chromium
+sessions worked on both the local and HTTPS addresses. Adding the versioned module
+to Lovelace resources and performing a normal reload repaired that same Brave
+session; the owner separately confirmed recovery in the companion app. No viewing
+session was stopped. The integration now performs this registration automatically.
+
+The backend suite passed **65 tests** in the official HA 2026.9.4 image on Unraid.
+New tests use HA's real resource collection for initial registration, concurrent
+instances, reload, persisted-resource upgrade, duplicate removal, preservation of
+unrelated URLs and YAML mode. Ruff and the bilingual Chromium card suite passed.
+
 The installed versions, API permissions and HACS were checked in the actual
 environment. A valid API key was accepted and an intentionally invalid key was
 rejected with HTTP 401. Status, actual user IDs, targeted channel metadata,

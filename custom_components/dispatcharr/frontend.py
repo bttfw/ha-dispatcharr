@@ -7,6 +7,8 @@ from time import monotonic
 from aiohttp import web
 from homeassistant.components import frontend
 from homeassistant.components.http import HomeAssistantView, StaticPathConfig
+from homeassistant.components.lovelace.const import LOVELACE_DATA
+from homeassistant.components.lovelace.resources import ResourceStorageCollection
 
 from .api import DispatcharrError
 from .const import CARD_URL, DOMAIN
@@ -15,14 +17,34 @@ from .const import CARD_URL, DOMAIN
 async def async_setup_frontend(hass):
     state = hass.data.setdefault(DOMAIN, {})
     async with state.setdefault("frontend_lock", asyncio.Lock()):
-        if state.get("frontend"):
-            return
-        await hass.http.async_register_static_paths(
-            [StaticPathConfig("/dispatcharr_static", str(Path(__file__).parent / "www"), False)]
-        )
-        hass.http.register_view(DispatcharrLogoView(hass))
+        if not state.get("frontend"):
+            await hass.http.async_register_static_paths(
+                [StaticPathConfig("/dispatcharr_static", str(Path(__file__).parent / "www"), False)]
+            )
+            hass.http.register_view(DispatcharrLogoView(hass))
+            state["frontend"] = True
+        await async_register_card_resource(hass)
+
+
+async def async_register_card_resource(hass):
+    """Load the card through Lovelace even when the app shell is cached."""
+    resources = hass.data[LOVELACE_DATA].resources
+    if not isinstance(resources, ResourceStorageCollection):
+        # YAML-owned resource collections must not be edited by the integration.
         frontend.add_extra_js_url(hass, CARD_URL)
-        state["frontend"] = True
+        return
+    # Public helper also loads the collection before we inspect existing items.
+    await resources.async_get_info()
+    path = CARD_URL.partition("?")[0]
+    existing = [r for r in resources.async_items() if r["url"].partition("?")[0] == path]
+    if not existing:
+        await resources.async_create_item({"url": CARD_URL, "res_type": "module"})
+        return
+    first, *duplicates = existing
+    if first["url"] != CARD_URL or first["type"] != "module":
+        await resources.async_update_item(first["id"], {"url": CARD_URL, "res_type": "module"})
+    for duplicate in duplicates:
+        await resources.async_delete_item(duplicate["id"])
 
 
 class DispatcharrLogoView(HomeAssistantView):

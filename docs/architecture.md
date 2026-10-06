@@ -61,6 +61,12 @@ array of viewers with per-row images, programme progress, and ID-bound actions.
 Therefore a bundled custom card provides that list with a visual editor; native
 entities remain usable in standard cards. No external custom cards are required.
 
+The bundled card is automatically registered in HA's Lovelace resource collection.
+Its versioned module URL is updated in place, and duplicates for this exact local
+card path are removed. Other resources are preserved. This avoids depending on a
+previously cached app shell loading a newly added frontend extra module. YAML-owned
+resource collections are left unchanged and use the extra-module fallback.
+
 Setup asks for URL and API key only. Reconfigure and reauthentication are GUI
 flows. Options have controls, device aliases and a separate advanced menu.
 Aliases identify a user-supplied mapping of observed IP plus User-Agent; this

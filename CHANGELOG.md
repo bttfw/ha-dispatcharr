@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.3 — 2026-10-06
+
+- Fixed the dashboard's "Custom element doesn't exist: dispatcharr-card" error
+  when an existing browser or companion-app session did not load the extra module.
+- Automatically register the card as a Lovelace JavaScript module, update its
+  versioned URL, and remove duplicate entries for this bundled card only.
+- Preserve YAML-managed resources and use the extra-module fallback in that mode.
+- Test initial registration, upgrades, repeated/multiple-instance setup and
+  preservation of unrelated resources.
+
 ## 0.1.2 — 2026-10-06
 
 - Refreshed theme-aware card with larger logos, clear viewer identities, source

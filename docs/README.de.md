@@ -64,7 +64,7 @@ dieser Anleitung; HACS bietet keine eigene Sprachauswahl für die README.
 
 Als benutzerdefiniertes HACS-Repository installierbar. Der
 [Aufnahmeantrag für den Standardkatalog](https://github.com/hacs/default/pull/11610)
-steht in der Prüfwarteschlange und ist noch nicht angenommen.
+wurde vorerst zurückgezogen, während weitere Verbesserungen entwickelt werden.
 Die Karte wird von der Integration mitgeladen, ohne zweites Repository.
 
 Künftige Updates brauchen keinen neuen Aufnahmeantrag. Neue GitHub-Releases
@@ -100,8 +100,10 @@ ein Browser-Zugriff allein reicht nicht. HTTPS-Zertifikate werden validiert.
 5. Speichern. Falls die Karte nach der erstmaligen Einrichtung noch nicht im
    Kartenkatalog erscheint, die Browserseite vollständig neu laden.
 
-Die Karte wird automatisch als Frontend-Modul registriert. Kein manuelles
-Eintragen von JavaScript-Ressourcen erforderlich. Die normalen Sensoren und der
+Die Karte wird automatisch als Dashboard-Ressource registriert und bei Updates
+aktualisiert. Kein manuelles Eintragen von JavaScript-Ressourcen erforderlich.
+Nach Installation oder Update eine bereits geöffnete Browser-/App-Ansicht einmal
+neu laden. Die normalen Sensoren und der
 Konfigurationsschalter lassen sich zusätzlich über HA-Standardkarten wie
 „Kachel“ oder „Entitäten“ auswählen.
 

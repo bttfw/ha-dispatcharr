@@ -7,6 +7,18 @@ Stand: 6. Oktober 2026. Geprüft mit **Home Assistant 2026.9.4** und
 
 ## Reale Installation und manuelle Prüfung
 
+### Korrektur der Ressourcenregistrierung in 0.1.3
+
+Die bereits geöffnete Brave-Sitzung meldete `Custom element doesn't exist:
+dispatcharr-card`; die Karte war nicht registriert und ihre JavaScript-Datei
+nicht angefordert worden. Nach Registrierung als Lovelace-Ressource und normalem
+Neuladen funktionierte genau diese Sitzung. Der Nutzer bestätigte zusätzlich die
+Reparatur in der App. Es wurde keine Wiedergabe beendet.
+
+65 Backend-Tests im offiziellen HA-2026.9.4-Image auf Unraid bestanden, einschließlich
+Ersteinrichtung, mehrerer Instanzen, Reload, Versionswechsel und Schutz fremder
+Ressourcen. Ruff und die zweisprachigen Chromium-Kartentests bestanden ebenfalls.
+
 Die installierten Versionen und HACS wurden an der vorhandenen Umgebung geprüft.
 Ein gültiger Dispatcharr-Key wurde akzeptiert, ein absichtlich ungültiger Key
 mit HTTP 401 abgewiesen. Status, Benutzer-IDs, gezielte Kanalmetadaten, aktuelle
