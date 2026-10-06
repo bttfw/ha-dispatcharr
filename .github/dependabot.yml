@@ -1,0 +1,33 @@
+version: 2
+updates:
+  # Keep this configuration on main; routine dependency PRs target beta.
+  # Security updates are enabled in repository settings and target main.
+  - package-ecosystem: pip
+    directory: /
+    target-branch: beta
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 5
+    groups:
+      python-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: beta
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:30"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 5
+
+# pip covers requirements-test.txt. The HA image and Playwright install in
+# workflow shell commands are maintained manually, as are floating action refs.
+# No automatic merge or release is configured.
