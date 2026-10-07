@@ -77,5 +77,14 @@ one connection; **Channel details → Stop channel for everyone** is a separate,
 confirmed action. In the list and tiles, open **Connections & details** first.
 Changing layouts does not start playback or change server configuration.
 
+## Server status
+
+Open **Server** at the bottom of any layout to see the connection status and last
+successful update for Dispatcharr and each optional media server. This also works
+with Dispatcharr alone and during a disconnection. From 0.3.1, the card omits the
+routine footer explanations and duplicate timestamp. Actual errors remain visible.
+
+![Expanded server status with fictional data](screenshots/server-details-en.png)
+
 All screenshots show fictional users, artwork, programmes and measurements rendered
 in the real Home Assistant frontend. They contain no real viewer data or credentials.

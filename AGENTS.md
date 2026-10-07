@@ -81,3 +81,7 @@ instructions when they change the scope or priorities.
   claiming the work was published.
 - Update the changelog and both integration version constants together when
   preparing a release. Use `scripts/build_release.py`; never package `.local/`.
+- Every future release must include a versioned English entry in `CHANGELOG.md`
+  and matching, meaningful GitHub release notes describing the changes, relevant
+  validation and any upgrade steps. Do not publish empty release notes or rely
+  only on a commit list.

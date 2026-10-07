@@ -149,6 +149,14 @@ def capture_layouts(page, card, errors):
                 assert card.evaluate("e => e.scrollWidth <= e.clientWidth")
                 assert not errors, errors
                 card.screenshot(path=str(OUTPUT / f"layout-{layout}{suffix}-{language}.png"))
+        page.set_viewport_size({"width": 640, "height": 1000})
+        page.evaluate("cardFixture.card.style.maxWidth='560px'")
+        card.locator(".server-details > summary").click()
+        card.locator(".server-details").screenshot(
+            path=str(OUTPUT / f"server-details-{language}.png")
+        )
+        card.locator(".server-details > summary").click()
+        page.evaluate("cardFixture.card.style.maxWidth='1240px'")
 
 
 def main():
@@ -190,7 +198,7 @@ def main():
         capture_previews(page, card, errors)
         browser.close()
         print(
-            "Rendered 21 screenshots: layouts, EN/DE, desktop/mobile, grouped, empty, offline, missing data."
+            "Rendered 23 screenshots: layouts, EN/DE, desktop/mobile, grouped, server details, empty, offline, missing data."
         )
 
 
