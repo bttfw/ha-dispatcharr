@@ -125,6 +125,10 @@ work with standard HA cards such as Tile and Entities.
 The [dashboard walkthrough with screenshots](docs/setup.md#4-add-the-dashboard-card)
 shows the **By card** tab and the visual editor.
 
+Open **Server** at the bottom of the card for each source's connection status and
+last successful update. From 0.3.1, routine footer explanations and duplicate
+timestamps are removed; actual connection and metadata warnings remain visible.
+
 ## Choose a language
 
 The setup dialogs and integration options follow your Home Assistant language.

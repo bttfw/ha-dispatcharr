@@ -184,11 +184,29 @@ configuration restored those selections. This check used synthetic state and
 stubbed actions, made no dashboard/server configuration writes and sent no live
 stop requests. No additional containers were created for this feature.
 
+Before stable promotion, [beta PR #22](https://github.com/bttfw/ha-dispatcharr/pull/22)
+passed 84 backend tests (one upstream warning), the expanded Chromium suite,
+Ruff, hassfest and HACS validation. Native editor checks were repeated against
+the merged beta card without production writes or live session actions.
+
+### Compact footer (0.3.1)
+
+The Chromium suite verifies that routine footer text is absent in every layout,
+while the Server section retains Dispatcharr and optional-source status/times,
+unknown timestamps and expanded state across updates. Dispatcharr-only outages
+retain the last successful update there. Existing permissions and exact-session
+tests still apply.
+
+Native checks on 8 October 2026 used the installed **HA 2026.10.0** frontend with
+the candidate module in an isolated browser context, synthetic state and stubbed
+actions. English/German views and source details passed without server writes or
+live stop requests. No additional test containers were created.
+
 ## Screenshots
 
 All public screenshots contain synthetic users, programmes, logos and source
 measurements. They are not real customer or provider data.
-The current previews show the selectable card layouts included in 0.3.0,
+The current previews show the selectable card layouts with the compact 0.3.1 footer,
 rendered inside the actual HA frontend with synthetic fixture state and stubbed
 image and service calls. Desktop and mobile layouts in English and German show
 a viewer and a reported DVR connection on one channel, alongside all three media

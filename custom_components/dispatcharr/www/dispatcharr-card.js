@@ -199,8 +199,7 @@ class DispatcharrCard extends HTMLElement {
     }
     if ((!state || !live) && !sources.length) {
       body.append(el("p", this._t(!this._config.entity ? "configure" : !state ? "gone" : "offline"), "empty"));
-      const lastSuccess = data.last_success || this._lastSuccess();
-      if (lastSuccess) body.append(el("div", `${this._t("last")}: ${new Date(lastSuccess).toLocaleString(this._locale())}`, "footer"));
+      if (state || this._lastSuccess()) body.append(this._serverDetails(data, live, sources));
       return;
     }
     const stats = el("div", null, sources.length ? "stats multi" : "stats");
@@ -221,22 +220,19 @@ class DispatcharrCard extends HTMLElement {
     body.append(list);
     const footer = el("div", null, "footer");
     if (data.warnings?.length) footer.append(el("div", this._t("metadata")));
-    if (sources.length) footer.append(el("div", this._t("incomplete")));
-    if (!data.control_enabled) footer.append(el("div", this._t("disabled")));
-    else if (!this._hass.user?.is_admin) footer.append(el("div", this._t("admin")));
-    const lastSuccess = data.last_success || this._lastSuccess();
-    footer.append(el("div", `${this._t("last")}: ${lastSuccess ? new Date(lastSuccess).toLocaleTimeString(this._locale()) : this._t("unknown")}`));
-    if (sources.length) {
-      const details = el("details"); details.open = this._details.has("sources"); details.ontoggle = () => details.open ? this._details.add("sources") : this._details.delete("sources"); details.append(el("summary", this._t("source")));
-      const dl = el("dl");
-      for (const source of sources) dl.append(el("dt", source.name), el("dd", `${this._t(source.connected ? "online" : source.error || "offline")} · ${this._t("last")}: ${source.last_success ? new Date(source.last_success).toLocaleString(this._locale()) : this._t("unknown")}`));
-      details.append(dl); footer.append(details);
-    }
-    body.append(footer);
+    if (footer.childElementCount) body.append(footer);
+    body.append(this._serverDetails(data, live, sources));
     const needed = new Set(rows.filter(r => r.logo_id).map(r => `${data.entry_id}/${r.logo_id}`));
     for (const row of sessions) if (row.image_key) needed.add(`${media.entry_id}/media/${row.source_id}/${row.image_key}`);
     for (const [key, value] of this._logos) if (!needed.has(key)) { if (value.url) URL.revokeObjectURL(value.url); this._logos.delete(key); }
     this._tick();
+  }
+  _serverDetails(data, live, sources) {
+    const details = this._expandable("sources", "source", "server-details"), dl = el("dl");
+    for (const source of [{ name: "Dispatcharr", connected: live, last_success: data.last_success || this._lastSuccess() }, ...sources]) {
+      dl.append(el("dt", source.name), el("dd", `${this._t(source.connected ? "online" : source.error || "offline")} · ${this._t("last")}: ${source.last_success ? new Date(source.last_success).toLocaleString(this._locale()) : this._t("unknown")}`));
+    }
+    details.append(dl); return details;
   }
   _clientName(row) { return this._value(row.device_alias || row.username || (isDvr(row) ? this._t("dvr") : row.device_description)); }
   _expandable(key, label, cls) {
