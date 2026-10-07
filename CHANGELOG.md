@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.1 — 2026-10-08
 
 - Remove the always-visible source/count explanation, disabled/admin control hints
   and duplicate update time from the dashboard footer in every layout.

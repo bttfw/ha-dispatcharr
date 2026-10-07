@@ -202,6 +202,10 @@ the candidate module in an isolated browser context, synthetic state and stubbed
 actions. English/German views and source details passed without server writes or
 live stop requests. No additional test containers were created.
 
+[Beta PR #24](https://github.com/bttfw/ha-dispatcharr/pull/24) passed the required
+checks, including 84 backend tests (one upstream warning). Native footer checks
+also passed against the merged beta module before stable promotion.
+
 ## Screenshots
 
 All public screenshots contain synthetic users, programmes, logos and source
