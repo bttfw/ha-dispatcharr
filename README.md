@@ -12,6 +12,10 @@
 
 **English** | [Deutsch](docs/README.de.md)
 
+**0.4.0 beta:** configurable headers, exact-server/DVR filters, sorting,
+Show more, playback badges, a slim idle view and on-demand connection checks.
+See the [beta review guide](docs/beta-0.4.md). Stable remains 0.3.1 until review.
+
 **Getting started:** [Setup with screenshots — English](docs/setup.md) ·
 [Einrichtung mit Bildern — Deutsch](docs/setup.de.md)
 

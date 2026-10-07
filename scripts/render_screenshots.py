@@ -159,6 +159,50 @@ def capture_layouts(page, card, errors):
         page.evaluate("cardFixture.card.style.maxWidth='1240px'")
 
 
+def capture_customization(page, errors):
+    """Small beta previews showing real card states with fictional inputs."""
+    page.evaluate(
+        "document.querySelector('#dispatcharr-fixture').remove(); installDispatcharrFixture()"
+    )
+    page.evaluate(DEMO)
+    page.evaluate("""() => {
+      const app=document.querySelector('home-assistant');if(app)app.style.display='none';
+      Object.assign(document.querySelector('#dispatcharr-fixture').style,
+        {position:'relative',inset:'auto',overflow:'visible'});
+      cardFixture.card.style.maxWidth='560px';
+    }""")
+    card = page.locator("#dispatcharr-fixture dispatcharr-card")
+    page.set_viewport_size({"width": 620, "height": 1400})
+    page.evaluate("window.betaDemoRows=structuredClone(cardFixture.attributes.viewers)")
+    for lang in ("en", "de"):
+        page.evaluate("cardFixture.update({viewers:structuredClone(betaDemoRows),active_channels:1})")
+        page.evaluate(DEMO)
+        page.evaluate(
+            """lang=>cardFixture.update({}, {language:lang,layout:'list',compact:true,
+            show_title:true,show_subtitle:false,show_sources:false,show_counts:false,
+            show_quality:false,show_progress:true,max_items:1,dvr_mode:'separate',sources:[],idle_compact:true})""",
+            lang,
+        )
+        expect(card.locator("article.viewer")).to_have_count(1)
+        expect(
+            card.get_by_role(
+                "button",
+                name="Weitere anzeigen (4)" if lang == "de" else "Show more (4)",
+                exact=True,
+            )
+        ).to_be_visible()
+        page.wait_for_function(
+            "[...cardFixture.card.shadowRoot.querySelectorAll('img')].every(i=>i.complete&&i.naturalWidth>0)"
+        )
+        card.screenshot(path=str(OUTPUT / f"beta-filtered-list-{lang}.png"))
+        page.evaluate("""() => {cardFixture.media.sessions=[];
+            cardFixture.media.media_sources.forEach(s=>s.session_count=0);
+            cardFixture.update({viewers:[],active_channels:0});}""")
+        expect(card.locator(".idle-line")).to_be_visible()
+        card.screenshot(path=str(OUTPUT / f"beta-slim-idle-{lang}.png"))
+    assert not errors, errors
+
+
 def main():
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -196,6 +240,7 @@ def main():
         )
         page.set_viewport_size({"width": 1000, "height": 1400})
         capture_previews(page, card, errors)
+        capture_customization(page, errors)
         browser.close()
         print(
             "Rendered 23 screenshots: layouts, EN/DE, desktop/mobile, grouped, server details, empty, offline, missing data."

@@ -5,6 +5,10 @@
 
 # Dispatcharr für Home Assistant
 
+**0.4.0-Beta:** Kopfbereich, Server-/DVR-Filter, Sortierung, „Weitere anzeigen“,
+Wiedergabe-Badges, schmale Leeransicht und Verbindungsprüfung.
+[Beta-Anleitung mit Bildern](beta-0.4.de.md). Stable bleibt bis zur Freigabe 0.3.1.
+
 **Neu in 0.2.0:** Jellyfin, Emby und Plex lassen sich gemeinsam mit Dispatcharr
 anzeigen, auch bei unabhängigen Wiedergaben und mehreren Servern desselben Typs.
 Siehe [Medienserver-Einrichtung und bekannte Grenzen](media-servers.de.md).

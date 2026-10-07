@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Connect Dispatcharr",
-        "description": "Enter the URL and API key of a Dispatcharr administrator. The key stays in the HA backend.",
+        "description": "Enter the URL and API key of a Dispatcharr administrator. The key stays in the HA backend.Saving checks authentication, status, metadata and API permissions. The server must be reachable from the HA host.",
         "data": {
           "url": "Dispatcharr URL",
           "api_key": "API-Key"
@@ -12,7 +12,7 @@
       },
       "reconfigure": {
         "title": "Change connection",
-        "description": "Enter the URL and API key of a Dispatcharr administrator. The key stays in the HA backend.",
+        "description": "Enter the URL and API key of a Dispatcharr administrator. The key stays in the HA backend.Saving checks authentication, status, metadata and API permissions. The server must be reachable from the HA host.",
         "data": {
           "url": "Dispatcharr URL",
           "api_key": "API-Key"
@@ -20,7 +20,7 @@
       },
       "reauth_confirm": {
         "title": "Update API key",
-        "description": "Enter the URL and API key of a Dispatcharr administrator. The key stays in the HA backend.",
+        "description": "Enter the URL and API key of a Dispatcharr administrator. The key stays in the HA backend.Saving checks authentication, status, metadata and API permissions. The server must be reachable from the HA host.",
         "data": {
           "url": "Dispatcharr URL",
           "api_key": "API-Key"
@@ -31,8 +31,13 @@
       "invalid_url": "Enter an HTTP(S) server URL without credentials, query parameters or fragments.",
       "invalid_auth": "The API key was rejected. Enter a valid Dispatcharr API key.",
       "insufficient_permissions": "Dispatcharr requires an active administrator API key (user level 10) for viewer status and controls.",
-      "cannot_connect": "Cannot reach Dispatcharr. Check the URL, network and TLS certificate.",
-      "unsupported_api": "This server does not provide the required Dispatcharr API. Verified with Dispatcharr 0.31.0."
+      "cannot_connect": "Home Assistant could not reach this server. Check its URL, network access and certificate from the HA host.",
+      "unsupported_api": "This server does not provide the required Dispatcharr API. Verified with Dispatcharr 0.31.0.",
+      "connection_timeout": "Home Assistant did not receive a response in time. Check the server address, firewall and routing from the HA host; access from your browser alone is not sufficient.",
+      "connection_tls": "The TLS connection or certificate could not be verified. Check the HTTPS hostname, certificate chain and validity on the server.",
+      "connection_dns": "Home Assistant could not resolve the server hostname. Check DNS from the HA host or use a reachable local server address.",
+      "connection_refused": "The host refused the connection. Check the port and whether the server is running.",
+      "server_unavailable": "The server responded with a server error or rate limit. Check server health and try again later."
     },
     "abort": {
       "already_configured": "This URL is already configured.",
@@ -48,7 +53,8 @@
           "control": "Controls",
           "aliases": "Device aliases",
           "advanced": "Advanced",
-          "media": "Media servers"
+          "media": "Media servers",
+          "connection_check": "Check connection"
         }
       },
       "control": {
@@ -116,6 +122,21 @@
         "data": {
           "confirm": "Remove this connection"
         }
+      },
+      "connection_check": {
+        "title": "Check connection",
+        "description": "Check a configured server directly from the HA backend. No playback is started or stopped and no settings are changed.",
+        "data": {
+          "source": "Server"
+        }
+      },
+      "connection_result": {
+        "title": "Check results",
+        "description": "**{name}**\n\nServer reachable: {connection}\n\nAuthentication and server access: {authentication}\n\nSessions readable: {sessions}\n\nChannel metadata and EPG endpoint: {metadata}\n\nControl permissions (OPTIONS only): {permissions}\n\n✓ Passed · ✗ Failed · — Not checked\n\nNo playback was started or stopped. Submit returns to configuration."
+      },
+      "media_connection_result": {
+        "title": "Check results",
+        "description": "**{name}**\n\nServer reachable: {connection}\n\nAuthentication and server access: {authentication}\n\nSessions readable: {sessions}\n\n✓ Passed · ✗ Failed · — Not checked\n\nStop commands were not tested. Client support and additional server permissions may be required. Submit returns to configuration."
       }
     },
     "abort": {
@@ -130,7 +151,16 @@
       "media_permissions": "This credential cannot read the required server and session data. Use an administrator/owner credential.",
       "media_cannot_connect": "Cannot reach this server. Check its URL, network and certificate.",
       "media_unsupported_api": "The server returned an unsupported or incomplete API response. Check the selected server type.",
-      "plex_unclaimed": "Link this Plex server to its owner account before adding it. Unclaimed servers cannot validate your token."
+      "plex_unclaimed": "Link this Plex server to its owner account before adding it. Unclaimed servers cannot validate your token.",
+      "connection_timeout": "Home Assistant did not receive a response in time. Check the server address, firewall and routing from the HA host; access from your browser alone is not sufficient.",
+      "connection_tls": "The TLS connection or certificate could not be verified. Check the HTTPS hostname, certificate chain and validity on the server.",
+      "connection_dns": "Home Assistant could not resolve the server hostname. Check DNS from the HA host or use a reachable local server address.",
+      "connection_refused": "The host refused the connection. Check the port and whether the server is running.",
+      "server_unavailable": "The server responded with a server error or rate limit. Check server health and try again later.",
+      "cannot_connect": "Home Assistant could not reach this server. Check its URL, network access and certificate from the HA host.",
+      "check_invalid_auth": "The server rejected the API key or token.",
+      "check_permissions": "The API key or token lacks the permissions required for this check.",
+      "check_unsupported_api": "The checked API endpoint is missing or returned incomplete data. Check the server type and version."
     }
   },
   "entity": {

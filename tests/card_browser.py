@@ -5,6 +5,7 @@ Requires Playwright + Chromium. No Home Assistant login or server is required.
 
 from pathlib import Path
 
+from card_customization import check_customization
 from card_layouts import check_layouts
 from playwright.sync_api import expect, sync_playwright
 
@@ -197,6 +198,7 @@ def main():
         page.set_viewport_size({"width": 390, "height": 1000})
         assert card.evaluate("e => e.scrollWidth <= e.clientWidth")
         check_layouts(page, card)
+        check_customization(page, card)
         assert not errors, errors
         browser.close()
         print(

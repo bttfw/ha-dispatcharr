@@ -5,6 +5,7 @@ await customElements.whenDefined("home-assistant");
 
 const messages = {
   de: {
+    showTitle: "Titel anzeigen", showSubtitle: "Untertitel anzeigen", showSources: "Server-Badges anzeigen", showCounts: "Große Zähler anzeigen", showPlayback: "Wiedergabe-Badges anzeigen", idleCompact: "Schmale Ansicht, wenn niemand schaut", sourceFilter: "Server auswählen", sourceHint: "Leer = alle Server. Filter gelten nur für diese Karte, nicht als Zugriffsschutz. Zähler gelten für die ausgewählten Server vor DVR-Filter und Anzeigelimit.", dvrMode: "DVR-Verbindungen", dvrShow: "Zusammen mit Zuschauern", dvrHide: "Ausblenden", dvrOnly: "Nur Aufnahmen", dvrSeparate: "Separat anzeigen", sortBy: "Sortierung", sortDefault: "Server-Reihenfolge", sortUser: "Benutzer A–Z", sortChannel: "Sender / Titel A–Z", sortDuration: "Längste Verbindung zuerst", sortHint: "Bei Sendergruppen zählt der erste Benutzer nach Alphabet bzw. die älteste Verbindung. Nicht gemeldete Verbindungszeiten stehen zuletzt; Wiedergabeposition ist keine Verbindungsdauer.", maxItems: "Einträge zunächst anzeigen (0 = alle)", more: "Weitere anzeigen", less: "Weniger anzeigen", filteredEmpty: "Keine passenden Wiedergaben", filteredHint: "Die Kartenfilter blenden vorhandene Verbindungen aus.", selectedMissing: "Ein ausgewählter Server ist nicht mehr konfiguriert.", recordings: "Aufnahmen", countScope: "Ausgewählte Server · vor DVR-Filter und Anzeigelimit", directPlay: "Direct Play", directStream: "Direct Stream", transcode: "Transcoding",
     layout: "Ansicht", grid: "Raster", list: "Kompakte Liste", tiles: "Logo-Kacheln", columns: "Maximale Spaltenzahl", automatic: "Automatisch", spacing: "Kompakte Abstände", showQuality: "Quellqualität anzeigen", showProgress: "EPG / Wiedergabefortschritt anzeigen", connectionsDetails: "Verbindungen & Details", layoutHint: "Auf schmalen Karten werden automatisch weniger Spalten angezeigt. Die Liste bleibt einspaltig. Die Gesamtbreite der Karte wird im HA-Dashboard eingestellt.",
     clients: "Verbindungen", oneClient: "Verbindung", dvr: "DVR-Aufnahme", channelDetails: "Senderdetails", clientDetails: "Verbindungsdetails", dvrWarning: "Diese Verbindung gehört laut Dispatcharr zu einer DVR-Aufnahme. Das Beenden kann die Aufnahme unterbrechen.",
     mediaSessions: "Medien-Sessions", proxyClients: "Dispatcharr-Clients", partial: "Teilweise verbunden", source: "Server", sourceUserId: "Server-Benutzer-ID", sessionId: "Session-ID", itemId: "Medien-ID", device: "Gerät", method: "Wiedergabeart", output: "Transkodierte Ausgabe", nominalBitrate: "Gemeldete Bitrate", position: "Wiedergabefortschritt", playing: "Wiedergabe", paused: "Pausiert", buffering: "Puffert", noPoster: "Kein Bild", incomplete: "Die Liste enthält nur erreichbare Quellen. Verbindungen werden getrennt gezählt, nicht als eindeutige Personen.", invalid_auth: "Schlüssel abgewiesen", insufficient_permissions: "Berechtigung fehlt", cannot_connect: "Nicht erreichbar", unsupported_api: "API-Antwort unvollständig", mediaConfirm: "Diese Wiedergabe auf diesem Server beenden?",
@@ -23,6 +24,7 @@ const messages = {
     resolution: "Auflösung", fps: "Bildrate", video: "Video", audio: "Audio", overview: "Zuschauer im Überblick",
   },
   en: {
+    showTitle: "Show title", showSubtitle: "Show subtitle", showSources: "Show server badges", showCounts: "Show large counters", showPlayback: "Show playback badges", idleCompact: "Slim view when nobody is watching", sourceFilter: "Select servers", sourceHint: "Empty = all servers. Filters affect this card only, not access permissions. Counters cover selected servers before the DVR filter and row limit.", dvrMode: "DVR connections", dvrShow: "Together with viewers", dvrHide: "Hide recordings", dvrOnly: "Recordings only", dvrSeparate: "Separate recordings", sortBy: "Sort order", sortDefault: "Server order", sortUser: "User A–Z", sortChannel: "Channel / title A–Z", sortDuration: "Longest connection first", sortHint: "Channel groups use the first user alphabetically or the oldest connection. Unreported connection times sort last; playback position is not connection duration.", maxItems: "Initially visible entries (0 = all)", more: "Show more", less: "Show less", filteredEmpty: "No matching playback", filteredHint: "Card filters hide existing connections.", selectedMissing: "A selected server is no longer configured.", recordings: "Recordings", countScope: "Selected servers · before DVR filtering and row limit", directPlay: "Direct Play", directStream: "Direct Stream", transcode: "Transcoding",
     layout: "Layout", grid: "Grid", list: "Compact list", tiles: "Logo tiles", columns: "Maximum columns", automatic: "Automatic", spacing: "Compact spacing", showQuality: "Show source quality", showProgress: "Show EPG / playback progress", connectionsDetails: "Connections & details", layoutHint: "Narrow cards automatically use fewer columns. The list always uses one column. Set the overall card width in the HA dashboard.",
     clients: "Connections", oneClient: "Connection", dvr: "DVR recording", channelDetails: "Channel details", clientDetails: "Connection details", dvrWarning: "Dispatcharr identifies this connection as a DVR recording. Ending it may interrupt the recording.",
     mediaSessions: "Media sessions", proxyClients: "Dispatcharr clients", partial: "Partly connected", source: "Server", sourceUserId: "Server user ID", sessionId: "Session ID", itemId: "Media item ID", device: "Device", method: "Play method", output: "Transcoded output", nominalBitrate: "Reported bitrate", position: "Playback progress", playing: "Playing", paused: "Paused", buffering: "Buffering", noPoster: "No artwork", incomplete: "Only reachable sources are listed. Connections are counted separately, not as unique people.", invalid_auth: "Key rejected", insufficient_permissions: "Permission denied", cannot_connect: "Unreachable", unsupported_api: "Incomplete API response", mediaConfirm: "End this playback on this server?",
@@ -69,6 +71,29 @@ const channelGroups = (rows, entry) => {
 // Official v0.31.0 core/utils.py dispatcharr_dvr_user_agent(). This is a
 // reported client type, not proof of a person or a recording's saved state.
 const isDvr = row => /^Dispatcharr-DVR\/recording-[0-9]+$/.test(row.device_description || "");
+const keyed = (node, key) => { node.dataset.renderKey = key; return node; };
+// Reconcile public DOM nodes by identity. Keep focused controls, open details,
+// loaded images and scroll containers alive across coordinator updates.
+const nodeKey = node => node.nodeType === Node.ELEMENT_NODE ? node.dataset.renderKey || node.dataset.detailsKey || `${node.tagName}.${node.className}` : "#text";
+const reconcile = (parent, incoming) => {
+  const old = [...parent.childNodes], used = new Set(), candidates = new Map();
+  const identity = node => `${node.nodeType}/${node.nodeName}/${nodeKey(node)}`;
+  for (const node of old) { const key = identity(node); if (!candidates.has(key)) candidates.set(key, []); candidates.get(key).push(node); }
+  for (const fresh of [...incoming.childNodes]) {
+    const current = candidates.get(identity(fresh))?.shift();
+    const position = parent.childNodes[used.size];
+    if (!current) { parent.insertBefore(fresh, position || null); used.add(fresh); continue; }
+    used.add(current);
+    if (current !== position) parent.insertBefore(current, position || null);
+    if (current.nodeType === Node.TEXT_NODE) { if (current.data !== fresh.data) current.data = fresh.data; continue; }
+    const sameImage = current.dataset.imageKey && current.dataset.imageKey === fresh.dataset.imageKey;
+    for (const attr of [...current.attributes]) if (!fresh.hasAttribute(attr.name)) current.removeAttribute(attr.name);
+    for (const attr of fresh.attributes) if (current.getAttribute(attr.name) !== attr.value) current.setAttribute(attr.name, attr.value);
+    for (const handler of ["onclick", "ontoggle"]) current[handler] = fresh[handler];
+    if (!sameImage) reconcile(current, fresh);
+  }
+  for (const node of old) if (!used.has(node)) node.remove();
+};
 const cardConfig = (config = {}) => ({
   title: "Dispatcharr", show_controls: true, language: "auto", ...config,
   layout: ["grid", "list", "tiles"].includes(config.layout) ? config.layout : "grid",
@@ -77,6 +102,13 @@ const cardConfig = (config = {}) => ({
   // Old compact cards hid quality. Preserve that until explicitly changed.
   show_quality: typeof config.show_quality === "boolean" ? config.show_quality : config.compact !== true,
   show_progress: config.show_progress !== false,
+  show_title: config.show_title !== false, show_subtitle: config.show_subtitle !== false,
+  show_sources: config.show_sources !== false, show_counts: config.show_counts !== false,
+  show_playback: config.show_playback !== false, idle_compact: config.idle_compact === true,
+  sources: Array.isArray(config.sources) ? [...new Set(config.sources.filter(value => typeof value === "string"))] : [],
+  dvr_mode: ["show", "hide", "only", "separate"].includes(config.dvr_mode) ? config.dvr_mode : "show",
+  sort_by: ["default", "user", "channel", "duration"].includes(config.sort_by) ? config.sort_by : "default",
+  max_items: Number.isInteger(Number(config.max_items)) ? Math.min(100, Math.max(0, Number(config.max_items))) : 0,
 });
 
 class DispatcharrCard extends HTMLElement {
@@ -105,6 +137,7 @@ class DispatcharrCard extends HTMLElement {
       .clients{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:9px}.client{padding:11px 12px;border:1px solid var(--divider-color);border-radius:11px;min-width:0}.client .name{font-size:14px;flex-wrap:wrap}.client .name>span:first-of-type{overflow-wrap:anywhere;min-width:0}.client .time{font-size:11px}.client .session-stop{margin-top:4px}.client-details{margin-top:4px;border:0}.client-details summary{font-size:11px}.client-details dl{margin-top:3px}.dvr-badge{border-radius:5px;padding:2px 6px;font-size:10px;font-weight:500;background:var(--dispatcharr-tint);color:var(--primary-color)}
       .logo{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}.logo img{min-width:0;min-height:0}
       .preview-clients{margin:12px 0 0;display:grid;gap:6px;list-style:none;padding:0}.preview-client{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:12px}.preview-name{min-width:0;overflow-wrap:anywhere}.preview-client .time{flex-shrink:0;font-size:11px;margin:0}.layout-details>.clients{margin-top:0}.layout-details>.channel-details{margin-top:12px}
+      .body>.list{margin-top:14px}.idle-line{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;font-size:14px}.body.slim{padding:12px 16px}.body.slim .server-details{margin-top:6px}.playback-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.playback-badges .chip{font-size:10px;font-weight:500}.playback-badges .transcode{color:var(--warning-color,#bf7900)}.list-heading{grid-column:1/-1;font-size:13px;font-weight:550;color:var(--secondary-text-color);margin:5px 0}.pagination{display:flex;justify-content:center;gap:8px;margin-top:12px}.selection-warning{font-size:12px;color:var(--error-color,#db4437);margin:12px 0}
       .body[data-layout="list"] .viewer{padding:12px}.body[data-layout="list"] .programme{margin-top:10px;padding:10px}.body[data-layout="list"] .channel-title{font-size:17px}.body[data-layout="list"] .quality{margin-top:8px}.body[data-layout="list"] .preview-clients{margin-top:10px}
       .body[data-layout="tiles"] .identity{display:block;text-align:center}.body[data-layout="tiles"] .logo{width:84px;height:84px;margin:0 auto 12px}.body[data-layout="tiles"] .logo img{width:72px;height:72px}.body[data-layout="tiles"] .poster{height:112px}.body[data-layout="tiles"] .poster img{width:100%;height:100%}.body[data-layout="tiles"] .connection-count,.body[data-layout="tiles"] .name{justify-content:center}.body[data-layout="tiles"] .preview-clients{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 12px}.body[data-layout="tiles"] .preview-client .time{display:none}.body[data-layout="tiles"] .media-viewer .who{display:flex;flex-direction:column}.body[data-layout="tiles"] .media-viewer .channel{order:-1;font-size:17px;font-weight:650;margin-bottom:5px}.body[data-layout="tiles"] .media-viewer .name{font-size:14px}.body[data-layout="tiles"] .chips{justify-content:center}.body[data-layout="tiles"] .quality{text-align:center}
       @container(min-width:680px){.body:not([data-columns="1"]) .list{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -134,7 +167,7 @@ class DispatcharrCard extends HTMLElement {
     return document.createElement("dispatcharr-card-editor");
   }
   static getStubConfig(hass) { return { entity: candidates(hass)[0]?.entity_id || "", show_controls: true }; }
-  setConfig(config) { this._config = cardConfig(config); this._render(); }
+  setConfig(config) { const next = cardConfig(config); if (JSON.stringify(next) !== JSON.stringify(this._config)) this._expandedLimit = 0; this._config = next; this._render(); }
   set hass(hass) {
     const previous = this._hass;
     this._hass = hass;
@@ -164,89 +197,149 @@ class DispatcharrCard extends HTMLElement {
   }
   _render() {
     if (!this._config || !this._hass) return;
-    const body = this.shadowRoot.querySelector(".body");
+    const currentBody = this.shadowRoot.querySelector(".body"), body = el("div", null, "body");
     body.classList.toggle("compact", Boolean(this._config.compact));
     body.classList.toggle("hide-quality", !this._config.show_quality);
     body.classList.toggle("hide-progress", !this._config.show_progress);
     body.dataset.layout = this._config.layout; body.dataset.columns = this._config.columns;
     // Capture the visible state before replacing nodes: native toggle events
     // can still be queued when a coordinator update arrives immediately.
-    for (const details of body.querySelectorAll("details[data-details-key]")) {
+    for (const details of currentBody.querySelectorAll("details[data-details-key]")) {
       details.open ? this._details.add(details.dataset.detailsKey) : this._details.delete(details.dataset.detailsKey);
     }
-    body.replaceChildren();
     const state = this._state();
     const live = state && !["unavailable", "unknown"].includes(state.state);
     const data = state?.attributes || {};
     const media = this._mediaState()?.attributes || {};
-    const sources = media.media_sources || [];
-    const sessions = media.sessions || [];
-    const allLive = live && sources.every(s => s.connected);
-    const anyLive = live || sources.some(s => s.connected);
+    const availableSources = media.media_sources || [];
+    const selected = id => !this._config.sources.length || this._config.sources.includes(id);
+    const dispatcharrSelected = selected("dispatcharr");
+    const sources = availableSources.filter(s => selected(s.id));
+    const missingSource = this._config.sources.some(id => id !== "dispatcharr" && !availableSources.some(s => s.id === id));
+    const sessions = (media.sessions || []).filter(row => sources.some(s => s.id === row.source_id && s.connected));
+    const allLive = !missingSource && (!dispatcharrSelected || live) && sources.every(s => s.connected);
+    const anyLive = (dispatcharrSelected && live) || sources.some(s => s.connected);
+    const rows = live && dispatcharrSelected ? data.viewers || [] : [];
+    const idle = !rows.length && !sessions.length;
     body.lang = this._locale();
+    const commit = () => this._commitBody(body);
+    if (this._config.idle_compact && idle && allLive && state) {
+      body.classList.add("slim");
+      const line = el("div", null, "idle-line");
+      if (this._config.show_title) line.append(el("strong", this._config.title || this._t("title")));
+      line.append(el("span", this._t("empty"))); body.append(line);
+      body.append(this._serverDetails(data, live, sources, dispatcharrSelected)); commit(); return;
+    }
     const header = el("header"), heading = el("div", null, "heading"), headingText = el("div");
-    headingText.append(el("h2", this._config.title || this._t("title")), el("span", this._t("overview"), "muted"));
-    heading.append(icon("television-play"), headingText); header.append(heading);
+    if (this._config.show_title) headingText.append(el("h2", this._config.title || this._t("title")));
+    if (this._config.show_subtitle) headingText.append(el("span", this._t("overview"), "muted"));
+    if (headingText.childElementCount) { heading.append(icon("television-play"), headingText); header.append(heading); }
     const status = el("span", null, allLive ? "status" : "status offline"); status.append(el("i", null, "dot"), el("span", this._t(allLive ? "online" : anyLive ? "partial" : "offline"))); header.append(status); body.append(header);
-    if (sources.length) {
+    if (this._config.show_sources && sources.length) {
       const strip = el("div", null, "sources");
-      for (const s of [{ name: "Dispatcharr", connected: live, session_count: live ? state.state : null, last_success: data.last_success || this._lastSuccess() }, ...sources]) {
+      for (const s of [...(dispatcharrSelected ? [{ name: "Dispatcharr", connected: live, session_count: live ? state.state : null, last_success: data.last_success || this._lastSuccess() }] : []), ...sources]) {
         const badge = el("span", null, s.connected ? "status" : "status offline");
         badge.append(el("i", null, "dot"), el("span", `${s.name}: ${s.connected ? this._value(s.session_count) : this._t(s.error || "offline")}`));
         badge.title = `${this._t("last")}: ${s.last_success ? new Date(s.last_success).toLocaleString(this._locale()) : this._t("unknown")}`; strip.append(badge);
       }
       body.append(strip);
     }
+    if (missingSource) body.append(el("p", this._t("selectedMissing"), "selection-warning"));
     if ((!state || !live) && !sources.length) {
       body.append(el("p", this._t(!this._config.entity ? "configure" : !state ? "gone" : "offline"), "empty"));
-      if (state || this._lastSuccess()) body.append(this._serverDetails(data, live, sources));
-      return;
+      if (state || this._lastSuccess()) body.append(this._serverDetails(data, live, sources, dispatcharrSelected));
+      commit(); return;
     }
     const stats = el("div", null, sources.length ? "stats multi" : "stats");
-    const counts = [["channels", live ? data.active_channels : null], ["proxyClients", live ? state.state : null]];
+    const counts = dispatcharrSelected ? [["channels", live ? data.active_channels : null], ["proxyClients", live ? state.state : null]] : [];
     if (sources.length) counts.push(["mediaSessions", sources.some(s => s.connected) ? sessions.length : null]);
     for (const [key, value] of counts) {
-      const stat = el("div", null, "stat"); stat.append(icon(key === "channels" ? "television" : "account-multiple-outline"), el("strong", this._value(value)), el("span", this._t(key))); stats.append(stat);
+      const stat = keyed(el("div", null, "stat"), key); stat.title = this._t("countScope"); stat.append(icon(key === "channels" ? "television" : "account-multiple-outline"), el("strong", this._value(value)), el("span", this._t(key))); stats.append(stat);
     }
-    body.append(stats);
-    const rows = live ? data.viewers || [] : [];
+    stats.style.gridTemplateColumns = `repeat(${Math.max(1, counts.length)},minmax(0,1fr))`;
+    if (this._config.show_counts && counts.length) body.append(stats);
     const list = el("div", null, "list");
-    if (!rows.length && !sessions.length) {
+    const items = this._visibleItems(rows, sessions, data.entry_id);
+    if (!items.length) {
       const empty = el("div", null, "empty"), icon = el("ha-icon"); icon.setAttribute("icon", "mdi:television-off");
-      empty.append(icon, el("strong", this._t(allLive ? "empty" : "offline")), el("span", this._t(allLive ? "emptyHint" : "incomplete"), "muted")); list.append(empty);
+      empty.append(icon, el("strong", this._t(!allLive ? "offline" : !idle ? "filteredEmpty" : "empty")), el("span", this._t(!allLive ? "incomplete" : !idle ? "filteredHint" : "emptyHint"), "muted")); list.append(empty);
     }
-    for (const group of channelGroups(rows, data.entry_id)) list.append(this._channel(group, data));
-    for (const row of sessions) list.append(this._mediaViewer(row, media));
+    const limit = this._config.max_items ? this._config.max_items + (this._expandedLimit || 0) : items.length;
+    let dvrHeading = false;
+    for (const item of items.slice(0, limit)) {
+      if (item.recordings && !dvrHeading) { list.append(el("div", this._t("recordings"), "list-heading")); dvrHeading = true; }
+      list.append(item.group ? this._channel(item.group, data) : this._mediaViewer(item.row, media));
+    }
     body.append(list);
+    if (this._config.max_items && items.length > this._config.max_items) {
+      const pagination = el("div", null, "pagination");
+      if (items.length > limit) { const more = keyed(el("button", `${this._t("more")} (${items.length - limit})`), "more"); more.onclick = () => { this._expandedLimit = (this._expandedLimit || 0) + this._config.max_items; this._render(); }; pagination.append(more); }
+      if (this._expandedLimit) { const less = keyed(el("button", this._t("less")), "less"); less.onclick = () => { this._expandedLimit = 0; this._render(); }; pagination.append(less); }
+      body.append(pagination);
+    }
     const footer = el("div", null, "footer");
-    if (data.warnings?.length) footer.append(el("div", this._t("metadata")));
+    if (dispatcharrSelected && data.warnings?.length) footer.append(el("div", this._t("metadata")));
     if (footer.childElementCount) body.append(footer);
-    body.append(this._serverDetails(data, live, sources));
+    body.append(this._serverDetails(data, live, sources, dispatcharrSelected));
     const needed = new Set(rows.filter(r => r.logo_id).map(r => `${data.entry_id}/${r.logo_id}`));
     for (const row of sessions) if (row.image_key) needed.add(`${media.entry_id}/media/${row.source_id}/${row.image_key}`);
     for (const [key, value] of this._logos) if (!needed.has(key)) { if (value.url) URL.revokeObjectURL(value.url); this._logos.delete(key); }
+    commit();
+  }
+  _visibleItems(rows, sessions, entry) {
+    const mode = this._config.dvr_mode, partitions = mode === "separate" ? [false, true] : [null];
+    const items = [];
+    for (const recordings of partitions) {
+      const filtered = rows.filter(row => mode === "hide" ? !isDvr(row) : mode === "only" ? isDvr(row) : recordings === null || isDvr(row) === recordings);
+      for (const group of channelGroups(filtered, entry)) {
+        if (recordings) group.key += ":dvr";
+        items.push({group, key:group.key, recordings:recordings === true, row:group.rows[0], rows:group.rows});
+      }
+    }
+    if (mode !== "only") for (const row of sessions) items.push({row, rows:[row], key:JSON.stringify(["media", row.source_id, row.session_key || row.session_id])});
+    const text = item => this._config.sort_by === "user" ? item.rows.map(r => this._clientName(r)).sort((a,b) => a.localeCompare(b, this._locale()))[0] : item.row.channel_name || item.row.title;
+    const started = item => { const times = item.rows.map(r => r.connected_at).filter(v => typeof v === "number" && Number.isFinite(v) && v > 0); return times.length ? Math.min(...times) : Infinity; };
+    return items.sort((a,b) => {
+      if (Boolean(a.recordings) !== Boolean(b.recordings)) return a.recordings ? 1 : -1;
+      if (this._config.sort_by === "default") return 0;
+      if (this._config.sort_by === "duration") return (started(a) - started(b)) || a.key.localeCompare(b.key);
+      const av = text(a), bv = text(b);
+      return (!av - !bv) || (av || "").localeCompare(bv || "", this._locale(), {numeric:true,sensitivity:"base"}) || a.key.localeCompare(b.key);
+    });
+  }
+  _commitBody(fresh) {
+    const body = this.shadowRoot.querySelector(".body"), active = this.shadowRoot.activeElement;
+    body.className = fresh.className; body.lang = fresh.lang; body.dataset.layout = fresh.dataset.layout; body.dataset.columns = fresh.dataset.columns;
+    reconcile(body, fresh);
+    // A removed/reordered sibling must not steal focus from a surviving control.
+    if (active?.isConnected && this.shadowRoot.activeElement !== active) active.focus({preventScroll:true});
+    const valid = new Set([...body.querySelectorAll("details[data-details-key]")].map(node => node.dataset.detailsKey));
+    this._details = new Set([...this._details].filter(key => valid.has(key)));
+    const images = new Set([...body.querySelectorAll("[data-image-key]")].map(node => node.dataset.imageKey));
+    for (const [key, value] of this._logos) if (!images.has(key)) { if (value.url) URL.revokeObjectURL(value.url); this._logos.delete(key); }
+    for (const node of body.querySelectorAll("[data-image-key]")) this._loadLogo(node);
     this._tick();
   }
-  _serverDetails(data, live, sources) {
+  _serverDetails(data, live, sources, includeDispatcharr = true) {
     const details = this._expandable("sources", "source", "server-details"), dl = el("dl");
-    for (const source of [{ name: "Dispatcharr", connected: live, last_success: data.last_success || this._lastSuccess() }, ...sources]) {
+    for (const source of [...(includeDispatcharr ? [{ name: "Dispatcharr", connected: live, last_success: data.last_success || this._lastSuccess() }] : []), ...sources]) {
       dl.append(el("dt", source.name), el("dd", `${this._t(source.connected ? "online" : source.error || "offline")} · ${this._t("last")}: ${source.last_success ? new Date(source.last_success).toLocaleString(this._locale()) : this._t("unknown")}`));
     }
     details.append(dl); return details;
   }
-  _clientName(row) { return this._value(row.device_alias || row.username || (isDvr(row) ? this._t("dvr") : row.device_description)); }
+  _clientName(row) { return this._value(row.device_alias || row.username || (isDvr(row) ? this._t("dvr") : row.device_name || row.device_description)); }
   _expandable(key, label, cls) {
     const details = el("details", null, cls);
     details.dataset.detailsKey = key;
     details.open = this._details.has(key);
-    details.ontoggle = () => { if (details.isConnected) details.open ? this._details.add(key) : this._details.delete(key); };
+    details.ontoggle = event => { const target = event.currentTarget; if (target.isConnected) target.open ? this._details.add(key) : this._details.delete(key); };
     details.append(el("summary", this._t(label)));
     return details;
   }
   _channel(group, data) {
     // All shared fields are normalized from this UUID's channel record by HA.
     const row = group.rows[0];
-    const node = el("article", null, "viewer channel-card");
+    const node = keyed(el("article", null, "viewer channel-card"), group.key);
     if (this._mediaState()?.attributes.media_sources?.length) node.append(el("div", "Dispatcharr", "source-label"));
     const identity = el("div", null, "identity");
     const logo = el("div", this._t("noLogo"), "logo");
@@ -274,7 +367,7 @@ class DispatcharrCard extends HTMLElement {
     else {
       const preview = el("ul", null, "preview-clients"); preview.setAttribute("aria-label", this._t("clients"));
       for (const client of group.rows) {
-        const item = el("li", null, "preview-client");
+        const item = keyed(el("li", null, "preview-client"), String(client.client_id));
         item.append(el("span", `${this._clientName(client)}${isDvr(client) ? " · DVR" : ""}`, "preview-name"));
         const elapsed = el("span", this._t("unknown"), "time");
         if (client.connected_at) elapsed.dataset.since = String(client.connected_at);
@@ -304,7 +397,7 @@ class DispatcharrCard extends HTMLElement {
     return node;
   }
   _client(row, data, group) {
-    const node = el("li", null, "client"), name = el("strong", null, "name");
+    const node = keyed(el("li", null, "client"), JSON.stringify([group.key, row.client_id])), name = el("strong", null, "name");
     name.append(icon(isDvr(row) ? "record-rec" : "account-outline"), el("span", this._clientName(row)));
     if (isDvr(row)) name.append(el("span", "DVR", "dvr-badge"));
     node.append(name);
@@ -324,14 +417,20 @@ class DispatcharrCard extends HTMLElement {
     return node;
   }
   _mediaViewer(row, data) {
-    const node = el("article", null, "viewer media-viewer");
+    const node = keyed(el("article", null, "viewer media-viewer"), JSON.stringify(["media", data.entry_id, row.source_id, row.session_key || row.session_id]));
     node.append(el("div", `${this._value(row.source_name)} · ${this._value(row.source_type)}`, "source-label"));
     const identity = el("div", null, "identity"), poster = el("div", this._t("noPoster"), "logo poster"), who = el("div", null, "who");
     if (row.image_key) this._logo(poster, data.entry_id, row.image_key, row.source_id);
     const name = el("strong", null, "name"); name.append(icon("account-outline"), el("span", this._value(row.device_alias || row.username || row.device_name)));
     who.append(name, el("span", this._value(row.title), "channel"));
     if (row.series_title) who.append(el("div", `${row.series_title}${row.season != null && row.episode != null ? ` · S${row.season} E${row.episode}` : ""}`, "muted"));
-    who.append(el("div", `${this._value(row.device_name)} · ${row.playback_status ? this._t(row.playback_status) : this._t("unknown")}`, "time"));
+    who.append(el("div", `${this._value(row.device_name)}${this._config.show_playback ? "" : ` · ${row.playback_status ? this._t(row.playback_status) : this._t("unknown")}`}`, "time"));
+    if (this._config.show_playback) {
+      const badges = el("div", null, "playback-badges");
+      badges.append(el("span", row.playback_status ? this._t(row.playback_status) : this._t("unknown"), "chip"));
+      if (row.play_method) { const kind = {directplay:"directPlay",directstream:"directStream",transcode:"transcode",transcoding:"transcode"}[row.play_method.toLowerCase().replace(/[ _-]/g, "")]; const badge = el("span", kind ? this._t(kind) : row.play_method, `chip${kind === "transcode" ? " transcode" : ""}`); badge.title = this._t("method"); badges.append(badge); }
+      who.append(badges);
+    }
     identity.append(poster, who); node.append(identity);
     const programme = el("div", null, "programme"); programme.append(el("span", this._t("position"), "eyebrow"));
     if (row.programme && row.programme.end > Date.now() / 1000) {
@@ -363,7 +462,13 @@ class DispatcharrCard extends HTMLElement {
     }
     return node;
   }
-  async _logo(node, entry, id, source) {
+  _logo(node, entry, id, source) {
+    node.dataset.imageKey = source ? `${entry}/media/${source}/${id}` : `${entry}/${id}`;
+    node.dataset.imageEntry = entry; node.dataset.imageId = id;
+    if (source) node.dataset.imageSource = source;
+  }
+  async _loadLogo(node) {
+    const entry = node.dataset.imageEntry, id = node.dataset.imageId, source = node.dataset.imageSource;
     const key = source ? `${entry}/media/${source}/${id}` : `${entry}/${id}`;
     let cached = this._logos.get(key);
     if (cached && !cached.url && Date.now() - cached.created > 60000) cached = null;
@@ -381,7 +486,7 @@ class DispatcharrCard extends HTMLElement {
       })();
     }
     await cached.promise;
-    if (cached.url && node.isConnected) { const img = el("img"); img.alt = ""; img.src = cached.url; img.onerror = () => node.replaceChildren(document.createTextNode(this._t("noLogo"))); node.replaceChildren(img); }
+    if (cached.url && node.isConnected && node.dataset.imageKey === key && node.firstElementChild?.src !== cached.url) { const img = el("img"); img.alt = ""; img.src = cached.url; img.onerror = () => node.replaceChildren(document.createTextNode(this._t(source ? "noPoster" : "noLogo"))); node.replaceChildren(img); }
   }
   _tick() {
     const now = Date.now() / 1000;
@@ -446,6 +551,9 @@ class DispatcharrCardEditor extends HTMLElement {
     }
     const m = messages[language(this._hass)];
     this._form.hass = this._hass; this._form.data = this._config;
+    const media = Object.values(this._hass.states || {}).find(s => s.attributes.viewer_entity_id === this._config.entity && Array.isArray(s.attributes.media_sources));
+    const sourceOptions = [{value:"dispatcharr",label:"Dispatcharr"}, ...(media?.attributes.media_sources || []).map(s => ({value:s.id,label:`${s.name} (${s.type})`}))];
+    for (const id of this._config.sources) if (!sourceOptions.some(s => s.value === id)) sourceOptions.push({value:id,label:`${m.unknown} (${id})`});
     this._form.schema = [
       { name: "entity", required: true, selector: { select: { options: candidates(this._hass).map(s => ({ value: s.entity_id, label: s.attributes.friendly_name || s.entity_id })), mode: "dropdown" } } },
       { name: "title", selector: { text: {} } },
@@ -456,9 +564,20 @@ class DispatcharrCardEditor extends HTMLElement {
       { name: "show_quality", selector: { boolean: {} } },
       { name: "show_progress", selector: { boolean: {} } },
       { name: "show_controls", selector: { boolean: {} } },
+      { name: "show_playback", selector: { boolean: {} } },
+      { name: "idle_compact", selector: { boolean: {} } },
+      { type:"expandable", name:"header_options", flatten:true, title: language(this._hass) === "de" ? "Kopfbereich" : "Header", schema: [
+        ...["show_title", "show_subtitle", "show_sources", "show_counts"].map(name => ({name,selector:{boolean:{}}})),
+      ] },
+      { type:"expandable", name:"filter_options", flatten:true, title: language(this._hass) === "de" ? "Filter & Sortierung" : "Filters & sorting", schema: [
+        {name:"sources",selector:{select:{options:sourceOptions,multiple:true,mode:"dropdown"}}},
+        {name:"dvr_mode",selector:{select:{options:[{value:"show",label:m.dvrShow},{value:"hide",label:m.dvrHide},{value:"only",label:m.dvrOnly},{value:"separate",label:m.dvrSeparate}],mode:"dropdown"}}},
+        {name:"sort_by",selector:{select:{options:[{value:"default",label:m.sortDefault},{value:"user",label:m.sortUser},{value:"channel",label:m.sortChannel},{value:"duration",label:m.sortDuration}],mode:"dropdown"}}},
+        {name:"max_items",selector:{number:{min:0,max:100,step:1,mode:"box"}}},
+      ] },
     ];
-    this._form.computeLabel = ({ name }) => ({ entity: m.entity, title: m.cardTitle, language: m.language, layout: m.layout, columns: m.columns, compact: m.spacing, show_quality: m.showQuality, show_progress: m.showProgress, show_controls: m.controls }[name]);
-    this._form.computeHelper = ({ name }) => name === "layout" ? m.layoutHint : undefined;
+    this._form.computeLabel = ({ name }) => ({ entity: m.entity, title: m.cardTitle, language: m.language, layout: m.layout, columns: m.columns, compact: m.spacing, show_quality: m.showQuality, show_progress: m.showProgress, show_controls: m.controls, show_title:m.showTitle, show_subtitle:m.showSubtitle, show_sources:m.showSources, show_counts:m.showCounts, show_playback:m.showPlayback, idle_compact:m.idleCompact, sources:m.sourceFilter, dvr_mode:m.dvrMode, sort_by:m.sortBy, max_items:m.maxItems }[name]);
+    this._form.computeHelper = ({ name }) => ({layout:m.layoutHint,sources:m.sourceHint,sort_by:m.sortHint}[name]);
   }
 }
 if (!customElements.get("dispatcharr-card")) customElements.define("dispatcharr-card", DispatcharrCard);
