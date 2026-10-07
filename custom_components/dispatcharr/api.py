@@ -7,8 +7,11 @@ No playback endpoints and no username/password authentication are implemented.
 from __future__ import annotations
 
 import asyncio
+import errno
 import json
 import re
+import socket
+from contextlib import contextmanager
 from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 from uuid import UUID
@@ -38,6 +41,61 @@ class CannotConnect(DispatcharrError):
 
 class InvalidResponse(DispatcharrError):
     """Unsupported or incomplete API response."""
+
+
+def connection_error_reason(error: CannotConnect) -> str:
+    reason = str(error)
+    return (
+        reason
+        if reason
+        in {
+            "connection_timeout",
+            "connection_tls",
+            "connection_dns",
+            "connection_refused",
+            "server_unavailable",
+        }
+        else "cannot_connect"
+    )
+
+
+def transport_error(error: Exception) -> str:
+    """Classify transport errors without retaining URLs, certificates or keys."""
+    if isinstance(error, TimeoutError):
+        return "connection_timeout"
+    if isinstance(error, (aiohttp.ClientConnectorCertificateError, aiohttp.ClientSSLError)):
+        return "connection_tls"
+    cause = getattr(error, "os_error", error)
+    if isinstance(cause, socket.gaierror):
+        return "connection_dns"
+    if getattr(cause, "errno", None) == errno.ECONNREFUSED:
+        return "connection_refused"
+    return "cannot_connect"
+
+
+class ValidationChecks:
+    """Ephemeral, credential-free results of explicitly requested checks."""
+
+    def __init__(self):
+        self.results = dict.fromkeys(
+            ("connection", "authentication", "sessions", "metadata", "permissions"), "—"
+        )
+
+    @contextmanager
+    def stage(self, name):
+        try:
+            yield
+        except DispatcharrError as error:
+            self.results[name] = "✗"
+            self.results["connection"] = (
+                "✗"
+                if isinstance(error, CannotConnect) and str(error) != "server_unavailable"
+                else "✓"
+            )
+            raise
+        else:
+            self.results[name] = "✓"
+            self.results["connection"] = "✓"
 
 
 def normalize_url(value: str) -> str:
@@ -145,8 +203,8 @@ class DispatcharrClient:
                     return json.loads(chunks)
                 except (ValueError, UnicodeError):
                     raise InvalidResponse("invalid_json") from None
-        except (aiohttp.ClientError, TimeoutError, OSError):
-            raise CannotConnect("cannot_connect") from None
+        except (aiohttp.ClientError, TimeoutError, OSError) as error:
+            raise CannotConnect(transport_error(error)) from None
 
     async def collection(self, path: str) -> list[dict]:
         """Follow DRF pagination only inside the original collection URL."""
@@ -177,27 +235,32 @@ class DispatcharrClient:
             path = original + ("?" + parsed.query if parsed.query else "")
         return result
 
-    async def validate(self) -> dict:
-        me = await self.request("GET", "/api/accounts/users/me/")
-        if not isinstance(me, dict):
-            raise InvalidResponse("invalid_account")
-        try:
-            admin = int(me.get("user_level", 0)) >= 10
-        except (TypeError, ValueError):
-            admin = False
-        if not admin:
-            raise Forbidden("insufficient_permissions")
-        del me  # The endpoint also returns API keys. Never retain it.
-        version = await self.request("GET", "/api/core/version/")
-        if not isinstance(version, dict) or not isinstance(version.get("version"), str):
-            raise InvalidResponse("unsupported_version")
-        await self.status()
-        await self.channels([])
-        await self.epg([])
+    async def validate(self, checks: ValidationChecks | None = None) -> dict:
+        checks = checks or ValidationChecks()
+        with checks.stage("authentication"):
+            me = await self.request("GET", "/api/accounts/users/me/")
+            if not isinstance(me, dict):
+                raise InvalidResponse("invalid_account")
+            try:
+                admin = int(me.get("user_level", 0)) >= 10
+            except (TypeError, ValueError):
+                admin = False
+            if not admin:
+                raise Forbidden("insufficient_permissions")
+            del me  # The endpoint also returns API keys. Never retain it.
+        with checks.stage("sessions"):
+            await self.status()
+        with checks.stage("metadata"):
+            version = await self.request("GET", "/api/core/version/")
+            if not isinstance(version, dict) or not isinstance(version.get("version"), str):
+                raise InvalidResponse("unsupported_version")
+            await self.channels([])
+            await self.epg([])
         # OPTIONS exercises exactly the same permission classes without stopping.
         probe = "00000000-0000-0000-0000-000000000000"
-        for action in ("stop_client", "stop"):
-            await self.request("OPTIONS", f"/proxy/ts/{action}/{probe}")
+        with checks.stage("permissions"):
+            for action in ("stop_client", "stop"):
+                await self.request("OPTIONS", f"/proxy/ts/{action}/{probe}")
         return {"version": self.text(version["version"]), "can_control": True}
 
     async def detail(self, uuid: str) -> dict:

@@ -16,8 +16,10 @@ from .api import (
     InvalidAuth,
     InvalidResponse,
     NotFound,
+    connection_error_reason,
     normalize_url,
 )
+from .connection_check import ConnectionCheckMixin
 from .const import CONF_ALIASES, CONF_CONTROL, CONF_EPG, CONF_METADATA, CONF_POLL, DEFAULTS, DOMAIN
 from .media_config import MediaOptionsMixin
 
@@ -62,8 +64,8 @@ class DispatcharrConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "invalid_auth"
             except Forbidden:
                 errors["base"] = "insufficient_permissions"
-            except CannotConnect:
-                errors["base"] = "cannot_connect"
+            except CannotConnect as error:
+                errors["base"] = connection_error_reason(error)
             except (InvalidResponse, NotFound):
                 errors["base"] = "unsupported_api"
         schema = vol.Schema(
@@ -89,10 +91,13 @@ class DispatcharrConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return await self._credentials("reauth_confirm", user_input)
 
 
-class DispatcharrOptionsFlow(MediaOptionsMixin, config_entries.OptionsFlowWithReload):
+class DispatcharrOptionsFlow(
+    ConnectionCheckMixin, MediaOptionsMixin, config_entries.OptionsFlowWithReload
+):
     async def async_step_init(self, user_input=None):
         return self.async_show_menu(
-            step_id="init", menu_options=["control", "aliases", "media", "advanced"]
+            step_id="init",
+            menu_options=["control", "aliases", "media", "connection_check", "advanced"],
         )
 
     async def async_step_control(self, user_input=None):

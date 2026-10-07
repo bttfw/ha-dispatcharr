@@ -6,7 +6,14 @@ import voluptuous as vol
 from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .api import CannotConnect, Forbidden, InvalidAuth, InvalidResponse, NotFound
+from .api import (
+    CannotConnect,
+    Forbidden,
+    InvalidAuth,
+    InvalidResponse,
+    NotFound,
+    connection_error_reason,
+)
 from .const import CONF_CONTROL
 from .media_api import MEDIA_KINDS, MediaClient
 from .media_coordinator import CONF_MEDIA
@@ -105,8 +112,8 @@ class MediaOptionsMixin:
                 errors["base"] = "media_invalid_auth"
             except Forbidden:
                 errors["base"] = "media_permissions"
-            except CannotConnect:
-                errors["base"] = "media_cannot_connect"
+            except CannotConnect as error:
+                errors["base"] = connection_error_reason(error)
             except (InvalidResponse, NotFound) as error:
                 errors["base"] = (
                     "plex_unclaimed" if str(error) == "plex_unclaimed" else "media_unsupported_api"
