@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.1 — 2026-10-08
+
+- Remove the always-visible source/count explanation, disabled/admin control hints
+  and duplicate update time from the dashboard footer in every layout.
+- Keep connection status and last successful update under the expandable Server
+  section for Dispatcharr and all optional media servers, including outages and
+  Dispatcharr-only setups. Preserve its expanded state during updates.
+- Retain actual metadata warnings and existing control permissions. Refresh the
+  English/German desktop and phone screenshots and server-detail guide images.
+- Require meaningful English changelog entries and matching GitHub release notes
+  for every future release in the contributor instructions.
+
 ## 0.3.0 — 2026-10-06
 
 - Add Grid, Compact list and Logo tiles to the English/German visual card editor.

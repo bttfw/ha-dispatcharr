@@ -82,5 +82,15 @@ alle beenden** bleibt eine getrennte Aktion mit Bestätigung. In Liste und Kache
 zuerst **Verbindungen & Details** öffnen. Der Ansichtswechsel startet keine
 Wiedergabe und ändert keine Servereinstellungen.
 
+## Serverstatus
+
+Unter **Server** am Ende jeder Ansicht stehen Verbindungsstatus und letzte
+erfolgreiche Aktualisierung von Dispatcharr und jedem zusätzlichen Medienserver.
+Das funktioniert auch mit Dispatcharr allein und bei einem Verbindungsabbruch.
+Ab 0.3.1 entfallen die dauerhaften Erklärungstexte und die doppelte Zeitangabe
+im Kartenfuß. Tatsächliche Fehler bleiben sichtbar.
+
+![Aufgeklappter Serverstatus mit erfundenen Daten](screenshots/server-details-de.png)
+
 Alle Bilder zeigen erfundene Nutzer, Bilder, Sendungen und Messwerte im echten
 HA-Frontend. Sie enthalten keine echten Zuschauerdaten oder Zugangsdaten.

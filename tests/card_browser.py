@@ -131,18 +131,26 @@ def main():
             "cardFixture.update({viewers:originalRows});cardFixture.admin=false;cardFixture.update()"
         )
         expect(card.locator(".session-stop")).to_have_count(0)
-        expect(card.get_by_text("Controls require an HA administrator", exact=True)).to_be_visible()
+        expect(card.get_by_text("Controls require an HA administrator", exact=True)).to_have_count(
+            0
+        )
         page.evaluate("cardFixture.admin=true;cardFixture.update()")
 
         page.evaluate("cardFixture.offline=true;cardFixture.update()")
         expect(card.get_by_text("Connection lost", exact=True).first).to_be_visible()
+        expect(card.get_by_text("Last updated", exact=False)).not_to_be_visible()
+        card.locator(".server-details > summary").click()
+        expect(card.locator(".server-details dt")).to_have_text(["Dispatcharr"])
         expect(card.get_by_text("Last updated", exact=False)).to_be_visible()
+        page.evaluate("cardFixture.update()")
+        expect(card.locator(".server-details")).to_have_attribute("open", "")
+        card.locator(".server-details > summary").click()
         page.evaluate(
             "cardFixture.offline=false;cardFixture.update({viewers:[{client_id:'unknown-client'}],control_enabled:false})"
         )
         expect(card.get_by_text("No current EPG data", exact=True)).to_be_visible()
         expect(card.get_by_text("No logo", exact=True)).to_be_visible()
-        expect(card.get_by_text("Controls are disabled", exact=True)).to_be_visible()
+        expect(card.get_by_text("Controls are disabled", exact=True)).to_have_count(0)
         expect(card.get_by_role("button", name="End session", exact=True)).to_have_count(0)
         assert card.evaluate("e => e.scrollWidth <= e.clientWidth")
         page.set_viewport_size({"width": 1000, "height": 1000})

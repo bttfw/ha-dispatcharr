@@ -34,6 +34,26 @@ def check_layouts(page, card):
         expect(card.locator(".client")).to_have_count(4)
         expect(card.locator(".media-viewer")).to_have_count(3)
         expect(card.locator(".stat strong")).to_have_text(["3", "4", "3"])
+        # Routine footer text is absent; each source retains its status/time.
+        expect(card.locator(".footer")).to_have_count(0)
+        server_details = card.locator(".server-details")
+        expect(server_details.locator("dd").first).not_to_be_visible()
+        server_details.locator("summary").click()
+        expect(server_details.locator("dt")).to_have_text(
+            ["Dispatcharr", "jellyfin", "emby", "plex"]
+        )
+        expect(server_details.locator("dd").first).to_contain_text("Connected · Last updated:")
+        expect(server_details.locator("dd").nth(1)).to_have_text(
+            "Connected · Last updated: Unknown"
+        )
+        page.evaluate("cardFixture.update()")
+        expect(server_details).to_have_attribute("open", "")
+        server_details.locator("summary").click()
+        page.evaluate("cardFixture.update({warnings:['metadata unavailable']})")
+        expect(
+            card.get_by_text("Some additional data is currently unavailable.", exact=True)
+        ).to_be_visible()
+        page.evaluate("cardFixture.update({warnings:[]})")
         if layout != "grid":
             expect(card.locator(".preview-name")).to_have_count(4)
             expect(card.locator(".layout-details[open]")).to_have_count(0)

@@ -65,6 +65,10 @@ Beispieldaten. Sie veranschaulichen die Karte und zeigen keinen echten Server.
 - Deutsche und englische Oberfläche, HA-Themes, Desktop und Smartphone.
 - Keine zusätzlichen Wiedergaben, keine XMLTV-Komplettabfrage, keine Keys im Browser.
 
+Unter **Server** am Kartenende stehen Verbindungsstatus und letzte erfolgreiche
+Aktualisierung je Quelle. Ab 0.3.1 entfallen die dauerhaften Erklärungstexte und
+die doppelte Zeitangabe. Tatsächliche Verbindungs- und Metadatenprobleme bleiben sichtbar.
+
 ## Sprache auswählen
 
 Einrichtung und Integrationsoptionen folgen der Sprache von Home Assistant.
