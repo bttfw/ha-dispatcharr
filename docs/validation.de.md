@@ -163,3 +163,16 @@ Temporäre Unraid-Testcontainer, deren Testverzeichnis und das dafür geladene
 HA-Image wurden nach dem Wechsel zu Docker Desktop entfernt. Docker-Desktop-
 Testcontainer werden nach Abschluss ebenfalls entfernt; Testläufe verwenden
 `--rm`. Es verbleibt kein dauerhaft laufender Testdienst auf Unraid.
+
+## Kartenoptionen und Verbindungsprüfung (0.4.0)
+
+Die Beta bestand 94 Backend-Tests im offiziellen HA-2026.9.4-Image, Ruff,
+Chromium-Kartentests sowie hassfest/HACS. Der native HA-2026.10.0-Editor wurde
+für die neuen Optionen und alle drei Ansichten mit synthetischen Daten geprüft.
+Live wurden Dispatcharr, Jellyfin, die GUI-Verbindungsprüfungen und die Erhaltung
+offener Details/des Fokus beim Aktualisieren geprüft. Der Inhaber bestätigte
+seinen Betatest und gab am 9. Oktober 2026 das reguläre Release frei.
+Ein zusätzlicher Live-Abbruchtest oder unabhängiges menschliches Code-Review
+wird für diese Freigabe nicht behauptet. Die Implementierung bleibt gegenüber
+der getesteten Beta unverändert; Version und Dokumentation werden angepasst.
+Siehe [Anleitung mit Bildern](card-customization.de.md).
