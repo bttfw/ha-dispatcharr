@@ -1,5 +1,48 @@
 # Changelog
 
+## 0.4.0 — 2026-10-09
+
+- Promote the owner-tested 0.4 beta to the regular HACS release. Keep existing
+  entity IDs, server credentials, aliases, controls and dashboard settings.
+- Customize title, subtitle, server badges and counters independently in all
+  three layouts. Add an optional slim idle view with expandable server status.
+- Filter by actual configured server and reported DVR connections; sort by user,
+  channel/title or connection age, and limit entries with Show more / Show less.
+  Counters cover selected servers before DVR filters and pagination.
+- Display reported playback state and Direct Play, Direct Stream or transcoding
+  badges. Preserve open details, loaded artwork and focus during live updates.
+- Check each server connection through GUI options, with per-stage results and
+  clearer authentication, permission, DNS, TLS, timeout and server errors.
+  These checks do not start or stop playback or change settings.
+- Publish the illustrated English/German customization guides and refreshed
+  desktop/mobile previews as stable documentation.
+- Validation: 94 backend tests, Chromium card regressions and native HA editor
+  checks passed for the beta. Dispatcharr and Jellyfin were verified live on
+  HA 2026.10.0; the owner tested the installed beta and approved this release.
+  No additional live session-termination test is claimed for this promotion.
+- Upgrade through HACS, restart HA and reload the browser/app. Beta users can
+  select v0.4.0 under Redownload; no reconfiguration is required.
+
+## 0.4.0b1 — 2026-10-08 (prerelease)
+
+- Configure title, subtitle, source badges and large counters independently in
+  the visual card editor. Add a slim idle view that expands when playback starts.
+- Select exact servers per card, including multiple servers of the same type.
+  Show, hide, isolate or separately group reported Dispatcharr DVR connections.
+- Sort entries by user, channel/title or reported connection age. Limit initially
+  visible entries with Show more / Show less. Counters cover selected servers
+  before DVR filtering and pagination; unknown connection ages sort last.
+- Show reported media playback state and Direct Play, Direct Stream or transcoding
+  as optional badges. Never infer values from titles, codecs or playback position.
+- Reconcile DOM by channel/source/session IDs to preserve surviving focused
+  controls, open details and loaded artwork while updating action targets safely.
+- Add read-only Check connection options with per-stage results and specific DNS,
+  timeout, TLS, refused-connection, server and permission errors. Checks never
+  start/stop playback or claim media-server stop capabilities.
+- Preserve existing cards and entity IDs. Add English/German guides and previews.
+- Validate with 94 backend tests, Chromium regressions and the native HA editor.
+  This is an opt-in beta for owner review, not a stable release.
+
 ## 0.3.1 — 2026-10-08
 
 - Remove the always-visible source/count explanation, disabled/admin control hints

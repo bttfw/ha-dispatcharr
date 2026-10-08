@@ -9,7 +9,16 @@ import re
 
 import aiohttp
 
-from .api import CannotConnect, Forbidden, InvalidAuth, InvalidResponse, NotFound, normalize_url
+from .api import (
+    CannotConnect,
+    Forbidden,
+    InvalidAuth,
+    InvalidResponse,
+    NotFound,
+    ValidationChecks,
+    normalize_url,
+    transport_error,
+)
 from .media_models import normalize_emby_session, normalize_plex_session
 
 MEDIA_KINDS = ("jellyfin", "plex", "emby")
@@ -120,10 +129,18 @@ class MediaClient:
                     return json.loads(body)
                 except (ValueError, UnicodeError):
                     raise InvalidResponse("invalid_json") from None
-        except (aiohttp.ClientError, TimeoutError, OSError):
-            raise CannotConnect("cannot_connect") from None
+        except (aiohttp.ClientError, TimeoutError, OSError) as error:
+            raise CannotConnect(transport_error(error)) from None
 
-    async def validate(self):
+    async def validate(self, checks: ValidationChecks | None = None):
+        checks = checks or ValidationChecks()
+        with checks.stage("authentication"):
+            info = await self._validate_identity()
+        with checks.stage("sessions"):
+            await self.sessions()
+        return info
+
+    async def _validate_identity(self):
         if self.kind == "plex":
             identity = await self.request("GET", "/identity")
             if not isinstance(identity, dict) or not isinstance(
@@ -143,7 +160,6 @@ class MediaClient:
         else:
             server, version = info.get("Id"), info.get("Version")
         server = self.safe_id(server)
-        await self.sessions()
         return {"server_id": server, "version": self.text(version)}
 
     async def sessions(self):

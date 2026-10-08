@@ -206,17 +206,35 @@ live stop requests. No additional test containers were created.
 checks, including 84 backend tests (one upstream warning). Native footer checks
 also passed against the merged beta module before stable promotion.
 
+### Configurable cards and connection checks (0.4.0)
+
+The 0.4.0b1 beta passed **94 backend tests** in the pinned official HA 2026.9.4
+image, Ruff, Chromium card regressions, hassfest and HACS validation. Native
+HA **2026.10.0** editor checks used synthetic fixtures for all new settings and
+all three layouts. Filter and pagination checks include exact server IDs,
+unknown data, DVR modes and outages; action targets remain exact session IDs.
+
+The beta was installed through HACS and verified live with Dispatcharr and
+Jellyfin on desktop and mobile, including both GUI connection checks and focus/
+open-detail preservation during a real update. Existing configuration, controls
+and calendars were retained. The owner reported successful beta testing and
+approved stable promotion on **9 October 2026**. No additional live termination
+test or independent human code review is claimed for this release.
+
+See the [illustrated customization guide](card-customization.md). The stable
+promotion changes version and documentation; the tested implementation is retained.
+
 ## Screenshots
 
 All public screenshots contain synthetic users, programmes, logos and source
 measurements. They are not real customer or provider data.
-The current previews show the selectable card layouts with the compact 0.3.1 footer,
+The current previews show the selectable card layouts and 0.4 customization options,
 rendered inside the actual HA frontend with synthetic fixture state and stubbed
 image and service calls. Desktop and mobile layouts in English and German show
 a viewer and a reported DVR connection on one channel, alongside all three media
 server types. The empty, offline and missing-data previews are refreshed too.
 Setup-form screenshots were captured on 0.2.0; those forms did not change.
-The English/German card-editor screenshots were refreshed for 0.3.0 using native
+The English/German card-editor screenshots were refreshed for 0.4 using native
 HA controls and synthetic entity state. The [layout guide](card-layouts.md) includes
 all three layouts at desktop and phone sizes. The shared source data,
 capture checks and offline renderer are in `scripts/render_screenshots.py`.

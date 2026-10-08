@@ -5,6 +5,11 @@
 
 # Dispatcharr für Home Assistant
 
+**Neu in 0.4.0:** Kopfbereich, Server-/DVR-Filter, Sortierung, „Weitere anzeigen“,
+Wiedergabe-Badges, schmale Leeransicht und Verbindungsprüfung.
+[Anleitung mit Bildern](card-customization.de.md). Im regulären HACS-Release
+verfügbar; bestehende Karteneinstellungen bleiben erhalten.
+
 **Neu in 0.2.0:** Jellyfin, Emby und Plex lassen sich gemeinsam mit Dispatcharr
 anzeigen, auch bei unabhängigen Wiedergaben und mehreren Servern desselben Typs.
 Siehe [Medienserver-Einrichtung und bekannte Grenzen](media-servers.de.md).
@@ -20,7 +25,8 @@ Wer schaut gerade welchen Sender, Film oder welche Folge? Eine eigenständige
 Dispatcharr-Integration mit optionalen Jellyfin-, Emby- und Plex-Verbindungen,
 GUI-Einrichtung und einer gemeinsamen Dashboard-Karte.
 
-**Geprüfte Basis:** Home Assistant 2026.9.4, Dispatcharr 0.31.0.
+**Geprüfte Basis:** Home Assistant 2026.10.0 (Live-Oberfläche), HA 2026.9.4
+(Backend-Testimage) und Dispatcharr 0.31.0.
 Vollständig neu implementiert, ohne Code aus anderen Dispatcharr-Integrationen
 für Home Assistant. Grundlage sind die offiziellen APIs und Entwicklerdokumentationen.
 Unabhängiges Community-Projekt.

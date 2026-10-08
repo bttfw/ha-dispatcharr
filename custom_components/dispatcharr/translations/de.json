@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Dispatcharr verbinden",
-        "description": "URL und API-Key eines Dispatcharr-Administrators eingeben. Der Key bleibt im HA-Backend.",
+        "description": "URL und API-Key eines Dispatcharr-Administrators eingeben. Der Key bleibt im HA-Backend. Beim Speichern werden Anmeldung, Status, Metadaten und API-Berechtigungen geprüft. Der Server muss vom HA-Host aus erreichbar sein.",
         "data": {
           "url": "Dispatcharr URL",
           "api_key": "API-Key"
@@ -12,7 +12,7 @@
       },
       "reconfigure": {
         "title": "Verbindung ändern",
-        "description": "URL und API-Key eines Dispatcharr-Administrators eingeben. Der Key bleibt im HA-Backend.",
+        "description": "URL und API-Key eines Dispatcharr-Administrators eingeben. Der Key bleibt im HA-Backend. Beim Speichern werden Anmeldung, Status, Metadaten und API-Berechtigungen geprüft. Der Server muss vom HA-Host aus erreichbar sein.",
         "data": {
           "url": "Dispatcharr URL",
           "api_key": "API-Key"
@@ -20,7 +20,7 @@
       },
       "reauth_confirm": {
         "title": "API-Key erneuern",
-        "description": "URL und API-Key eines Dispatcharr-Administrators eingeben. Der Key bleibt im HA-Backend.",
+        "description": "URL und API-Key eines Dispatcharr-Administrators eingeben. Der Key bleibt im HA-Backend. Beim Speichern werden Anmeldung, Status, Metadaten und API-Berechtigungen geprüft. Der Server muss vom HA-Host aus erreichbar sein.",
         "data": {
           "url": "Dispatcharr URL",
           "api_key": "API-Key"
@@ -31,8 +31,13 @@
       "invalid_url": "Eine HTTP(S)-Server-URL ohne Zugangsdaten, Abfrageparameter oder Fragment eingeben.",
       "invalid_auth": "Der API-Key wurde abgewiesen. Einen gültigen Dispatcharr-API-Key eingeben.",
       "insufficient_permissions": "Dispatcharr verlangt für Zuschauerstatus und Steuerung einen aktiven Administrator-API-Key (Benutzerstufe 10).",
-      "cannot_connect": "Dispatcharr ist nicht erreichbar. URL, Netzwerk und TLS-Zertifikat prüfen.",
-      "unsupported_api": "Der Server stellt die benötigte Dispatcharr-API nicht bereit. Geprüft mit Dispatcharr 0.31.0."
+      "cannot_connect": "Home Assistant kann diesen Server nicht erreichen. Prüfe URL, Netzwerkzugriff und Zertifikat vom HA-Host aus.",
+      "unsupported_api": "Der Server stellt die benötigte Dispatcharr-API nicht bereit. Geprüft mit Dispatcharr 0.31.0.",
+      "connection_timeout": "Home Assistant hat nicht rechtzeitig eine Antwort erhalten. Prüfe Serveradresse, Firewall und Routing vom HA-Host aus; Zugriff im Browser allein reicht nicht.",
+      "connection_tls": "TLS-Verbindung oder Zertifikat konnten nicht geprüft werden. Prüfe HTTPS-Hostnamen, Zertifikatskette und Gültigkeit auf dem Server.",
+      "connection_dns": "Home Assistant konnte den Servernamen nicht auflösen. Prüfe DNS auf dem HA-Host oder verwende eine erreichbare lokale Serveradresse.",
+      "connection_refused": "Der Host hat die Verbindung abgelehnt. Prüfe Port und ob der Server läuft.",
+      "server_unavailable": "Der Server antwortet mit einem Serverfehler oder einer Zugriffsbeschränkung wegen zu vieler Anfragen. Prüfe den Server und versuche es später erneut."
     },
     "abort": {
       "already_configured": "Diese URL ist bereits eingerichtet.",
@@ -48,7 +53,8 @@
           "control": "Steuerung",
           "aliases": "Geräte-Aliase",
           "advanced": "Erweitert",
-          "media": "Medienserver"
+          "media": "Medienserver",
+          "connection_check": "Verbindung prüfen"
         }
       },
       "control": {
@@ -116,6 +122,21 @@
         "data": {
           "confirm": "Diese Verbindung entfernen"
         }
+      },
+      "connection_check": {
+        "title": "Verbindung prüfen",
+        "description": "Prüfe einen konfigurierten Server direkt vom HA-Backend aus. Es werden keine Wiedergaben gestartet oder beendet und keine Einstellungen geändert.",
+        "data": {
+          "source": "Server"
+        }
+      },
+      "connection_result": {
+        "title": "Prüfergebnis",
+        "description": "**{name}**\n\nErreichbarkeit: {connection}\n\nAnmeldung und Serverzugriff: {authentication}\n\nSessions abrufbar: {sessions}\n\nKanalmetadaten und EPG-Endpunkt: {metadata}\n\nSteuerrechte (nur OPTIONS): {permissions}\n\n✓ Erfolgreich · ✗ Fehlgeschlagen · — Nicht geprüft\n\nKeine Wiedergabe wurde gestartet oder beendet. OK führt zurück zur Konfiguration."
+      },
+      "media_connection_result": {
+        "title": "Prüfergebnis",
+        "description": "**{name}**\n\nErreichbarkeit: {connection}\n\nAnmeldung und Serverzugriff: {authentication}\n\nSessions abrufbar: {sessions}\n\n✓ Erfolgreich · ✗ Fehlgeschlagen · — Nicht geprüft\n\nStop-Funktionen wurden nicht getestet. Client-Unterstützung und zusätzliche Serverberechtigungen können erforderlich sein. OK führt zurück zur Konfiguration."
       }
     },
     "abort": {
@@ -130,7 +151,16 @@
       "media_permissions": "Mit diesen Zugangsdaten können Server- und Session-Daten nicht gelesen werden. Administrator-/Eigentümer-Zugangsdaten verwenden.",
       "media_cannot_connect": "Server nicht erreichbar. URL, Netzwerk und Zertifikat prüfen.",
       "media_unsupported_api": "Der Server hat eine nicht unterstützte oder unvollständige API-Antwort geliefert. Den gewählten Servertyp prüfen.",
-      "plex_unclaimed": "Diesen Plex-Server zuerst mit seinem Eigentümer-Konto verknüpfen. Nicht verknüpfte Server können den Token nicht prüfen."
+      "plex_unclaimed": "Diesen Plex-Server zuerst mit seinem Eigentümer-Konto verknüpfen. Nicht verknüpfte Server können den Token nicht prüfen.",
+      "connection_timeout": "Home Assistant hat nicht rechtzeitig eine Antwort erhalten. Prüfe Serveradresse, Firewall und Routing vom HA-Host aus; Zugriff im Browser allein reicht nicht.",
+      "connection_tls": "TLS-Verbindung oder Zertifikat konnten nicht geprüft werden. Prüfe HTTPS-Hostnamen, Zertifikatskette und Gültigkeit auf dem Server.",
+      "connection_dns": "Home Assistant konnte den Servernamen nicht auflösen. Prüfe DNS auf dem HA-Host oder verwende eine erreichbare lokale Serveradresse.",
+      "connection_refused": "Der Host hat die Verbindung abgelehnt. Prüfe Port und ob der Server läuft.",
+      "server_unavailable": "Der Server antwortet mit einem Serverfehler oder einer Zugriffsbeschränkung wegen zu vieler Anfragen. Prüfe den Server und versuche es später erneut.",
+      "cannot_connect": "Home Assistant kann diesen Server nicht erreichen. Prüfe URL, Netzwerkzugriff und Zertifikat vom HA-Host aus.",
+      "check_invalid_auth": "Der Server hat den API-Key bzw. Token abgewiesen.",
+      "check_permissions": "Dem API-Key bzw. Token fehlen die erforderlichen Berechtigungen für diesen Prüfschritt.",
+      "check_unsupported_api": "Der geprüfte API-Endpunkt fehlt oder liefert unvollständige Daten. Prüfe Servertyp und Version."
     }
   },
   "entity": {

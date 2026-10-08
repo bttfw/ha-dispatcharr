@@ -12,6 +12,11 @@
 
 **English** | [Deutsch](docs/README.de.md)
 
+**New in 0.4.0:** configurable headers, exact-server/DVR filters, sorting,
+Show more, playback badges, a slim idle view and on-demand connection checks.
+See the [illustrated customization guide](docs/card-customization.md).
+Available in the regular HACS release; existing card settings are preserved.
+
 **Getting started:** [Setup with screenshots — English](docs/setup.md) ·
 [Einrichtung mit Bildern — Deutsch](docs/setup.de.md)
 
@@ -19,7 +24,8 @@ See who is watching which channel, movie or episode. An independent Dispatcharr
 integration with optional Jellyfin, Emby and Plex servers, GUI setup and one
 bundled dashboard card.
 
-**Verified with:** Home Assistant 2026.9.4 and Dispatcharr 0.31.0.
+**Verified with:** Home Assistant 2026.10.0 (live UI), HA 2026.9.4 (backend
+test image) and Dispatcharr 0.31.0.
 Built from scratch using official documentation and the verified Dispatcharr API.
 No code was copied from existing Dispatcharr integrations for Home Assistant.
 Independent community project.
@@ -254,7 +260,7 @@ security update PRs are enabled; GitHub directs security fixes to `main`.
 All updates require review and passing checks, with no automatic merge or release.
 See the [configuration](.github/dependabot.yml) for scope and schedule.
 
-84 automated tests passed against HA 2026.9.4, along with hassfest, HACS and code
+94 automated tests passed against HA 2026.9.4, along with hassfest, HACS and code
 checks. Browser tests cover synthetic multi-viewer scenarios, exact-client and
 whole-channel stops, outages, missing data, aliases and visual configuration.
 Production installation through HACS, empty and active live dashboards, actual
