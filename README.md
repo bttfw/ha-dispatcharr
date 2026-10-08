@@ -260,7 +260,7 @@ security update PRs are enabled; GitHub directs security fixes to `main`.
 All updates require review and passing checks, with no automatic merge or release.
 See the [configuration](.github/dependabot.yml) for scope and schedule.
 
-84 automated tests passed against HA 2026.9.4, along with hassfest, HACS and code
+94 automated tests passed against HA 2026.9.4, along with hassfest, HACS and code
 checks. Browser tests cover synthetic multi-viewer scenarios, exact-client and
 whole-channel stops, outages, missing data, aliases and visual configuration.
 Production installation through HACS, empty and active live dashboards, actual
