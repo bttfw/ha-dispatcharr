@@ -3,6 +3,7 @@
 import copy
 import json
 from types import SimpleNamespace
+from unittest.mock import Mock
 
 import pytest
 from aiohttp import ClientSession, web
@@ -19,6 +20,7 @@ from custom_components.dispatcharr.config_flow import DispatcharrOptionsFlow
 from custom_components.dispatcharr.coordinator import DispatcharrCoordinator
 from custom_components.dispatcharr.media_api import MediaClient
 from custom_components.dispatcharr.media_coordinator import MediaCoordinator
+from custom_components.dispatcharr.sensor import DispatcharrCount, TotalStreams
 
 KEY = "synthetic-private-key"
 
@@ -367,6 +369,162 @@ async def test_source_isolation_recovery_and_no_name_deduplication(
     assert KEY not in json.dumps(coordinator.data)
     await coordinator.async_shutdown()
     await proxy.async_shutdown()
+
+
+@pytest.fixture
+async def stream_counter(media_hass, media_entry, media_servers, dispatcharr):
+    proxy = DispatcharrCoordinator(media_hass, media_entry, dispatcharr.client)
+    media = MediaCoordinator(media_hass, media_entry, media_servers.session)
+    proxy.media_coordinator = media
+    counter = TotalStreams(proxy)
+    yield counter
+    await proxy.async_shutdown()
+    await media.async_shutdown()
+
+
+async def test_total_streams_counts_all_sources_without_changing_existing_counts(stream_counter):
+    counter = stream_counter
+    assert not counter.available and counter.native_value is None
+    await counter.coordinator.async_refresh()
+    await counter.media_coordinator.async_refresh()
+    assert counter.available and counter.native_value == 5  # 2 clients + JF/Emby/Plex
+    assert counter.extra_state_attributes == {
+        "dispatcharr_clients": 2,
+        "media_sessions": 3,
+        "complete": True,
+        "unavailable_sources": [],
+    }
+    # Both clients share one channel; all media sources have the same user name.
+    assert (
+        DispatcharrCount(counter.coordinator, "active_channels", "mdi:television").native_value == 1
+    )
+    assert (
+        DispatcharrCount(counter.coordinator, "viewer_count", "mdi:account-group").native_value == 2
+    )
+
+
+async def test_total_streams_updates_from_either_coordinator_and_removes_listeners(
+    stream_counter, dispatcharr, media_servers
+):
+    counter = stream_counter
+    callbacks = []
+    counter.async_on_remove = callbacks.append
+    counter.async_write_ha_state = Mock()
+    await counter.async_added_to_hass()
+    assert len(callbacks) == 2
+    await counter.coordinator.async_refresh()
+    await counter.media_coordinator.async_refresh()
+    assert counter.async_write_ha_state.call_count == 2
+    assert counter.native_value == 5
+    media_servers.servers["jellyfin"].rows.append(emby_row("session-two"))
+    await counter.media_coordinator.async_refresh()
+    assert counter.native_value == 6
+    dispatcharr.channels.clear()
+    await counter.coordinator.async_refresh()
+    assert counter.native_value == 4
+    assert counter.async_write_ha_state.call_count == 4
+    calls = len(dispatcharr.calls) + sum(len(s.calls) for s in media_servers.servers.values())
+    for _ in range(5):
+        assert counter.available and counter.native_value == 4
+        assert counter.extra_state_attributes["complete"]
+    assert calls == len(dispatcharr.calls) + sum(
+        len(s.calls) for s in media_servers.servers.values()
+    )
+    for remove in callbacks:
+        remove()
+    await counter.coordinator.async_refresh()
+    await counter.media_coordinator.async_refresh()
+    assert counter.async_write_ha_state.call_count == 4
+
+
+async def test_total_streams_outages_do_not_reuse_stale_counts_and_recover(
+    stream_counter, dispatcharr, media_servers
+):
+    counter = stream_counter
+    await counter.coordinator.async_refresh()
+    await counter.media_coordinator.async_refresh()
+    assert counter.native_value == 5
+    dispatcharr.failures["/proxy/ts/status"] = 503
+    await counter.coordinator.async_refresh()
+    assert counter.available and counter.native_value == 3
+    assert counter.extra_state_attributes["dispatcharr_clients"] is None
+    assert counter.extra_state_attributes["unavailable_sources"] == ["dispatcharr"]
+    assert counter.extra_state_attributes["complete"] is False
+    media_servers.servers["jellyfin"].failure = 401
+    await counter.media_coordinator.async_refresh()
+    assert counter.native_value == 2
+    assert set(counter.extra_state_attributes["unavailable_sources"]) == {"dispatcharr", "jellyfin"}
+    for source in media_servers.servers.values():
+        source.failure = 503
+    await counter.media_coordinator.async_refresh()
+    assert not counter.available and counter.native_value is None
+    assert counter.extra_state_attributes["media_sessions"] is None
+    for source in media_servers.servers.values():
+        source.failure = 0
+        source.rows.clear()
+    await counter.media_coordinator.async_refresh()
+    assert counter.available and counter.native_value == 0
+    assert counter.extra_state_attributes["complete"] is False
+    dispatcharr.failures.clear()
+    dispatcharr.channels.clear()
+    await counter.coordinator.async_refresh()
+    assert counter.native_value == 0 and counter.extra_state_attributes["complete"]
+
+
+async def test_total_streams_dispatcharr_only_and_missing_media_snapshot(stream_counter):
+    counter = stream_counter
+    await counter.coordinator.async_refresh()
+    counter.media_coordinator.clients.clear()
+    assert counter.native_value == 2 and counter.extra_state_attributes["complete"]
+    assert counter.extra_state_attributes["media_sessions"] == 0
+    counter.media_coordinator.clients["new-server"] = object()
+    assert counter.native_value == 2 and not counter.extra_state_attributes["complete"]
+    assert counter.extra_state_attributes["unavailable_sources"] == ["new-server"]
+    counter.media_coordinator.clients.clear()
+
+
+async def test_total_streams_media_coordinator_failure_drops_cached_snapshot(stream_counter):
+    from homeassistant.helpers.update_coordinator import UpdateFailed
+
+    counter = stream_counter
+    await counter.coordinator.async_refresh()
+    await counter.media_coordinator.async_refresh()
+    counter.media_coordinator.async_set_update_error(UpdateFailed("synthetic failure"))
+    assert counter.native_value == 2
+    assert counter.extra_state_attributes["media_sessions"] is None
+    assert set(counter.extra_state_attributes["unavailable_sources"]) == {
+        "jellyfin",
+        "emby",
+        "plex",
+    }
+    await counter.media_coordinator.async_refresh()
+    assert counter.native_value == 5 and counter.extra_state_attributes["complete"]
+
+
+async def test_total_streams_multiple_servers_same_type_and_stable_id(
+    stream_counter, media_servers, media_hass, media_entry, dispatcharr
+):
+    counter = stream_counter
+    second_source = {**media_servers.servers["jellyfin"].source, "id": "jellyfin-two"}
+    counter.media_coordinator.clients["jellyfin-two"] = MediaClient(
+        media_servers.session, second_source
+    )
+    await counter.coordinator.async_refresh()
+    await counter.media_coordinator.async_refresh()
+    assert counter.native_value == 6
+    replacement = DispatcharrCoordinator(media_hass, media_entry, dispatcharr.client)
+    replacement.media_coordinator = counter.media_coordinator
+    assert TotalStreams(replacement).unique_id == counter.unique_id
+    await replacement.async_shutdown()
+
+
+async def test_total_streams_registered_automatically(stream_counter, media_hass):
+    from custom_components.dispatcharr.sensor import async_setup_entry
+
+    entry = SimpleNamespace(runtime_data=stream_counter.coordinator)
+    entities = []
+    await async_setup_entry(media_hass, entry, entities.extend)
+    assert sum(isinstance(entity, TotalStreams) for entity in entities) == 1
 
 
 @pytest.mark.parametrize("kind", ["jellyfin", "emby", "plex"])

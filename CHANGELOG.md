@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.4.1 — 2026-11-07
+
+- Add the automatically created **Total streams** sensor for combined dashboard
+  counters: Dispatcharr client connections plus sessions reported by every
+  configured Jellyfin, Plex and Emby server. Previously, badges using Viewers
+  counted only Dispatcharr, even when the card correctly showed media sessions.
+- Update the total whenever either shared coordinator publishes new data,
+  without additional API requests. Keep existing channel, viewer and media-session
+  sensors and card counters unchanged.
+- Count connections rather than unique people or titles. Multiple clients on
+  one channel and identical user/session names across servers remain separate;
+  reported DVR connections and paused media sessions are included.
+- Exclude unavailable sources and stale cached counts. Expose partial-result
+  completeness and missing source IDs as attributes; return unavailable when no
+  source can be counted instead of reporting a misleading zero.
+- Add seven regression tests for concurrent sources, independent updates,
+  listener cleanup, missing data, outages/recovery, multiple servers and stable IDs.
+  The backend suite now contains 101 tests.
+- Add English/German names and GUI instructions. After updating and restarting
+  HA, select **Total streams** / **Streams insgesamt** for combined badges.
+  Existing dashboards are not rewritten automatically.
+
 ## 0.4.0 — 2026-10-09
 
 - Promote the owner-tested 0.4 beta to the regular HACS release. Keep existing
