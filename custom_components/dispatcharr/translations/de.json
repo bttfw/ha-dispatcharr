@@ -176,6 +176,9 @@
       },
       "media_sessions": {
         "name": "Medien-Sessions"
+      },
+      "total_streams": {
+        "name": "Streams insgesamt"
       }
     },
     "binary_sensor": {

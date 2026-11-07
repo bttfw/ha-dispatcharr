@@ -15,10 +15,76 @@ async def async_setup_entry(hass, entry, async_add_entities):
         [
             DispatcharrCount(coordinator, "active_channels", "mdi:television"),
             DispatcharrCount(coordinator, "viewer_count", "mdi:account-group"),
+            TotalStreams(coordinator),
             LastSuccess(coordinator),
             MediaSessions(coordinator.media_coordinator),
         ]
     )
+
+
+class TotalStreams(DispatcharrEntity, SensorEntity):
+    """Count reported connections across both independently polled coordinators."""
+
+    _attr_icon = "mdi:play-network"
+    _unrecorded_attributes = frozenset(
+        {"dispatcharr_clients", "media_sessions", "complete", "unavailable_sources"}
+    )
+
+    def __init__(self, coordinator):
+        super().__init__(coordinator, "total_streams")
+        self.media_coordinator = coordinator.media_coordinator
+
+    async def async_added_to_hass(self):
+        await super().async_added_to_hass()
+        self.async_on_remove(
+            self.media_coordinator.async_add_listener(self._handle_coordinator_update)
+        )
+
+    def _counts(self):
+        """Do not reuse stale counts when a source is unavailable."""
+        data = self.coordinator.data or {}
+        count = data.get("viewer_count")
+        counts = {
+            "dispatcharr": count
+            if self.coordinator.last_update_success and type(count) is int and count >= 0
+            else None
+        }
+        media = self.media_coordinator
+        statuses = {s["id"]: s for s in (media.data or {}).get("media_sources", [])}
+        for source_id in media.clients:
+            status = statuses.get(source_id, {})
+            count = status.get("session_count")
+            counts[source_id] = (
+                count
+                if media.last_update_success
+                and status.get("connected")
+                and type(count) is int
+                and count >= 0
+                else None
+            )
+        return counts
+
+    @property
+    def available(self):
+        return any(count is not None for count in self._counts().values())
+
+    @property
+    def native_value(self):
+        counts = [count for count in self._counts().values() if count is not None]
+        return sum(counts) if counts else None
+
+    @property
+    def extra_state_attributes(self):
+        counts = self._counts()
+        media = [count for key, count in counts.items() if key != "dispatcharr"]
+        return {
+            "dispatcharr_clients": counts["dispatcharr"],
+            "media_sessions": sum(count for count in media if count is not None)
+            if not media or any(count is not None for count in media)
+            else None,
+            "complete": all(count is not None for count in counts.values()),
+            "unavailable_sources": [key for key, count in counts.items() if count is None],
+        }
 
 
 class MediaSessions(CoordinatorEntity, SensorEntity):

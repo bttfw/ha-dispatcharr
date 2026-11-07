@@ -5,6 +5,10 @@
 
 # Dispatcharr für Home Assistant
 
+**Korrigiert in 0.4.1:** Der neue Sensor **Streams insgesamt** zählt
+Dispatcharr, Jellyfin, Plex und Emby zusammen. Ein Dispatcharr-Client plus eine
+Jellyfin-Session ergibt **2**. [Gesamtzähler auswählen](stream-counter.de.md).
+
 **Neu in 0.4.0:** Kopfbereich, Server-/DVR-Filter, Sortierung, „Weitere anzeigen“,
 Wiedergabe-Badges, schmale Leeransicht und Verbindungsprüfung.
 [Anleitung mit Bildern](card-customization.de.md). Im regulären HACS-Release

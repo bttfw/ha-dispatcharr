@@ -12,6 +12,10 @@
 
 **English** | [Deutsch](docs/README.de.md)
 
+**Fixed in 0.4.1:** use the new **Total streams** sensor for badges that should
+count Dispatcharr, Jellyfin, Plex and Emby together. One Dispatcharr client plus
+one Jellyfin session now gives **2**. [Choose the combined counter](docs/stream-counter.md).
+
 **New in 0.4.0:** configurable headers, exact-server/DVR filters, sorting,
 Show more, playback badges, a slim idle view and on-demand connection checks.
 See the [illustrated customization guide](docs/card-customization.md).
@@ -260,7 +264,7 @@ security update PRs are enabled; GitHub directs security fixes to `main`.
 All updates require review and passing checks, with no automatic merge or release.
 See the [configuration](.github/dependabot.yml) for scope and schedule.
 
-94 automated tests passed against HA 2026.9.4, along with hassfest, HACS and code
+101 automated tests passed against HA 2026.9.4, along with hassfest, HACS and code
 checks. Browser tests cover synthetic multi-viewer scenarios, exact-client and
 whole-channel stops, outages, missing data, aliases and visual configuration.
 Production installation through HACS, empty and active live dashboards, actual
